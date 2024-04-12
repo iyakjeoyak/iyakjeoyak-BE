@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +24,10 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public List<MedicineResult> findAll() {
         return medicineRepository.findAll().stream().map(Medicine::toDto).toList();
+    }
+
+    @Override
+    public MedicineResult findOneById(Long medicineId) {
+        return medicineRepository.findById(medicineId).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")).toDto();
     }
 }

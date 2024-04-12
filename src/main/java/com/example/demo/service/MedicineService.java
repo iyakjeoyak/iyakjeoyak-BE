@@ -8,4 +8,7 @@ public interface MedicineService {
     Long save(Long id);
 
     List<MedicineResult> findAll();
+
+    MedicineResult findOneById(Long medicineId);
+
 }

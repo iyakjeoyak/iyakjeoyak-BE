@@ -2,6 +2,10 @@ spring:
   application:
     name: iyjy
 
+  security:
+    user:
+      name: 1
+      password: 1
 
   jpa:
     # ?? ?? ??
