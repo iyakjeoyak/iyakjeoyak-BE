@@ -21,7 +21,7 @@ public class Swagger3Config {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-                .title("test swagger")
+                .title("IYJY swagger")
                 .version("1.0")
                 .description("<li>서비스 가동 일시 : " + serverStartTime + "</li>");
 

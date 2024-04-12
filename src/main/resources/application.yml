@@ -17,7 +17,3 @@ spring:
     url: jdbc:mysql://localhost:13306/my-project-db
     username: root
     password: 1234
-
-  logging:
-    level:
-      org.hibernate.SQL: debug
