@@ -14,9 +14,9 @@ public class MedicineResult {
     private Long id;
 
     @Schema(description = "브랜드 명")
-    private String bssh_NM;
+    private String BSSH_NM;
 
     @Schema(description = "제품 명")
-    private String prdlst_NM;
+    private String PRDLST_NM;
 
 }
