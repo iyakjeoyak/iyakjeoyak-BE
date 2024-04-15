@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(영양제)", description = "영양제 관련")
-@RequestMapping("medicine")
+@RequestMapping("/medicine")
 public class MedicineController {
     private final MedicineService medicineService;
 
