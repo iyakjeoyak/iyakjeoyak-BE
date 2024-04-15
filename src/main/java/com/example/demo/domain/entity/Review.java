@@ -1,6 +1,7 @@
 package com.example.demo.domain.entity;
 
 import com.example.demo.domain.entity.common.BaseTimeEntity;
+import com.example.demo.web.payload.ReviewEditPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,4 +39,9 @@ public class Review extends BaseTimeEntity {
 //    @OneToMany
 //    private List<Attachment> imageList = new ArrayList<>();
 
+    public Long update(ReviewEditPayload reviewEditPayload) {
+        //TODO : 수정 로직 작성
+
+        return this.id;
+    }
 }
