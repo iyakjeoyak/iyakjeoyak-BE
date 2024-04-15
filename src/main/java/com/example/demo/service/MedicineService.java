@@ -1,13 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.web.payload.MedicinePayload;
 import com.example.demo.web.result.MedicineResult;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface MedicineService {
-    Long save(Long id);
+    Long save(MedicinePayload medicinePayload);
 
-    List<MedicineResult> findAll();
+    Page<MedicineResult> findAll(Pageable pageable);
 
     MedicineResult findOneById(Long medicineId);
 

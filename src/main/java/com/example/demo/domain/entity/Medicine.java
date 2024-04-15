@@ -84,7 +84,12 @@ public class Medicine {
 
 
     public MedicineResult toDto() {
-        return MedicineResult.builder().id(this.getId()).bssh_NM(this.BSSH_NM).prdlst_NM(this.PRDLST_NM).build();
+        return MedicineResult
+                .builder()
+                .id(this.getId())
+                .bssh_NM(this.BSSH_NM)
+                .prdlst_NM(this.PRDLST_NM)
+                .build();
     }
 
 }
