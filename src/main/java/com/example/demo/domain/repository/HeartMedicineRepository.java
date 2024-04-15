@@ -4,6 +4,9 @@ import com.example.demo.domain.entity.HeartMedicine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface HeartMedicineRepository extends JpaRepository<HeartMedicine , Long> {
+    Optional<HeartMedicine> findByMedicineId(Long medicineId);
 }
