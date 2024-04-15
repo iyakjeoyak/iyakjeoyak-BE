@@ -5,6 +5,7 @@ import com.example.demo.domain.repository.MedicineRepository;
 import com.example.demo.service.MedicineService;
 import com.example.demo.web.payload.MedicinePayload;
 import com.example.demo.web.result.MedicineResult;
+import com.example.demo.web.result.PageResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,9 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public Page<MedicineResult> findAll(Pageable pageable) {
-        return medicineRepository.findAll(pageable).map(Medicine::toDto);
+    public PageResult<MedicineResult> findAll(Pageable pageable) {
+        Page<MedicineResult> result = medicineRepository.findAll(pageable).map(Medicine::toDto);
+        return new PageResult<>(result);
     }
 
     @Override
