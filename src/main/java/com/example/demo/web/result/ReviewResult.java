@@ -7,6 +7,6 @@ public class ReviewResult {
     private Long id;
     private String title;
     private String content;
-    private Integer star;
+    private Double star;
     private Integer heartCount;
 }
