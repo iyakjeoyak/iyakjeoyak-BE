@@ -3,6 +3,7 @@ package com.example.demo.web.controller;
 import com.example.demo.service.MedicineService;
 import com.example.demo.web.payload.MedicinePayload;
 import com.example.demo.web.result.MedicineResult;
+import com.example.demo.web.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,9 +30,9 @@ public class MedicineController {
     @Operation(summary = "영양제 전체 조회", description = "이후 페이지네이션으로 바꿀 예정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = List.class)))})
-    public ResponseEntity<Page<MedicineResult>> findAll(@RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "10") int size) {
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<PageResult<MedicineResult>> findAll(@RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
         return new ResponseEntity<>(medicineService.findAll(PageRequest.of(page, size)), HttpStatus.OK);
     }
 
@@ -39,7 +40,7 @@ public class MedicineController {
     @Operation(summary = "영양제 단건 조회", description = "medicineId : 영양제 PK")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MedicineResult.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = MedicineResult.class)))})
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<MedicineResult> findOneById(@PathVariable(name = "medicineId") Long medicineId) {
         return new ResponseEntity<>(medicineService.findOneById(medicineId), HttpStatus.OK);
     }
@@ -48,7 +49,7 @@ public class MedicineController {
     @Operation(summary = "영양제 생성", description = "영양제 DB 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = MedicineResult.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = MedicineResult.class)))})
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<MedicineResult> createMedicine(@RequestBody MedicinePayload medicinePayload){
         long id = medicineService.save(medicinePayload);
         MedicineResult medicineResult = medicineService.findOneById(id);
