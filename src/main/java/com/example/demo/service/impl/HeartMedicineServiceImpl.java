@@ -2,10 +2,12 @@ package com.example.demo.service.impl;
 
 import com.example.demo.domain.entity.HeartMedicine;
 import com.example.demo.domain.entity.Medicine;
+import com.example.demo.domain.entity.User;
 import com.example.demo.domain.repository.HeartMedicineRepository;
 import com.example.demo.domain.repository.MedicineRepository;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,33 +22,65 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     private final HeartMedicineRepository heartMedicineRepository;
     private final MedicineRepository medicineRepository;
 //    private final UserRepository userRepository;
+//    @Override
+//    public Long like(Long medicineId, Long userId) {
+//        Medicine medicine = medicineRepository.findById(medicineId)
+//                .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+//
+//        long id = heartMedicineRepository.save(HeartMedicine.builder()
+//                .medicine(medicine)
+////                .user(userRepository.findById(userId).orElseThrow("해당 유저 없음."))
+//                .build()).getId();
+//
+//        medicine.setHeartCount(medicine.getHeartCount()+1);
+//        medicineRepository.save(medicine);
+//        return id;
+//    }
+
     @Override
-    public Long like(Long medicineId, Long userId) {
-        Medicine medicine = medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+    public Long like(Long medicineId, User user) {
+        if(!isChecked(medicineId, user.getUserId())) {
+            Medicine medicine = medicineRepository.findById(medicineId)
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
 
-        long id = heartMedicineRepository.save(HeartMedicine.builder()
-                .medicine(medicine)
-//                .user(userRepository.findById(userId).orElseThrow("해당 유저 없음."))
-                .build()).getId();
-
-        medicine.setHeartCount(medicine.getHeartCount()+1);
-        medicineRepository.save(medicine);
-        return id;
+            Long id = heartMedicineRepository.save(HeartMedicine.builder()
+                    .medicine(medicine)
+                    .user(user)
+                    .build()).getId();
+            medicine.setHeartCount(medicine.getHeartCount() + 1);
+            medicineRepository.save(medicine);
+            return id;
+        }
+        throw new IllegalArgumentException("좋아요를 이미 누름");
     }
 
+//    @Override
+//    public Long cancel(Long medicineId, Long userId) {
+//        Medicine medicine = medicineRepository.findById(medicineId)
+//                .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+//        HeartMedicine heartMedicine = heartMedicineRepository.findByMedicineId(medicineId)
+//                .orElseThrow(() -> new NoSuchElementException("해당 게시물 좋아요 누른 유저가 아닙니다."));
+//
+//        medicine.setHeartCount(medicine.getHeartCount()-1);
+//        medicineRepository.save(medicine);
+//
+//        heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, userId);
+//        return medicineId;
+//    }
     @Override
-    public Long cancel(Long medicineId, Long userId) {
-        Medicine medicine = medicineRepository.findById(medicineId)
+    @Transactional
+    public Long cancel(Long medicineId, User user) {
+        if(isChecked(medicineId, user.getUserId())){
+            Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
-        HeartMedicine heartMedicine = heartMedicineRepository.findByMedicineId(medicineId)
-                .orElseThrow(() -> new NoSuchElementException("해당 게시물 좋아요 누른 유저가 아닙니다."));
 
-        medicine.setHeartCount(medicine.getHeartCount()-1);
-        medicineRepository.save(medicine);
+           medicine.setHeartCount(medicine.getHeartCount()-1);
+           medicineRepository.save(medicine);
 
-        heartMedicineRepository.deleteByMedicineIdAndUserUserId(heartMedicine.getId(), userId);
-        return medicineId;
+           heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, user.getUserId());
+           return medicineId;
+        }
+        throw new IllegalArgumentException("좋아요누른 회원이 아님.");
     }
 
     @Override

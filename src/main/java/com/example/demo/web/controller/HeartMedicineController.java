@@ -1,5 +1,6 @@
 package com.example.demo.web.controller;
 
+import com.example.demo.domain.entity.User;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,8 +29,9 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> likeMedicine(@PathVariable Long medicineId, @AuthenticationPrincipal Long userId){
-        return new ResponseEntity<>(heartMedicineService.like(medicineId, userId), HttpStatus.CREATED);
+    public ResponseEntity<Long> saveHeartMedicine(@PathVariable Long medicineId, /*@AuthenticationPrincipal Long userId*/@RequestBody User user){
+        return new ResponseEntity<>(heartMedicineService.like(medicineId, user), HttpStatus.OK);
+//        return new ResponseEntity<>(heartMedicineService.like(medicineId, userId), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{medicineId}")
@@ -37,8 +39,9 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> likeMedicineCancel(@PathVariable Long medicineId, @AuthenticationPrincipal Long userId){
-        return new ResponseEntity<>(heartMedicineService.cancel(medicineId, userId), HttpStatus.OK);
+    public ResponseEntity<Long> deleteHeartMedicine(@PathVariable Long medicineId, /*@AuthenticationPrincipal Long userId*/ @RequestBody User user){
+//        return new ResponseEntity<>(heartMedicineService.cancel(medicineId, userId), HttpStatus.OK);
+        return new ResponseEntity<>(heartMedicineService.cancel(medicineId, user), HttpStatus.OK);
     }
 
     @GetMapping
@@ -46,16 +49,16 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<List<HeartMedicineResult>> findAll(@AuthenticationPrincipal Long userId){
+    public ResponseEntity<List<HeartMedicineResult>> findAllByUser(/*@AuthenticationPrincipal Long userId*/@RequestParam Long userId){
         return new ResponseEntity<>(heartMedicineService.findAll(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{medicineId}")
-    @Operation(summary = "영양제 좋아요 클릭 여부 확인", description = "medicineId : 영양제 PK")
+    @Operation(summary = "영양제 좋아요 클릭 여부 확인", description = "눌렀으면 true, 안눌렀을땐 false")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Boolean> isChecked(@PathVariable Long medicineId, @AuthenticationPrincipal Long userId){
+    public ResponseEntity<Boolean> checkHeartMedicine(@PathVariable Long medicineId, /*@AuthenticationPrincipal Long userId*/@RequestParam Long userId){
         return new ResponseEntity<>(heartMedicineService.isChecked(medicineId, userId), HttpStatus.OK);
     }
 }
