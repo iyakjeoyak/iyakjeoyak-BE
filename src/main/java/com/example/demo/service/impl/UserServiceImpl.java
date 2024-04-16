@@ -3,10 +3,8 @@ package com.example.demo.service.impl;
 import com.example.demo.domain.entity.User;
 import com.example.demo.domain.repository.UserRepository;
 import com.example.demo.service.UserService;
-import com.example.demo.util.mapper.UserMapper;
 import com.example.demo.web.payload.UserJoinPayload;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     //TODO Bcrpt
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
+//    private final UserMapper userMapper;
 
         public Long createUser(UserJoinPayload userJoinPayload) {
             Boolean isExist = userRepository.existsByUsername(userJoinPayload.getUsername());
