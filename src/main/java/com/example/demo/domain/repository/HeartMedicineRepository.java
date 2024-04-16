@@ -13,7 +13,7 @@ public interface HeartMedicineRepository extends JpaRepository<HeartMedicine , L
 
     void deleteByMedicineIdAndUserUserId(Long medicineId, Long userId);
 
-    Optional<List<HeartMedicine>> findAllByUserUserId(Long userId);
+    List<HeartMedicine> findAllByUserUserId(Long userId);
 
     Boolean existsByMedicineIdAndUserUserId(Long medicineId, Long userId);
 }

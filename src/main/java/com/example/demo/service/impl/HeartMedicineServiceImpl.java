@@ -38,14 +38,16 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
 //    }
 
     @Override
-    public Long like(Long medicineId, User user) {
-        if(!isChecked(medicineId, user.getUserId())) {
+    public Long like(Long medicineId, Long userId) {
+        //Todo : UserRepository pull 받은 후 user 세팅하도록 변경 할 것
+
+        if(!isChecked(medicineId, userId)) {
             Medicine medicine = medicineRepository.findById(medicineId)
                     .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
 
             Long id = heartMedicineRepository.save(HeartMedicine.builder()
                     .medicine(medicine)
-                    .user(user)
+//                    .user(userRepository.findById(userId).orElseThrow())
                     .build()).getId();
             medicine.setHeartCount(medicine.getHeartCount() + 1);
             medicineRepository.save(medicine);
@@ -69,25 +71,24 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
 //    }
     @Override
     @Transactional
-    public Long cancel(Long medicineId, User user) {
-        if(isChecked(medicineId, user.getUserId())){
+    public Long cancel(Long medicineId, Long userId) {
+        if(isChecked(medicineId, userId)){
             Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
 
            medicine.setHeartCount(medicine.getHeartCount()-1);
            medicineRepository.save(medicine);
 
-           heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, user.getUserId());
+           heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, userId);
            return medicineId;
         }
-        throw new IllegalArgumentException("좋아요누른 회원이 아님.");
+        throw new IllegalArgumentException("좋아요 누른 회원이 아님.");
     }
 
     @Override
     public List<HeartMedicineResult> findAll(Long userId) {
 //        if(userRepository.existsById(userId)){
-            return heartMedicineRepository.findAllByUserUserId(userId).orElse(null)
-                .stream().map(HeartMedicine::toDto).toList();
+            return heartMedicineRepository.findAllByUserUserId(userId).stream().map(HeartMedicine::toDto).toList();
 //        }
 //          userNOtFound
     }

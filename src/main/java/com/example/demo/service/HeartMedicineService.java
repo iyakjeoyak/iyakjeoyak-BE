@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface HeartMedicineService {
 //    Long like(Long medicineId, Long userId);
-    Long like(Long medicineId, User user);
+    Long like(Long medicineId, Long userId);
 //    Long cancel(Long medicineId, Long userId);
-    Long cancel(Long medicineId, User user);
+    Long cancel(Long medicineId, Long userId);
 
     List<HeartMedicineResult> findAll(Long userId);
 
