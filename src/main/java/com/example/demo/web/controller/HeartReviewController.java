@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "(좋아요)", description = "후기 좋아요 관련")
+@Tag(name = "(후기-좋아요)", description = "후기 좋아요 관련")
 @RequestMapping("/heart/review")
 public class HeartReviewController {
     private final HeartReviewService heartReviewService;

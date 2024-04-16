@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "(좋아요)", description = "영양제 좋아요")
+@Tag(name = "(영양제-좋아요)", description = "영양제 좋아요")
 @RequestMapping("/heart/medicine")
 public class HeartMedicineController {
     private final HeartMedicineService heartMedicineService;
