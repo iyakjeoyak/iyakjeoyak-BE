@@ -5,6 +5,7 @@ import com.example.demo.domain.entity.Medicine;
 import com.example.demo.domain.entity.User;
 import com.example.demo.domain.repository.HeartMedicineRepository;
 import com.example.demo.domain.repository.MedicineRepository;
+import com.example.demo.domain.repository.UserRepository;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
 import jakarta.transaction.Transactional;
@@ -21,7 +22,7 @@ import java.util.NoSuchElementException;
 public class HeartMedicineServiceImpl implements HeartMedicineService {
     private final HeartMedicineRepository heartMedicineRepository;
     private final MedicineRepository medicineRepository;
-//    private final UserRepository userRepository;
+    private final UserRepository userRepository;
 //    @Override
 //    public Long like(Long medicineId, Long userId) {
 //        Medicine medicine = medicineRepository.findById(medicineId)
@@ -47,7 +48,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
 
             Long id = heartMedicineRepository.save(HeartMedicine.builder()
                     .medicine(medicine)
-//                    .user(userRepository.findById(userId).orElseThrow())
+                    .user(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("유저 정보가 잘못되었습니다.")))
                     .build()).getId();
             medicine.setHeartCount(medicine.getHeartCount() + 1);
             medicineRepository.save(medicine);
