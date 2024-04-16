@@ -17,8 +17,9 @@ public class Hashtag extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String detailName;
-
-    private String displayName;
+    //
+//    private String detailName;
+//
+//    private String displayName;
+    private String name;
 }
