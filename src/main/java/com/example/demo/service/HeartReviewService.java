@@ -5,9 +5,9 @@ import com.example.demo.domain.entity.HeartReview;
 import java.util.List;
 
 public interface HeartReviewService {
-    Long save(Long userId, Long reviewId) throws IllegalAccessException;
+    Long save(Long userId, Long reviewId);
 
-    Long delete(Long userId, Long reviewId) throws IllegalAccessException;
+    Long delete(Long userId, Long reviewId);
 
     Boolean checkReviewHeart(Long userId, Long reviewId);
 

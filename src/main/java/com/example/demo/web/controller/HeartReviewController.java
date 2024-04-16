@@ -45,7 +45,7 @@ public class HeartReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveHeartReview(@RequestBody HeartReviewPayload payload) throws IllegalAccessException {
+    public ResponseEntity<Long> saveHeartReview(@RequestBody HeartReviewPayload payload) {
         return new ResponseEntity<>(heartReviewService.save(payload.getUserId(), payload.getReviewId()), HttpStatus.OK);
     }
     @DeleteMapping("/{reviewId}")
@@ -53,7 +53,7 @@ public class HeartReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteHeartReview(@PathVariable("reviewId") Long reviewId, @RequestParam("userId") Long userId) throws IllegalAccessException {
+    public ResponseEntity<Long> deleteHeartReview(@PathVariable("reviewId") Long reviewId, @RequestParam("userId") Long userId) {
         return new ResponseEntity<>(heartReviewService.delete(userId, reviewId), HttpStatus.OK);
     }
 }
