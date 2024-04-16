@@ -19,8 +19,8 @@ public class HeartMedicine extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Medicine medicine;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     public HeartMedicineResult toDto(){
         return HeartMedicineResult.builder()

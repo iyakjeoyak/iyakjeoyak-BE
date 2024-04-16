@@ -7,8 +7,10 @@ import com.example.demo.domain.repository.MedicineRepository;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,13 +19,15 @@ import java.util.NoSuchElementException;
 public class HeartMedicineServiceImpl implements HeartMedicineService {
     private final HeartMedicineRepository heartMedicineRepository;
     private final MedicineRepository medicineRepository;
+//    private final UserRepository userRepository;
     @Override
-    public Long like(long medicineId) {
+    public Long like(Long medicineId, Long userId) {
         Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
 
         long id = heartMedicineRepository.save(HeartMedicine.builder()
                 .medicine(medicine)
+//                .user(userRepository.findById(userId).orElseThrow("해당 유저 없음."))
                 .build()).getId();
 
         medicine.setHeartCount(medicine.getHeartCount()+1);
@@ -32,7 +36,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     }
 
     @Override
-    public Long cancel(Long medicineId) {
+    public Long cancel(Long medicineId, Long userId) {
         Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
         HeartMedicine heartMedicine = heartMedicineRepository.findByMedicineId(medicineId)
@@ -41,14 +45,21 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         medicine.setHeartCount(medicine.getHeartCount()-1);
         medicineRepository.save(medicine);
 
-        heartMedicineRepository.deleteById(heartMedicine.getId());
+        heartMedicineRepository.deleteByMedicineIdAndUserUserId(heartMedicine.getId(), userId);
         return medicineId;
     }
 
     @Override
-    public List<HeartMedicineResult> findAll() {
-        return heartMedicineRepository.findAll().stream().map(HeartMedicine::toDto).toList();
+    public List<HeartMedicineResult> findAll(Long userId) {
+//        if(userRepository.existsById(userId)){
+            return heartMedicineRepository.findAllByUserUserId(userId).orElse(null)
+                .stream().map(HeartMedicine::toDto).toList();
+//        }
+//          userNOtFound
     }
 
-
+    @Override
+    public Boolean isChecked(Long medicineId, Long userId) {
+        return heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
+    }
 }
