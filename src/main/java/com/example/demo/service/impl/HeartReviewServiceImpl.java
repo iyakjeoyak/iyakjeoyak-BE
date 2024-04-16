@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.domain.entity.HeartReview;
 import com.example.demo.domain.repository.HeartReviewRepository;
 import com.example.demo.domain.repository.ReviewRepository;
+import com.example.demo.domain.repository.UserRepository;
 import com.example.demo.service.HeartReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.NoSuchElementException;
 public class HeartReviewServiceImpl implements HeartReviewService {
     private final HeartReviewRepository heartReviewRepository;
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -25,7 +27,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         }
         return heartReviewRepository.save(
                 HeartReview.builder()
-//                        .user(userRepository.findById(userId).orElseThrow())
+                        .user(userRepository.findById(userId).orElseThrow())
                         .review(reviewRepository.findById(reviewId).orElseThrow(()->new NoSuchElementException("해당하는 후기가 없습니다.")))
                 .build()).getId();
     }
