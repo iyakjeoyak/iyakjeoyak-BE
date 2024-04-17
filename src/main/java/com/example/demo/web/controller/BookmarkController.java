@@ -35,7 +35,7 @@ public class BookmarkController {
         return new ResponseEntity<>(bookmarkService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
-    @GetMapping("{bookmarkId}")
+    @GetMapping("/{bookmarkId}")
     @Operation(summary = "북마크 단일 조회", description = "북마크 단일 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = BookmarkResult.class))),
@@ -54,13 +54,22 @@ public class BookmarkController {
         return new ResponseEntity<>(bookmarkService.save(medicineId, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("{medicineId}")
+    @DeleteMapping("/{medicineId}")
     @Operation(summary = "북마크 삭제", description = "북마크 취소")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> delete(@PathVariable("medicineId") Long medicineId, @RequestParam("userId") Long userId){
         return new ResponseEntity<>(bookmarkService.delete(medicineId, userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/medicine/{medicineId}")
+    @Operation(summary = "북마크 클릭 여부 확인", description = "눌렀으면 true, 안눌렀을땐 false")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Boolean> checkBookmark(@PathVariable("medicineId") Long medicineId, @RequestParam("userId") Long userId){
+        return new ResponseEntity<>(bookmarkService.isChecked(medicineId, userId), HttpStatus.OK);
     }
 
 }

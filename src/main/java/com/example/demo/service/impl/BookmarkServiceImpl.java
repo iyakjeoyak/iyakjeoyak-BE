@@ -39,7 +39,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public Long save(Long medicineId, Long userId) {
-        if(!bookmarkRepository.existsByMedicineIdAndUserUserId(medicineId, userId)) {
+        if(!isChecked(medicineId, userId)) {
             return bookmarkRepository.save(Bookmark
                     .builder()
                     .medicine(medicineRepository.findById(medicineId).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")))
@@ -61,5 +61,10 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .orElseThrow(() -> new NoSuchElementException("해당 유저는 영양제를 북마크 하지 않았습니다.")).toDto();
         bookmarkRepository.deleteById(bookmarkResult.getId());
         return bookmarkResult.getId();
+    }
+
+    @Override
+    public Boolean isChecked(Long medicineId, Long userId) {
+        return bookmarkRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
 }
