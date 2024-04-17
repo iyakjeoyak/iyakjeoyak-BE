@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class HeartMedicineResult {
+
     @Schema(description = "영양제 좋아요 PK")
     private Long id;
 

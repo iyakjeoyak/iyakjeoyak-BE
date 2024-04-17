@@ -47,4 +47,13 @@ public class Review extends BaseTimeEntity {
         this.star = reviewEditPayload.getStar();
         return this.id;
     }
+
+    public void addHeartCount() {
+        this.heartCount++;
+    }
+
+    public void decreaseHeartCount() {
+        this.heartCount--;
+        if(this.heartCount < 0) throw new IllegalArgumentException("좋아요가 0 이하가 되었습니다.(비정상)");
+    }
 }

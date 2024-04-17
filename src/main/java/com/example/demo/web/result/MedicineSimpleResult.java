@@ -1,14 +1,13 @@
 package com.example.demo.web.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
-@AllArgsConstructor
-@Builder
-public class MedicineResult {
+public class MedicineSimpleResult {
 
     @Schema(description = "영양제 PK")
     private Long id;
@@ -19,12 +18,9 @@ public class MedicineResult {
     @Schema(description = "제품 명")
     private String PRDLST_NM;
 
-    @Schema(description = "좋아요 수")
-    private Integer heartCount;
+    @Schema(description = "카테고리 정보")
+    private List<CategoryResult> categories = new ArrayList<>();
 
-    @Schema(description = "평점")
-    private Long star;
-
-    @Schema(description = "리뷰 수")
-    private Integer reviewCount;
+    @Schema(description = "해쉬태그 정보")
+    private List<HashtagResult> hashtags = new ArrayList<>();
 }

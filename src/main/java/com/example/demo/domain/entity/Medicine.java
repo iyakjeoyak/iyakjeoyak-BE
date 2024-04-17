@@ -1,8 +1,12 @@
 package com.example.demo.domain.entity;
 
+import com.example.demo.web.result.HashtagResult;
 import com.example.demo.web.result.MedicineResult;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +38,7 @@ public class Medicine {
     private String STDR_STND;
     private String HIENG_LNTRT_DVS_NM;
     private String PRODUCTION;
-//    private String CHILD_CRTFC_YN;
+    //    private String CHILD_CRTFC_YN;
     private String PRDT_SHAP_CD_NM;
     private String RAWMTRL_NM;
 
@@ -83,6 +87,19 @@ public class Medicine {
 
     private Integer heartCount;
 
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MedicineHashtag> hashtagList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MedicineCategory> categoryList = new ArrayList<>();
+
+    public List<Hashtag> getHashtags() {
+        return hashtagList.stream().map(MedicineHashtag::getHashtag).toList();
+    }
+
+    public List<Category> getCategories() {
+        return categoryList.stream().map(MedicineCategory::getCategory).toList();
+    }
 
     public MedicineResult toDto() {
         return MedicineResult
