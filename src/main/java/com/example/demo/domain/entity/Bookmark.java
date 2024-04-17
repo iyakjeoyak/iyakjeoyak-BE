@@ -1,6 +1,7 @@
 package com.example.demo.domain.entity;
 
 import com.example.demo.domain.entity.common.BaseTimeEntity;
+import com.example.demo.web.result.BookmarkResult;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,15 @@ public class Bookmark extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Medicine medicine;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    public BookmarkResult toDto(){
+        return BookmarkResult
+                .builder()
+                .id(this.id)
+                .medicineId(this.medicine.getId())
+                .build();
+    }
 
 }
