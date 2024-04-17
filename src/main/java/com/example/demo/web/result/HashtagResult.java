@@ -1,13 +1,15 @@
 package com.example.demo.web.result;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 public class HashtagResult {
+
+    @Schema(description = "해쉬태그 PK")
     private Long id;
+
+    @Schema(description = "해쉬태그 이름")
     private String name;
 }

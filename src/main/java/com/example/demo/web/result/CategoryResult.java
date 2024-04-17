@@ -1,15 +1,17 @@
 package com.example.demo.web.result;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 public class CategoryResult {
+
+    @Schema(description = "카테고리 PK")
     private Long id;
+
+    @Schema(description = "카테고리 이름")
     private String name;
 }

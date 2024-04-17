@@ -1,6 +1,5 @@
 package com.example.demo.web.result;
 
-import com.example.demo.domain.entity.Medicine;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class MedicineResult {
+
     @Schema(description = "영양제 PK")
     private Long id;
 
