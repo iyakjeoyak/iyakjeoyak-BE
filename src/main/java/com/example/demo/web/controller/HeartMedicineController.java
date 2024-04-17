@@ -1,8 +1,8 @@
 package com.example.demo.web.controller;
 
-import com.example.demo.domain.entity.User;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
+import com.example.demo.web.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class HeartMedicineController {
     private final HeartMedicineService heartMedicineService;
 
-    @PostMapping("")
+    @PostMapping
     @Operation(summary = "영양제 좋아요", description = "medicineId : 영양제 PK")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
@@ -47,10 +47,11 @@ public class HeartMedicineController {
     @GetMapping
     @Operation(summary = "영양제 좋아요 전체 조회", description = "유저의 영양제 좋아요 전체 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<List<HeartMedicineResult>> findAllByUser(/*@AuthenticationPrincipal Long userId*/@RequestParam("userId") Long userId){
-        return new ResponseEntity<>(heartMedicineService.findAll(userId), HttpStatus.OK);
+    public ResponseEntity<PageResult<HeartMedicineResult>> findAllByUser(@RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size,/*@AuthenticationPrincipal Long userId*/@RequestParam("userId") Long userId){
+        return new ResponseEntity<>(heartMedicineService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
     @GetMapping("/{medicineId}")

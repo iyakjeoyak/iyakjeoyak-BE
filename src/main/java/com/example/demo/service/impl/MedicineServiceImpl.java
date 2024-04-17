@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.domain.entity.Medicine;
 import com.example.demo.domain.repository.MedicineRepository;
+import com.example.demo.domain.repository.ReviewRepository;
 import com.example.demo.service.MedicineService;
 import com.example.demo.util.mapper.MedicineMapper;
 import com.example.demo.web.payload.MedicinePayload;
@@ -21,6 +22,7 @@ import java.util.NoSuchElementException;
 public class MedicineServiceImpl implements MedicineService {
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
+    private final ReviewRepository reviewRepository;
     @Override
     public Long save(MedicinePayload medicinePayload) {
         return medicineRepository.save(Medicine.builder()
@@ -31,7 +33,9 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Override
     public PageResult<MedicineResult> findAll(Pageable pageable) {
-        Page<MedicineResult> result = medicineRepository.findAll(pageable).map(Medicine::toDto);
+        Page<MedicineResult> result = medicineRepository.findAll(pageable)
+                .map(Medicine::toDto);
+        // todo 영양제 리뷰 계산해서 medicineResult에 넣기
         return new PageResult<>(result);
     }
 
