@@ -3,6 +3,7 @@ package com.example.demo.web.controller;
 import com.example.demo.domain.entity.User;
 import com.example.demo.service.UserService;
 import com.example.demo.web.payload.UserJoinPayload;
+import com.example.demo.web.payload.UserLoginPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class UserController {
     @Operation(summary = "유저 생성", description = "유저 생성")
     public ResponseEntity<Long> createUser(@RequestBody UserJoinPayload userJoinPayload) throws Exception {
         return new ResponseEntity<>(userService.createUser(userJoinPayload), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginPayload userLoginPayload) {
+        String token = userService.loginUser(userLoginPayload);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
 }
