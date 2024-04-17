@@ -8,8 +8,11 @@ import com.example.demo.domain.repository.MedicineRepository;
 import com.example.demo.domain.repository.UserRepository;
 import com.example.demo.service.HeartMedicineService;
 import com.example.demo.web.result.HeartMedicineResult;
+import com.example.demo.web.result.PageResult;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +40,8 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
 //        medicineRepository.save(medicine);
 //        return id;
 //    }
-
     @Override
     public Long like(Long medicineId, Long userId) {
-        //Todo : UserRepository pull 받은 후 user 세팅하도록 변경 할 것
-
         if(!isChecked(medicineId, userId)) {
             Medicine medicine = medicineRepository.findById(medicineId)
                     .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
@@ -76,7 +76,6 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         if(isChecked(medicineId, userId)){
             Medicine medicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
-
            medicine.setHeartCount(medicine.getHeartCount()-1);
            medicineRepository.save(medicine);
 
@@ -87,11 +86,12 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     }
 
     @Override
-    public List<HeartMedicineResult> findAll(Long userId) {
-//        if(userRepository.existsById(userId)){
-            return heartMedicineRepository.findAllByUserUserId(userId).stream().map(HeartMedicine::toDto).toList();
-//        }
-//          userNOtFound
+    public PageResult<HeartMedicineResult> findAll(Long userId, Pageable pageable) {
+        if(userRepository.existsById(userId)){
+            Page<HeartMedicineResult> heartMedicines = heartMedicineRepository.findAllByUserUserId(userId, pageable).map(HeartMedicine::toDto);
+            return new PageResult<>(heartMedicines);
+        }
+        throw new IllegalArgumentException("해당 유저 없음.");
     }
 
     @Override
