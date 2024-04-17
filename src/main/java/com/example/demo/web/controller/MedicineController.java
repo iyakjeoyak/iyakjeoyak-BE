@@ -27,10 +27,10 @@ import java.util.List;
 public class MedicineController {
     private final MedicineService medicineService;
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "영양제 전체 조회", description = "이후 페이지네이션으로 바꿀 예정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<MedicineSimpleResult>> findAll(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                     @RequestParam(name = "size",defaultValue = "10") int size) {
@@ -46,7 +46,7 @@ public class MedicineController {
         return new ResponseEntity<>(medicineService.findOneById(medicineId), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     @Operation(summary = "영양제 생성", description = "영양제 DB 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = MedicineResult.class))),

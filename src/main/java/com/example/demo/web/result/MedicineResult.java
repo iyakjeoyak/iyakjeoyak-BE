@@ -19,4 +19,12 @@ public class MedicineResult {
     @Schema(description = "제품 명")
     private String PRDLST_NM;
 
+    @Schema(description = "좋아요 수")
+    private Integer heartCount;
+
+    @Schema(description = "평점")
+    private Long star;
+
+    @Schema(description = "리뷰 수")
+    private Integer reviewCount;
 }
