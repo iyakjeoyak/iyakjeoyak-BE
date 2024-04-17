@@ -3,6 +3,7 @@ package com.example.demo.web.controller;
 import com.example.demo.service.MedicineService;
 import com.example.demo.web.payload.MedicinePayload;
 import com.example.demo.web.result.MedicineResult;
+import com.example.demo.web.result.MedicineSimpleResult;
 import com.example.demo.web.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,8 +32,8 @@ public class MedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<MedicineResult>> findAll(@RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<PageResult<MedicineSimpleResult>> findAll(@RequestParam(name = "page", defaultValue = "0") int page,
+                                                                    @RequestParam(name = "size",defaultValue = "10") int size) {
         return new ResponseEntity<>(medicineService.findAll(PageRequest.of(page, size)), HttpStatus.OK);
     }
 
