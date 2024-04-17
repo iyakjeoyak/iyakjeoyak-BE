@@ -1,7 +1,7 @@
 package com.example.demo.util.mapper;
 
-import com.example.demo.domain.entity.Medicine;
-import com.example.demo.web.result.MedicineResult;
+import com.example.demo.module.medicine.entity.Medicine;
+import com.example.demo.module.medicine.dto.result.MedicineResult;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
