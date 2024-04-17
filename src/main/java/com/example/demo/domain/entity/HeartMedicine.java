@@ -2,6 +2,7 @@ package com.example.demo.domain.entity;
 
 
 import com.example.demo.domain.entity.common.BaseTimeEntity;
+import com.example.demo.web.result.HeartMedicineResult;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,13 @@ public class HeartMedicine extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Medicine medicine;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Users users;
-//
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    public HeartMedicineResult toDto(){
+        return HeartMedicineResult.builder()
+                .id(this.id)
+                .medicineId(this.medicine.getId())
+                .build();
+    }
 }
