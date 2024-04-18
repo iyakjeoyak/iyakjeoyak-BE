@@ -65,7 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
                                 .review(review)
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
-        pointHistoryRepository.save(PointHistory.builder().user(user).changedValue(reviewCreatePoint).pointSum(user.reviewPoint(reviewCreatePoint)).build());
+        pointHistoryRepository.save(PointHistory.builder().domain("review").user(user).changedValue(reviewCreatePoint).pointSum(user.reviewPoint(reviewCreatePoint)).build());
 
         return review.getId();
     }
