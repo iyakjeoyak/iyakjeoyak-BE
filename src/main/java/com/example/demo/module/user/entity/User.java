@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class User extends BaseTimeEntity {
 
+    //TODO 사용자 정보 벨리데이션 , 이미지 경로 , 소셜 값 필드 만들기
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;

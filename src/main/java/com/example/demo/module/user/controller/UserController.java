@@ -28,7 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "유저 로그인", description = "유저 로그인 및 JWT 생성")
     public ResponseEntity<String> loginUser(@RequestBody UserLoginPayload userLoginPayload) {
+        // 토큰 생성 시작
         String token = userService.loginUser(userLoginPayload);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
