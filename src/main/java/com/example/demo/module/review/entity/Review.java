@@ -4,6 +4,7 @@ import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
+import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,8 +30,8 @@ public class Review extends BaseTimeEntity {
     private Integer heartCount;
 
 //    EntityListener 사용할까 고민중
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Medicine medicine;

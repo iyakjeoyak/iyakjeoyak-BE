@@ -4,6 +4,8 @@ import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.image.repository.ReviewImageRepository;
 import com.example.demo.module.medicine.repository.MedicineRepository;
+import com.example.demo.module.point.entity.PointHistory;
+import com.example.demo.module.point.repository.PointHistoryRepository;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
 import com.example.demo.module.review.dto.result.ReviewResult;
@@ -11,8 +13,11 @@ import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.review.entity.ReviewHashtag;
 import com.example.demo.module.review.repository.ReviewHashtagRepository;
 import com.example.demo.module.review.repository.ReviewRepository;
+import com.example.demo.module.user.entity.User;
+import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,12 +35,19 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewImageRepository imageRepository;
     private final ReviewHashtagRepository reviewHashtagRepository;
     private final HashtagRepository hashtagRepository;
+    private final UserRepository userRepository;
+    private final PointHistoryRepository pointHistoryRepository;
+
+    @Value("${point.review}")
+    private Integer reviewCreatePoint;
 
     @Override
     @Transactional
-    public Long save(ReviewPayload reviewPayload) {
+    public Long save(Long userId, ReviewPayload reviewPayload) {
 
         //TODO : 이미지 저장 로직 추가 필요
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
 
         Review review = reviewRepository.save(
                 Review.builder()
@@ -44,6 +56,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .star(reviewPayload.getStar())
                         .heartCount(0)
                         .medicine(medicineRepository.findById(reviewPayload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")))
+                        .user(user)
                         .build());
 
         reviewPayload.getTagList().forEach(
@@ -52,6 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
                                 .review(review)
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
+        pointHistoryRepository.save(PointHistory.builder().user(user).changedValue(reviewCreatePoint).pointSum(user.reviewPoint(reviewCreatePoint)).build());
 
         return review.getId();
     }

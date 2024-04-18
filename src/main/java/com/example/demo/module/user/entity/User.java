@@ -30,6 +30,13 @@ public class User extends BaseTimeEntity {
     private Integer age;
 
     private String role;
+
+    private Integer point;
 //    private String tag;
 
+
+    public Integer reviewPoint(Integer point) {
+        this.point += point;
+        return point;
+    }
 }

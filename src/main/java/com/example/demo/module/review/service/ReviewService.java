@@ -7,7 +7,7 @@ import com.example.demo.module.common.result.PageResult;
 import org.springframework.data.domain.PageRequest;
 
 public interface ReviewService {
-    Long save(ReviewPayload reviewPayload);
+    Long save(Long userId,ReviewPayload reviewPayload);
 
     ReviewResult findOneByReviewId(Long reviewId);
 
