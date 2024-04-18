@@ -5,12 +5,14 @@ import com.example.demo.module.image.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -22,25 +24,36 @@ public class ImageServiceImpl implements ImageService {
     private String filePath;
 
     @Override
-    public Long saveImage(MultipartFile file) throws IOException {
+    public Image saveImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return null;
         }
-        return imageRepository.save(saveFileAndGetEntity(file)).getId();
+        return imageRepository.save(saveFileAndGetEntity(file));
     }
 
     @Override
-    public List<Long> saveImageList(List<MultipartFile> files) throws IOException {
-        List<Long> ids = new ArrayList<>();
+    @Transactional
+    public List<Image> saveImageList(List<MultipartFile> files) throws IOException {
+        List<Image> ids = new ArrayList<>();
         if (!files.isEmpty()) {
             for (MultipartFile file : files) {
                 Image image = saveFileAndGetEntity(file);
                 if (image != null) {
-                    ids.add(imageRepository.save(image).getId());
+                    ids.add(imageRepository.save(image));
                 }
             }
         }
         return ids;
+    }
+
+    @Override
+    public Long deleteImage(Long userId, Long imageId) {
+        if (!imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."))
+                .getCreatedBy().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("이미지를 저장한 사용자가 아닙니다.");
+        }
+        imageRepository.deleteById(imageId);
+        return imageId;
     }
 
 

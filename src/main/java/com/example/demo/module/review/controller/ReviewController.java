@@ -57,8 +57,8 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> editReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewEditPayload editPayload) {
-        return new ResponseEntity<>(reviewService.editReview(reviewId, editPayload), HttpStatus.OK);
+    public ResponseEntity<Long> editReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewEditPayload editPayload, @RequestParam("userId")Long userId) {
+        return new ResponseEntity<>(reviewService.editReview(userId,reviewId, editPayload), HttpStatus.OK);
     }
 
     @DeleteMapping("/{reviewId}")
@@ -66,8 +66,8 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId) {
-        return new ResponseEntity<>(reviewService.deleteByReviewId(reviewId), HttpStatus.OK);
+    public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @RequestParam("userId") Long userId) {
+        return new ResponseEntity<>(reviewService.deleteByReviewId(userId,reviewId), HttpStatus.OK);
     }
 
 

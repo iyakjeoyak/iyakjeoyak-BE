@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ImageService {
-    Long saveImage(MultipartFile file) throws IOException;
+    Image saveImage(MultipartFile file) throws IOException;
 
-    List<Long> saveImageList(List<MultipartFile> files) throws IOException;
+    List<Image> saveImageList(List<MultipartFile> files) throws IOException;
+
+    Long deleteImage(Long userId, Long imageId);
 }

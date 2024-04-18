@@ -1,10 +1,9 @@
 package com.example.demo.module.image.entity;
 
+import com.example.demo.module.common.entity.BaseEntity;
 import com.example.demo.module.common.entity.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.demo.module.user.entity.User;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -12,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Image extends BaseTimeEntity {
+public class Image extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -66,7 +66,11 @@ public class UserStorageServiceImpl implements UserStorageService {
     }
 
     @Override
-    public Long deleteById(Long storageId) {
+    public Long deleteById(Long userId, Long storageId) {
+        if (!userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관된 영양제를 찾을 수 없습니다."))
+                .getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("접근 유저가 잘못되었습니다.");
+        }
         userStorageRepository.deleteById(storageId);
         return storageId;
     }
