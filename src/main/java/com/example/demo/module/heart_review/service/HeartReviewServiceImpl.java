@@ -30,7 +30,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
 
         return heartReviewRepository.save(
                 HeartReview.builder()
-                        .user(userRepository.findById(userId).orElseThrow())
+                        .user(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("유저 정보를 찾지 못했습니다.")))
                         .review(review)
                         .build()).getId();
     }

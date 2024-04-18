@@ -13,7 +13,7 @@ public interface UserStorageService {
 
     UserStorageDetailResult getOneById(Long userStorageId);
 
-    Long deleteById(Long storageId);
+    Long deleteById(Long userId ,Long storageId);
 
     Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload);
 }

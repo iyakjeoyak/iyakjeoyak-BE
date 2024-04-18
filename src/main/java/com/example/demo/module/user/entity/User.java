@@ -2,10 +2,7 @@ package com.example.demo.module.user.entity;
 
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -41,7 +38,18 @@ public class User extends BaseTimeEntity {
     //TODO enum or table
     private String role;
 
+    private Integer point;
+
     //TODO tag 부활?
 //    private String tag;
 
+    @PrePersist
+    public void init() {
+        this.point = 0;
+    }
+
+    public Integer reviewPoint(Integer point) {
+        this.point += point;
+        return point;
+    }
 }
