@@ -20,6 +20,9 @@ public class PointHistory {
 
     private String domain;
 
+    @Enumerated(EnumType.STRING)
+    private ReserveUse reserveUse;
+
     private Integer changedValue;
 
     private Integer pointSum;

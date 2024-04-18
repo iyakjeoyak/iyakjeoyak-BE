@@ -2,7 +2,6 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
-import com.example.demo.module.image.repository.ReviewImageRepository;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.entity.PointHistory;
 import com.example.demo.module.point.repository.PointHistoryRepository;
@@ -25,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,7 +33,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final MedicineRepository medicineRepository;
     private final ReviewMapper reviewMapper;
-    private final ReviewImageRepository imageRepository;
     private final ReviewHashtagRepository reviewHashtagRepository;
     private final HashtagRepository hashtagRepository;
     private final UserRepository userRepository;
@@ -46,8 +46,11 @@ public class ReviewServiceImpl implements ReviewService {
     public Long save(Long userId, ReviewPayload reviewPayload) {
 
         //TODO : 이미지 저장 로직 추가 필요
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
 
-        User user = userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
+        if(reviewRepository.existsByMedicineIdAndUserUserId(reviewPayload.getMedicineId(), user.getUserId())){
+            throw new IllegalArgumentException("이미 후기를 작성한 영양제 입니다.");
+        }
 
         Review review = reviewRepository.save(
                 Review.builder()
@@ -65,7 +68,13 @@ public class ReviewServiceImpl implements ReviewService {
                                 .review(review)
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
-        pointHistoryRepository.save(PointHistory.builder().domain("review").user(user).changedValue(reviewCreatePoint).pointSum(user.reviewPoint(reviewCreatePoint)).build());
+        pointHistoryRepository.save(
+                PointHistory.builder()
+                        .domain("review")
+                        .user(user)
+                        .changedValue(reviewCreatePoint)
+                        .pointSum(user.reviewPoint(reviewCreatePoint))
+                        .reserveUse(RESERVE).build());
 
         return review.getId();
     }

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAllByMedicineId(Long medicineId, PageRequest pageRequest);
+
+    Boolean existsByMedicineIdAndUserUserId(Long medicineId, Long userId);
 }
