@@ -19,7 +19,6 @@ public class ReviewImage extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
-    private String originName;
-
-    private String storeName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Image image;
 }

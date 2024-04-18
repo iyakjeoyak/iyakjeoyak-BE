@@ -1,9 +1,10 @@
 package com.example.demo.module.image.entity;
 
-
 import com.example.demo.module.common.entity.BaseTimeEntity;
-import com.example.demo.module.medicine.entity.Medicine;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 @Entity
@@ -11,15 +12,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class MedicineImage extends BaseTimeEntity {
+public class Image extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Medicine medicine;
+    private String originName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Image image;
+    private String storeName;
 }

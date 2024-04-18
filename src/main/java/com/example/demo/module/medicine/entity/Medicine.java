@@ -85,6 +85,7 @@ public class Medicine {
 
     private boolean isAd;
 
+    @Setter
     private Integer heartCount;
 
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)

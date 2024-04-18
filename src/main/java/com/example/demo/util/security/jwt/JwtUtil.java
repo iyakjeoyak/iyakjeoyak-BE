@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -18,9 +19,9 @@ public class JwtUtil {
     private final Key key;
     private final long accessTokenExpTime;
 
-    public JwtUtil (
-        @Value("${jwt.secret}") String secretKey,
-        @Value("${jwt.expiration_time}") long accessTokenExpTime
+    public JwtUtil(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.expiration_time}") long accessTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -33,8 +34,8 @@ public class JwtUtil {
 
     private String createToken(JwtTokenPayload user, long expireTime) {
         Claims claims = Jwts.claims();
-        claims.put("userId" ,user.getUserId());
-        claims.put("username" ,user.getUsername());
+        claims.put("userId", user.getUserId());
+        claims.put("username", user.getUsername());
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidty = now.plusSeconds(expireTime);
 
