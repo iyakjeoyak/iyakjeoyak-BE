@@ -10,27 +10,35 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Transactional
     public Long createUser(UserJoinPayload userJoinPayload) {
-        Boolean isExist = userRepository.existsByUsername(userJoinPayload.getUsername());
+        Boolean isUsernameExist = userRepository.existsByUsername(userJoinPayload.getUsername());
+        Boolean isUserNicknameExist = userRepository.existsByNickname(userJoinPayload.getNickname());
 
-        if (isExist) {
+        if (isUsernameExist) {
             throw new IllegalArgumentException("이미 있는 아이디입니다.");
+        }
+
+        if (isUserNicknameExist) {
+            throw new IllegalArgumentException("이미 있는 닉네임입니다.");
         }
 
         User saveUser = userRepository.save(User.builder().username(userJoinPayload.getUsername())
                 .password(passwordEncoder.encode(userJoinPayload.getPassword()))
                 .gender(userJoinPayload.getGender())
-                .nickName(userJoinPayload.getNickName())
+                .nickname(userJoinPayload.getNickname())
                 .age(userJoinPayload.getAge())
                 .build());
 

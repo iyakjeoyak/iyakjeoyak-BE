@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -20,17 +22,26 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @NotBlank(message = "아이디는 필수 입력 값입니다.")
     private String username;
 
+    //TODO 비밀번호 정규식
+    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+    @Size(min = 8, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
     private String password;
 
-    private String nickName;
+    @NotBlank(message = "닉네임은 필수 입력 값입니다.")
+    private String nickname;
 
+    @NotBlank(message = "성별 선택은 필수 입력 값입니다.")
     private String gender;
 
     private Integer age;
 
+    //TODO enum or table
     private String role;
+
+    //TODO tag 부활?
 //    private String tag;
 
 }
