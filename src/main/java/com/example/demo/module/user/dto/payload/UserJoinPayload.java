@@ -13,7 +13,7 @@ public class UserJoinPayload {
 
     private String password;
 
-    private String nickName;
+    private String nickname;
 
     private String gender;
 

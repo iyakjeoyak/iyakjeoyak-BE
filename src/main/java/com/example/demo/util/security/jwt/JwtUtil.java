@@ -5,7 +5,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -19,7 +18,7 @@ public class JwtUtil {
     private final Key key;
     private final long accessTokenExpTime;
 
-    public JwtUtil(
+    public JwtUtil (
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.expiration_time}") long accessTokenExpTime
     ) {
@@ -33,25 +32,35 @@ public class JwtUtil {
     }
 
     private String createToken(JwtTokenPayload user, long expireTime) {
+        // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
         Claims claims = Jwts.claims();
-        claims.put("userId", user.getUserId());
-        claims.put("username", user.getUsername());
+        claims.put("userId" ,user.getUserId());
+        claims.put("username" ,user.getUsername());
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidty = now.plusSeconds(expireTime);
 
         return Jwts.builder()
                 .setClaims(claims)
+                // 생성 시기?
                 .setIssuedAt(Date.from(now.toInstant()))
+                // 소멸 시기?
                 .setExpiration(Date.from(tokenValidty.toInstant()))
                 //DS256이 왜 안 되는지
                 .signWith(key, SignatureAlgorithm.HS256)
+                // 토큰을 생성해 String으로 리턴
                 .compact();
     }
 
+    /*
+     * token에서 userId 추출
+     * */
     public Long getUserId(String token) {
         return parseClaims(token).get("userId", Long.class);
     }
 
+    /*
+     * JWT 유효성 검증
+     * */
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -68,6 +77,9 @@ public class JwtUtil {
         return false;
     }
 
+    /*
+     * JWT 클레임 추출
+     * */
     public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
