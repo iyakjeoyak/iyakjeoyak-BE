@@ -2,6 +2,7 @@ package com.example.demo.module.image.service;
 
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.repository.ImageRepository;
+import com.example.demo.module.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,8 +49,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Long deleteImage(Long userId, Long imageId) {
-        if (!imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."))
-                .getCreatedBy().getUserId().equals(userId)) {
+        User createdBy = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다.")).getCreatedBy();
+        if (createdBy == null || !createdBy.getUserId().equals(userId)) {
             throw new IllegalArgumentException("이미지를 저장한 사용자가 아닙니다.");
         }
         imageRepository.deleteById(imageId);

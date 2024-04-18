@@ -4,6 +4,7 @@ package com.example.demo.module.user.entity;
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
