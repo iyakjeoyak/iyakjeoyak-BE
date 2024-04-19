@@ -10,7 +10,7 @@ import java.util.List;
 public class PageResult<T> {
 
     @Schema(description = "데이터 리스트")
-    private List<T> content;
+    private List<T> data;
 
     @Schema(description = "현재 페이지")
     private int number;
@@ -28,7 +28,7 @@ public class PageResult<T> {
     private int numberOfElement;
 
     public PageResult(Page<T> page) {
-        this.content = page.getContent();
+        this.data = page.getContent();
         this.number = page.getNumber();
         this.size = page.getSize();
         this.totalPages = page.getTotalPages();
