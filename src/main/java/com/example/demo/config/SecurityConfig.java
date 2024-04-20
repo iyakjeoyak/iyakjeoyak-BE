@@ -1,8 +1,8 @@
 package com.example.demo.config;
 
 import com.example.demo.module.user.service.CustomUserDetailsService;
-import com.example.demo.util.security.jwt.JwtUtil;
-import com.example.demo.util.security.jwt.JwtFilter;
+import com.example.demo.security.jwt.JwtUtil;
+import com.example.demo.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

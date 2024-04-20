@@ -1,10 +1,10 @@
-package com.example.demo.module.user_storage.controller;
+package com.example.demo.module.userStorage.controller;
 
-import com.example.demo.module.user_storage.service.UserStorageService;
-import com.example.demo.module.user_storage.dto.payload.UserStorageCreatePayload;
-import com.example.demo.module.user_storage.dto.payload.UserStorageEditPayload;
-import com.example.demo.module.user_storage.dto.result.UserStorageDetailResult;
-import com.example.demo.module.user_storage.dto.result.UserStorageSimpleResult;
+import com.example.demo.module.userStorage.service.UserStorageService;
+import com.example.demo.module.userStorage.dto.payload.UserStorageCreatePayload;
+import com.example.demo.module.userStorage.dto.payload.UserStorageEditPayload;
+import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
+import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
 import com.example.demo.module.common.result.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

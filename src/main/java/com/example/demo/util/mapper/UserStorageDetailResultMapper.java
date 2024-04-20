@@ -1,7 +1,7 @@
 package com.example.demo.util.mapper;
 
-import com.example.demo.module.user_storage.entity.UserStorage;
-import com.example.demo.module.user_storage.dto.result.UserStorageDetailResult;
+import com.example.demo.module.userStorage.entity.UserStorage;
+import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

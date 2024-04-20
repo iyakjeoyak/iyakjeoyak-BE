@@ -1,4 +1,4 @@
-package com.example.demo.module.aop.exception;
+package com.example.demo.global.advice.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;

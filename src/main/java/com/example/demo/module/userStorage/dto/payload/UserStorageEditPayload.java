@@ -1,4 +1,4 @@
-package com.example.demo.module.user_storage.dto.payload;
+package com.example.demo.module.userStorage.dto.payload;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;

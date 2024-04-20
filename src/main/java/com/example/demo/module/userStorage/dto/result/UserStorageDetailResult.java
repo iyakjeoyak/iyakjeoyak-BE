@@ -1,4 +1,4 @@
-package com.example.demo.module.user_storage.dto.result;
+package com.example.demo.module.userStorage.dto.result;
 
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import io.swagger.v3.oas.annotations.media.Schema;

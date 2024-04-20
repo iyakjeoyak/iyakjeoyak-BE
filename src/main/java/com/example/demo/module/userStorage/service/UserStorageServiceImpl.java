@@ -1,14 +1,14 @@
-package com.example.demo.module.user_storage.service;
+package com.example.demo.module.userStorage.service;
 
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.medicine.repository.MedicineRepository;
-import com.example.demo.module.user_storage.entity.UserStorage;
-import com.example.demo.module.user_storage.repository.UserStorageRepository;
-import com.example.demo.module.user_storage.dto.payload.UserStorageCreatePayload;
-import com.example.demo.module.user_storage.dto.payload.UserStorageEditPayload;
-import com.example.demo.module.user_storage.dto.result.UserStorageDetailResult;
-import com.example.demo.module.user_storage.dto.result.UserStorageSimpleResult;
+import com.example.demo.module.userStorage.entity.UserStorage;
+import com.example.demo.module.userStorage.repository.UserStorageRepository;
+import com.example.demo.module.userStorage.dto.payload.UserStorageCreatePayload;
+import com.example.demo.module.userStorage.dto.payload.UserStorageEditPayload;
+import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
+import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.UserStorageDetailResultMapper;
 import com.example.demo.util.mapper.UserStorageSimpleResultMapper;

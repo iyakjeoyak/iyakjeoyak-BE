@@ -1,4 +1,4 @@
-package com.example.demo.module.user_storage.dto.result;
+package com.example.demo.module.userStorage.dto.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

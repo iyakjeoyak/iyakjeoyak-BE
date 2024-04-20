@@ -1,4 +1,4 @@
-package com.example.demo.module.user_storage.entity;
+package com.example.demo.module.userStorage.entity;
 
 
 import com.example.demo.module.common.entity.BaseTimeEntity;

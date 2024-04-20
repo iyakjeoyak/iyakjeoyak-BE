@@ -1,6 +1,6 @@
-package com.example.demo.module.user_storage.repository;
+package com.example.demo.module.userStorage.repository;
 
-import com.example.demo.module.user_storage.entity.UserStorage;
+import com.example.demo.module.userStorage.entity.UserStorage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
