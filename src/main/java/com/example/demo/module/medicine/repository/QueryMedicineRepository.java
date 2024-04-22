@@ -32,7 +32,7 @@ public class QueryMedicineRepository {
     }
 
     public Page<Medicine> findAllBySearch(MedicineSearchCond medicineSearchCond, Pageable pageable) {
-        OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
+//        OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
         List<Long> idList = query
                 .select(medicine.id)
                 .from(medicine)
@@ -48,7 +48,7 @@ public class QueryMedicineRepository {
                 .select(medicine)
                 .from(medicine)
                 .where(medicine.id.in(idList))
-                .orderBy(setOrderBy(orderSortCond.getOrderField(), orderSortCond.getSort()))
+//                .orderBy(setOrderBy(orderSortCond))
                 .fetch();
 
         // 이하 카운트용 쿼리
@@ -92,7 +92,10 @@ public class QueryMedicineRepository {
         return (hashtagId == null || hashtagId == 0) ? null : medicineHashtag.hashtag.id.eq(hashtagId);
     }
 
-    private OrderSpecifier<?> setOrderBy(String orderBy, Integer sortPayload) {
+    private OrderSpecifier<?> setOrderBy(OrderSortCond orderSortCond) {
+        Integer sortPayload = orderSortCond.getSort();
+        String orderBy = orderSortCond.getOrderField();
+
         Order order;
         if (sortPayload.equals(1)) {
             order = Order.ASC;
@@ -101,6 +104,7 @@ public class QueryMedicineRepository {
         } else {
             throw new IllegalArgumentException("오름차순 : 1 , 내림차순 : -1");
         }
+
         return switch (orderBy) {
             case "grade" -> new OrderSpecifier<>(order, medicine.grade);
             case "heartCount" -> new OrderSpecifier<>(order, medicine.heartCount);
