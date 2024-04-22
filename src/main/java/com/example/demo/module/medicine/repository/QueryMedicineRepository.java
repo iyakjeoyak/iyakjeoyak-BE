@@ -97,6 +97,8 @@ public class QueryMedicineRepository {
     }
 
     private OrderSpecifier<?> setOrderBy(OrderSortCond orderSortCond) {
+        if(orderSortCond==null) return new OrderSpecifier<>(Order.ASC, medicine.id);
+
         Integer sortPayload = orderSortCond.getSort();
         String orderBy = orderSortCond.getOrderField();
 

@@ -12,7 +12,6 @@ public class MedicineSearchCond {
 
     private String keyword;
 
-    // 정렬 어떻게 처리할지 고민중...
-//    private OrderSortCond orderSortCond;
+    private OrderSortCond orderSortCond;
 
 }
