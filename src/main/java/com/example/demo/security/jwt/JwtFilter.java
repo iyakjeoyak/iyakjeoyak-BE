@@ -1,12 +1,15 @@
 package com.example.demo.security.jwt;
 
+import com.example.demo.module.user.entity.CustomUserDetails;
 import com.example.demo.module.user.service.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
+    // private final repository;
 
     /*
     * JWT 토큰 검증 필터 수행
@@ -41,18 +45,26 @@ public class JwtFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(token)) {
 
                 // 토큰에서 userId 가져오기
-                Long userId = jwtUtil.getUserId(token);
-
+                // claims
+//                Long userId = jwtUtil.getUserId(token);
+                // new JwtTokenPayload();
                 // 유저와 토큰과 일치하면 userDetails를 생성한다
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+                // Authtication(뭘 넣을지) << claims() -> 다 뿌린다
+//                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+
+                JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
 
                 // UserDetails가 비어있지 않다면?
-                if (userDetails != null) {
+                if (ObjectUtils.isNotEmpty(jwtTokenPayload)) {
+                    //TODO Authenticaiton 객체 바꾸기
                     // Authentication Token 생성
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    // usernamepasswordAuthenticationToken은 username = principal, password = credential
+                    CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
 
-                    // Security context에 저장한다?
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+//                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    // Security context에 저장한다? username password 이
+                    SecurityContextHolder.getContext().setAuthentication(customUserDetails);
                 }
             }
         }

@@ -1,19 +1,60 @@
 package com.example.demo.module.user.entity;
 
+import com.example.demo.security.jwt.JwtTokenPayload;
+import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@Data
+@Builder
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements Authentication {
 
-    private final User user;
+    // JwtTokenPayload
+//    private User user;
+    private final JwtTokenPayload jwtTokenPayload;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public Object getDetails() {
+        return null;
+    }
+
+    // principal = username (ID)
+    // JWT ->
+    @Override
+    public Object getPrincipal() {
+        return jwtTokenPayload.getUserId();
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return true;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+/*    private final User user;
 
     // role 값 반환
     @Override
@@ -53,5 +94,5 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
+    }*/
 }
