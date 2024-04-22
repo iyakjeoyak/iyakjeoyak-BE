@@ -1,10 +1,12 @@
 package com.example.demo.module.medicine.service;
 
+import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.medicine.dto.payload.MedicinePayload;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import com.example.demo.module.medicine.dto.result.MedicineSimpleResult;
+import com.example.demo.module.medicine.repository.QueryMedicineRepository;
 import com.example.demo.util.mapper.MedicineMapper;
 import com.example.demo.util.mapper.MedicineSimpleResultMapper;
 import com.example.demo.module.common.result.PageResult;
@@ -23,6 +25,8 @@ public class MedicineServiceImpl implements MedicineService {
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
     private final MedicineSimpleResultMapper simpleResultMapper;
+    private final QueryMedicineRepository queryMedicineRepository;
+
     @Override
     public Long save(MedicinePayload medicinePayload) {
         return medicineRepository.save(Medicine.builder()
@@ -34,6 +38,12 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public PageResult<MedicineSimpleResult> findAll(Pageable pageable) {
         Page<MedicineSimpleResult> result = medicineRepository.findAll(pageable).map(simpleResultMapper::toDto);
+        return new PageResult<>(result);
+    }
+
+    @Override
+    public PageResult<MedicineSimpleResult> findAllByQuery(MedicineSearchCond cond, Pageable pageable) {
+        Page<MedicineSimpleResult> result = queryMedicineRepository.findAllBySearch(cond, pageable).map(simpleResultMapper::toDto);
         return new PageResult<>(result);
     }
 
