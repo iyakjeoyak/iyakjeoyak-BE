@@ -1,6 +1,5 @@
 package com.example.demo.module.medicine.repository;
 
-import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
 import com.example.demo.module.medicine.entity.Medicine;
@@ -32,7 +31,7 @@ public class QueryMedicineRepository {
         this.query = new JPAQueryFactory(em);
     }
 
-    private PageResult<Medicine> findAllBySearch(MedicineSearchCond medicineSearchCond, Pageable pageable) {
+    public Page<Medicine> findAllBySearch(MedicineSearchCond medicineSearchCond, Pageable pageable) {
         OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
         List<Long> idList = query
                 .select(medicine.id)
@@ -66,8 +65,7 @@ public class QueryMedicineRepository {
                 .from(medicine)
                 .where(medicine.id.in(totalIdList));
 
-        Page<Medicine> page = PageableExecutionUtils.getPage(medicines, pageable, count::fetchOne);
-        return new PageResult<>(page);
+        return PageableExecutionUtils.getPage(medicines, pageable, count::fetchOne);
     }
 
     private BooleanExpression heartCountGoe(Integer heartCount) {
