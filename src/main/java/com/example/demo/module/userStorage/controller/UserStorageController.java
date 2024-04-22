@@ -68,4 +68,8 @@ public class UserStorageController {
     public ResponseEntity<Long> deleteById(@PathVariable("storageId") Long storageId, @RequestParam("userId")Long userId) {
         return new ResponseEntity<>(userStorageService.deleteById(userId,storageId), HttpStatus.OK);
     }
+    @GetMapping("/jenkins-test")
+    @Operation(summary = "자동배포 확인용", description = "자동배포 확인용")
+    public void jenkinsTest() {
+    }
 }

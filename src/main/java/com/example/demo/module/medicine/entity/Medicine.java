@@ -1,6 +1,7 @@
 package com.example.demo.module.medicine.entity;
 
 import com.example.demo.module.category.entity.Category;
+import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Medicine {
+public class Medicine extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -88,11 +89,15 @@ public class Medicine {
     @Setter
     private Integer heartCount;
 
+    // ToDo :평균 평점 계산하는 로직 추가해야 함
+    private Double grade;
+
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MedicineHashtag> hashtagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MedicineCategory> categoryList = new ArrayList<>();
+
 
     public List<Hashtag> getHashtags() {
         return hashtagList.stream().map(MedicineHashtag::getHashtag).toList();
@@ -101,6 +106,7 @@ public class Medicine {
     public List<Category> getCategories() {
         return categoryList.stream().map(MedicineCategory::getCategory).toList();
     }
+
 
     public MedicineResult toDto() {
         return MedicineResult

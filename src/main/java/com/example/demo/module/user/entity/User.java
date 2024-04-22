@@ -19,18 +19,16 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @NotBlank(message = "아이디는 필수 입력 값입니다.")
+    @Column(nullable = false)
     private String username;
 
-    //TODO 비밀번호 정규식
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-    @Size(min = 8, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
+    @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "닉네임은 필수 입력 값입니다.")
+    @Column(nullable = false)
     private String nickname;
 
-    @NotBlank(message = "성별 선택은 필수 입력 값입니다.")
+    @Column(nullable = false)
     private String gender;
 
     private Integer age;
@@ -40,7 +38,7 @@ public class User extends BaseTimeEntity {
 
     private Integer point;
 
-    //TODO tag 부활?
+    //TODO tag 부활? List<>, 연관관계
 //    private String tag;
 
     @PrePersist
