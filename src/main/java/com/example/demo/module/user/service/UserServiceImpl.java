@@ -52,6 +52,8 @@ public class UserServiceImpl implements UserService {
         // username으로 user 테이블 조회
         User user = userRepository.findByUsername(userLoginPayload.getUsername());
 
+        //TODO 더 추가할 수도 있음
+
         // 유효성 검증
         if (ObjectUtils.isEmpty(user)) {
             throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
@@ -61,8 +63,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        // 이전 버전
         // JWT 엑세스 토큰 만들기
-        String accessToken = jwtUtil.createAccessToken(new JwtTokenPayload(user.getUserId(), user.getUsername()));
+        //String accessToken = jwtUtil.createAccessToken(new JwtTokenPayload(user.getUserId(), user.getUsername()));
+
+        // 다음 버전 (디비를 조회할 필요없이 loginPayload로 조회한 녀석으로 JwtTokenPayload 채우기)
+        JwtTokenPayload buildPayload = JwtTokenPayload.builder().userId(user.getUserId()).nickname(user.getNickname()).username(user.getUsername()).build();
+        // 그대로 토큰을 만드는데 사용하기
+        String accessToken = jwtUtil.createAccessToken(buildPayload);
 
         // 만들어진 토큰 리턴
         return accessToken;

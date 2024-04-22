@@ -33,9 +33,13 @@ public class JwtUtil {
 
     private String createToken(JwtTokenPayload user, long expireTime) {
         // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
+        /*
+        *  JwtTokenPayload : userId, username, nickname
+        * */
         Claims claims = Jwts.claims();
         claims.put("userId" ,user.getUserId());
         claims.put("username" ,user.getUsername());
+        claims.put("nickname", user.getNickname());
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidty = now.plusSeconds(expireTime);
 
@@ -54,8 +58,14 @@ public class JwtUtil {
     /*
      * token에서 userId 추출
      * */
-    public Long getUserId(String token) {
-        return parseClaims(token).get("userId", Long.class);
+    //TODO 굳이 유저 아이디만 줄 필요가 없다.
+    public JwtTokenPayload getJwtTokenPayload(String token) {
+//        return parseClaims(token).get("userId", Long.class);
+        String username = parseClaims(token).get("username", String.class);
+        String nickname = parseClaims(token).get("nickname", String.class);
+        Long userId = parseClaims(token).get("userId", Long.class);
+
+        return JwtTokenPayload.builder().username(username).nickname(nickname).userId(userId).build();
     }
 
     /*
