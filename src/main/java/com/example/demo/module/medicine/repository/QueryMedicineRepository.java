@@ -32,7 +32,7 @@ public class QueryMedicineRepository {
     }
 
     public Page<Medicine> findAllBySearch(MedicineSearchCond medicineSearchCond, Pageable pageable) {
-//        OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
+        OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
         List<Long> idList = query
                 .select(medicine.id)
                 .from(medicine)
@@ -43,6 +43,7 @@ public class QueryMedicineRepository {
                         , hashtagEq(medicineSearchCond.getHashtagId())
                         , nameLike(medicineSearchCond.getKeyword()))
                 .groupBy(medicine.id)
+                .orderBy(setOrderBy(orderSortCond))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -51,7 +52,7 @@ public class QueryMedicineRepository {
                 .select(medicine)
                 .from(medicine)
                 .where(medicine.id.in(idList))
-//                .orderBy(setOrderBy(orderSortCond))
+                .orderBy(setOrderBy(orderSortCond))
                 .fetch();
 
         // 이하 카운트용 쿼리
