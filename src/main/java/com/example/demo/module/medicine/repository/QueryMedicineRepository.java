@@ -38,7 +38,10 @@ public class QueryMedicineRepository {
                 .from(medicine)
                 .join(medicine.categoryList, medicineCategory)
                 .join(medicine.hashtagList, medicineHashtag)
-                .where(categoryEq(medicineSearchCond.getCategoryId()), hashtagEq(medicineSearchCond.getHashtagId()))
+                .where(
+                        categoryEq(medicineSearchCond.getCategoryId())
+                        , hashtagEq(medicineSearchCond.getHashtagId())
+                        , nameLike(medicineSearchCond.getKeyword()))
                 .groupBy(medicine.id)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -81,7 +84,8 @@ public class QueryMedicineRepository {
     }
 
     private BooleanExpression keywordLike(String keyword) {
-        return nameLike(keyword).and(companyLike(keyword));
+        BooleanExpression nameLike = nameLike(keyword);
+        return nameLike == null ? companyLike(keyword) : nameLike(keyword).and(companyLike(keyword));
     }
 
     private BooleanExpression categoryEq(Long categoryId) {
