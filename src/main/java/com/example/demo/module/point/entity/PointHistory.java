@@ -24,4 +24,6 @@ public class PointHistory extends BaseEntity {
     private Integer changedValue;
 
     private Integer pointSum;
+
+    private Long reviewId;
 }

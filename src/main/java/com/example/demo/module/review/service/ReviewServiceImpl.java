@@ -23,7 +23,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.example.demo.module.point.entity.ReserveUse.*;
 
@@ -74,8 +76,9 @@ public class ReviewServiceImpl implements ReviewService {
                 PointHistory.builder()
                         .domain("review")
                         .changedValue(reviewCreatePoint)
-                        .pointSum(user.reviewPoint(reviewCreatePoint))
-                        .reserveUse(RESERVE).build());
+                        .pointSum(user.plusPoint(reviewCreatePoint))
+                        .reserveUse(RESERVE)
+                        .reviewId(review.getId()).build());
 
         return review.getId();
     }
@@ -128,12 +131,17 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         // 포인트 삭감 메서드
-        pointHistoryRepository.save(PointHistory.builder()
-                .domain("review")
-                .changedValue(reviewCreatePoint * (-1))
-                .pointSum(user.cancelReviewPoint(reviewCreatePoint))
-                .reserveUse(CANCELED).build());
-
+        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(1);
+        Optional<PointHistory> pointHistory =  pointHistoryRepository
+                .findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(userId, reviewId, localDateTime);
+        if(pointHistory.isPresent()) {
+            pointHistoryRepository.save(PointHistory.builder()
+                    .domain("review")
+                    .changedValue(reviewCreatePoint * (-1))
+                    .pointSum(user.minusPoint(reviewCreatePoint))
+                    .reserveUse(CANCELED)
+                    .reviewId(reviewId).build());
+        }
         // 영양제 평점 구하는 메서드
         return reviewId;
     }
