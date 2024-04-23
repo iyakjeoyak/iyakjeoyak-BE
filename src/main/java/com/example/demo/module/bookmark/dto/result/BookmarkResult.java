@@ -1,5 +1,7 @@
 package com.example.demo.module.bookmark.dto.result;
 
+import com.example.demo.module.medicine.dto.result.MedicineResult;
+import com.example.demo.module.medicine.entity.Medicine;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +15,5 @@ public class BookmarkResult {
     private Long id;
 
     @Schema(description = "영양제")
-    private Long medicineId;
+    private MedicineResult medicine;
 }

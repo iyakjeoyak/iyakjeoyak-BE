@@ -6,6 +6,7 @@ import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.bookmark.dto.result.BookmarkResult;
 import com.example.demo.module.common.result.PageResult;
+import com.example.demo.util.mapper.MedicineMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,10 +20,11 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
+    private final MedicineMapper medicineMapper;
 
     @Override
     public PageResult<BookmarkResult> findAll(Long userId, PageRequest pageRequest) {
-        Page<BookmarkResult> bookmarkResults = bookmarkRepository.findAllByUserUserId(userId, pageRequest).map(Bookmark::toDto);
+        Page<BookmarkResult> bookmarkResults = bookmarkRepository.findAllByUserUserId(userId, pageRequest).map(bookmark -> bookmark.toDto(medicineMapper));
         return new PageResult<>(bookmarkResults);
     }
 
@@ -30,7 +32,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     public BookmarkResult findOneByUser(Long bookmarkId, Long userId) {
         if(bookmarkRepository.existsByIdAndUserUserId(bookmarkId, userId)) {
             return bookmarkRepository.findById(bookmarkId)
-                    .orElseThrow(() -> new NoSuchElementException("해당 북마크는 없습니다.")).toDto();
+                    .orElseThrow(() -> new NoSuchElementException("해당 북마크는 없습니다.")).toDto(medicineMapper);
         }
         throw new IllegalArgumentException("해당 유저는 북마크 등록을 하지 않았습니다.");
     }
@@ -56,7 +58,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             throw new IllegalArgumentException("해당 유저는 없습니다.");
         }
         BookmarkResult bookmarkResult = bookmarkRepository.findByMedicineIdAndUserUserId(medicineId, userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저는 영양제를 북마크 하지 않았습니다.")).toDto();
+                .orElseThrow(() -> new NoSuchElementException("해당 유저는 영양제를 북마크 하지 않았습니다.")).toDto(medicineMapper);
         bookmarkRepository.deleteById(bookmarkResult.getId());
         return bookmarkResult.getId();
     }
