@@ -4,6 +4,7 @@ import com.example.demo.module.category.entity.Category;
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
+import com.example.demo.module.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -98,6 +99,9 @@ public class Medicine extends BaseTimeEntity {
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MedicineCategory> categoryList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Review> reviewList = new ArrayList<>();
+
 
     public List<Hashtag> getHashtags() {
         return hashtagList.stream().map(MedicineHashtag::getHashtag).toList();
@@ -105,6 +109,39 @@ public class Medicine extends BaseTimeEntity {
 
     public List<Category> getCategories() {
         return categoryList.stream().map(MedicineCategory::getCategory).toList();
+    }
+
+    public void gradeAvg() {
+        this.grade = roundAvg(reviewStarSum() / reviewList.size());
+    }
+
+
+    public void gradeAvgByDelete(Double deleteReviewStar) {
+        if (reviewList.size() - 1 == 0) {
+            this.grade = 0.0;
+        } else {
+            Double newSum = Math.max(reviewStarSum() - deleteReviewStar, 0d);
+            this.grade = roundAvg(newSum / (reviewList.size() - 1));
+        }
+    }
+
+
+    public MedicineResult toDto() {
+        return MedicineResult
+                .builder()
+                .id(this.getId())
+                .BSSH_NM(this.BSSH_NM)
+                .PRDLST_NM(this.PRDLST_NM)
+                .build();
+    }
+
+    // 내부 계산 로직용 메서드
+    private Double reviewStarSum() {
+        return reviewList.stream().map(Review::getStar).reduce(Double::sum).orElse(0d);
+    }
+
+    private Double roundAvg(Double grade) {
+        return Math.round(grade * 10) / 10.0;
     }
 
 }

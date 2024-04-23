@@ -20,7 +20,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     @Override
     public PageResult<PointHistoryResult> findAllByUserId(Long userId, Pageable pageable) {
-        return new PageResult<>(pointHistoryRepository.findAllByUserUserId(userId, pageable).map(pointResultMapper::toDto));
+        return new PageResult<>(pointHistoryRepository.findAllByCreatedByUserId(userId, pageable).map(pointResultMapper::toDto));
     }
 
     @Override

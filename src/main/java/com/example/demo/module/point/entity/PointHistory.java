@@ -16,9 +16,6 @@ public class PointHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
     private String domain;
 
     @Enumerated(EnumType.STRING)
