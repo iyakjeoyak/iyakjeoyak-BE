@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "유저 생성", description = "유저 생성")
-    public ResponseEntity<Long> createUser(@RequestBody UserJoinPayload userJoinPayload) throws Exception {
+    public ResponseEntity<Long> createUser(@RequestBody UserJoinPayload userJoinPayload) {
         return new ResponseEntity<>(userService.createUser(userJoinPayload), HttpStatus.CREATED);
     }
 

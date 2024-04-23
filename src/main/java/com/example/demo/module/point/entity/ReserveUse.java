@@ -5,5 +5,5 @@ import org.springframework.data.relational.core.mapping.Embedded;
 
 @Getter
 public enum ReserveUse {
-    RESERVE , USE
+    RESERVE , USE , CANCELED
 }

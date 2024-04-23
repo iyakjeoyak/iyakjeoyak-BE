@@ -2,8 +2,7 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
-import com.example.demo.module.image.entity.ReviewImage;
-import com.example.demo.module.image.service.ImageService;
+import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.entity.PointHistory;
 import com.example.demo.module.point.repository.PointHistoryRepository;
@@ -24,11 +23,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
+import static com.example.demo.module.point.entity.ReserveUse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +49,10 @@ public class ReviewServiceImpl implements ReviewService {
         //TODO : 이미지 저장 로직 추가 필요
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
 
-        if (reviewRepository.existsByMedicineIdAndUserUserId(reviewPayload.getMedicineId(), user.getUserId())) {
+        if (reviewRepository.existsByMedicineIdAndCreatedByUserId(reviewPayload.getMedicineId(), user.getUserId())) {
             throw new IllegalArgumentException("이미 후기를 작성한 영양제 입니다.");
         }
+        Medicine medicine = medicineRepository.findById(reviewPayload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
 
         Review review = reviewRepository.save(
                 Review.builder()
@@ -62,8 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .content(reviewPayload.getContent())
                         .star(reviewPayload.getStar())
                         .heartCount(0)
-                        .medicine(medicineRepository.findById(reviewPayload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")))
-                        .user(user)
+                        .medicine(medicine)
                         .build());
 
         reviewPayload.getTagList().forEach(
@@ -72,10 +69,10 @@ public class ReviewServiceImpl implements ReviewService {
                                 .review(review)
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
+
         pointHistoryRepository.save(
                 PointHistory.builder()
                         .domain("review")
-                        .user(user)
                         .changedValue(reviewCreatePoint)
                         .pointSum(user.reviewPoint(reviewCreatePoint))
                         .reserveUse(RESERVE).build());
@@ -94,7 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public Long editReview(Long userId, Long reviewId, ReviewEditPayload reviewEditPayload) {
         if (!reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다."))
-                .getUser().getUserId().equals(userId)) {
+                .getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("후기 작성자만 수정할 수 있습니다.");
         }
         //없어진 해쉬태그 삭제
@@ -122,11 +119,22 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public Long deleteByReviewId(Long userId, Long reviewId) {
-        if (!reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다."))
-                .getUser().getUserId().equals(userId)) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다."));
+        Medicine medicine = review.getMedicine();
+        if (!review.getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("후기 작성자만 삭제할 수 있습니다.");
         }
-        reviewRepository.deleteById(reviewId);
+        reviewRepository.delete(review);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
+
+        // 포인트 삭감 메서드
+        pointHistoryRepository.save(PointHistory.builder()
+                .domain("review")
+                .changedValue(reviewCreatePoint * (-1))
+                .pointSum(user.cancelReviewPoint(reviewCreatePoint))
+                .reserveUse(CANCELED).build());
+
+        // 영양제 평점 구하는 메서드
         return reviewId;
     }
 

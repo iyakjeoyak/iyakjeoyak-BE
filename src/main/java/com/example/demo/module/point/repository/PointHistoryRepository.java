@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PointHistoryRepository extends JpaRepository<PointHistory, Long> {
-    Page<PointHistory> findAllByUserUserId(Long UserId, Pageable pageable);
+    Page<PointHistory> findAllByCreatedByUserId(Long UserId, Pageable pageable);
 }
