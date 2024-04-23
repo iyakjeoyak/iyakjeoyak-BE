@@ -55,6 +55,16 @@ public class Review extends BaseEntity {
 
     public void decreaseHeartCount() {
         this.heartCount--;
-        if(this.heartCount < 0) throw new IllegalArgumentException("좋아요가 0 이하가 되었습니다.(비정상)");
+        if (this.heartCount < 0) throw new IllegalArgumentException("좋아요가 0 이하가 되었습니다.(비정상)");
+    }
+
+    @PostPersist
+    public void postPersist() {
+        medicine.gradeAvg();
+    }
+
+    @PreRemove
+    public void postRemove() {
+        medicine.gradeAvgByDelete(this.star);
     }
 }
