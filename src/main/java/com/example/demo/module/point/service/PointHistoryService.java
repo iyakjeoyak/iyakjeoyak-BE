@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface PointHistoryService {
     PageResult<PointHistoryResult> findAllByUserId(Long userId, Pageable pageable);
+
+    void cleanupExpiredPoint();
 }
