@@ -1,5 +1,6 @@
 package com.example.demo.module.declaration.dto.result;
 
+import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.review.entity.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,5 @@ public class DeclarationResult {
     private String content;
 
     @Schema(description = "신고한 리뷰")
-    private Long reviewId;
+    private ReviewResult review;
 }
