@@ -11,4 +11,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAllByMedicineId(Long medicineId, PageRequest pageRequest);
 
     Boolean existsByMedicineIdAndCreatedByUserId(Long medicineId, Long userId);
+
+    Page<Review> findAllByCreatedByUserId(Long userId, PageRequest pageRequest);
+
 }

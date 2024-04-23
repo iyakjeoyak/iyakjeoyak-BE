@@ -1,6 +1,7 @@
 package com.example.demo.module.review.controller;
 
 
+import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.service.ReviewService;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
@@ -69,6 +70,15 @@ public class ReviewController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(reviewService.deleteByReviewId(userId,reviewId), HttpStatus.OK);
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "마이페이지 리뷰 전체 조회", description = "page : 현재 페이지 , size : 페이지당 데이터 수")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<PageResult<ReviewMyPageResult>> findPageByUserId(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size, @AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(reviewService.findPageByUserId(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
 

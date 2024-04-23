@@ -33,6 +33,15 @@ public class MedicineResult {
     @Schema(description = "평점")
     private Double grade;
 
+    @Schema(description = "기능")
+    private String PRIMARY_FNCLTY;
+
+    @Schema(description = "복용 방법")
+    private String NTK_MTHD;
+
+    @Schema(description = "복용시 주의사항")
+    private String IFTKN_ATNT_MATR_CN;
+
     @Schema(description = "카테고리 정보")
     private List<CategoryResult> categories = new ArrayList<>();
 

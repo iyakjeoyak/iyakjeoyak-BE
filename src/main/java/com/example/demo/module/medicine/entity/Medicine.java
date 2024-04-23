@@ -102,7 +102,7 @@ public class Medicine extends BaseTimeEntity {
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
-
+    // 추가 getter
     public List<Hashtag> getHashtags() {
         return hashtagList.stream().map(MedicineHashtag::getHashtag).toList();
     }
@@ -111,6 +111,11 @@ public class Medicine extends BaseTimeEntity {
         return categoryList.stream().map(MedicineCategory::getCategory).toList();
     }
 
+    public Integer getReviewCount() {
+        return reviewList.size();
+    }
+
+    // 도메인 로직
     public void gradeAvg() {
         this.grade = roundAvg(reviewStarSum() / reviewList.size());
     }

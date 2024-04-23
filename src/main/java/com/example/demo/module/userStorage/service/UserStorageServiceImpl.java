@@ -65,6 +65,7 @@ public class UserStorageServiceImpl implements UserStorageService {
                 userStorageRepository.findById(userStorageId).orElseThrow(() -> new NoSuchElementException("영양제 저장 내역이 없습니다.")));
     }
 
+    @Transactional
     @Override
     public Long deleteById(Long userId, Long storageId) {
         if (!userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관된 영양제를 찾을 수 없습니다."))
