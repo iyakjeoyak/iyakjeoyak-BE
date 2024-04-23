@@ -23,7 +23,19 @@ public class MedicineResult {
     private Integer heartCount;
 
     @Schema(description = "평점")
-    private Long star;
+    private Long grade;
+
+    @Schema(description = "기능")
+    private String PRIMARY_FNCLTY;
+
+    @Schema(description = "복용 방법")
+    private String NTK_MTHD;
+
+    @Schema(description = "복용시 주의사항")
+    private String IFTKN_ATNT_MATR_CN;
+
+    @Schema(description = "원재료")
+    private String INDIV_RAWMTRL_NM;
 
     @Schema(description = "리뷰 수")
     private Integer reviewCount;
