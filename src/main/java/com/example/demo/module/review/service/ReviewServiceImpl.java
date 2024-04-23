@@ -24,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
-import static com.example.demo.module.point.entity.ReserveUse.CANCELED;
-import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
+import static com.example.demo.module.point.entity.ReserveUse.*;
 
 @Service
 @RequiredArgsConstructor
