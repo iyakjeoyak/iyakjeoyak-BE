@@ -24,6 +24,15 @@ public class MedicineResult {
     @Schema(description = "제품 명")
     private String PRDLST_NM;
 
+    @Schema(description = "기능성 원재료")
+    private String INDIV_RAWMTRL_NM;
+
+    @Schema(description = "좋아요 수")
+    private Integer heartCount;
+
+    @Schema(description = "평점")
+    private Double grade;
+
     @Schema(description = "카테고리 정보")
     private List<CategoryResult> categories = new ArrayList<>();
 

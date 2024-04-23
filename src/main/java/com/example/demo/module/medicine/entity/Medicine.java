@@ -107,14 +107,4 @@ public class Medicine extends BaseTimeEntity {
         return categoryList.stream().map(MedicineCategory::getCategory).toList();
     }
 
-
-    public MedicineResult toDto() {
-        return MedicineResult
-                .builder()
-                .id(this.getId())
-                .BSSH_NM(this.BSSH_NM)
-                .PRDLST_NM(this.PRDLST_NM)
-                .build();
-    }
-
 }
