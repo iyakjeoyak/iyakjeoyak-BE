@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,7 +49,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload , @RequestParam("userId")Long userId) {
+    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload , @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(reviewService.save(userId,reviewPayload), HttpStatus.CREATED);
     }
 
@@ -57,7 +58,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> editReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewEditPayload editPayload, @RequestParam("userId")Long userId) {
+    public ResponseEntity<Long> editReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewEditPayload editPayload, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(reviewService.editReview(userId,reviewId, editPayload), HttpStatus.OK);
     }
 
@@ -66,7 +67,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @RequestParam("userId")Long userId) {
+    public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(reviewService.deleteByReviewId(userId,reviewId), HttpStatus.OK);
     }
 

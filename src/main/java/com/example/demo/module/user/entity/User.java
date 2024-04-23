@@ -50,4 +50,9 @@ public class User extends BaseTimeEntity {
         this.point += point;
         return point;
     }
+
+    public Integer cancelReviewPoint(Integer point) {
+        this.point -= point;
+        return point;
+    }
 }

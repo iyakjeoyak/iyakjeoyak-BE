@@ -18,12 +18,10 @@ public class UserAuditorAware implements AuditorAware<User> {
     @Override
     public Optional<User> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-                return userRepository.findById((Long) authentication.getPrincipal());
+        if (authentication != null&&!authentication.getPrincipal().equals("anonymousUser")) {
+                return userRepository.findById(Long.parseLong(authentication.getPrincipal().toString()));
         } else {
-//            return userRepository.findById(2);
-            // 배치 돌릴 때 관라지 아이디로 modified 꼽기 위함
-            return Optional.empty();
+            return null;
         }
     }
 }

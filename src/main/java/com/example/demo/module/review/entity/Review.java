@@ -1,5 +1,6 @@
 package com.example.demo.module.review.entity;
 
+import com.example.demo.module.common.entity.BaseEntity;
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Review extends BaseTimeEntity {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +30,6 @@ public class Review extends BaseTimeEntity {
 
     private Integer heartCount;
 
-//    EntityListener 사용할까 고민중
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Medicine medicine;
