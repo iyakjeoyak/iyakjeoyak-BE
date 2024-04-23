@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .csrf((auth) ->
                         auth.disable()
                 )
-                .cors(Customizer.withDefaults())
+//                .cors(Customizer.withDefaults())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 // usernmaepassword 필터 전에 loginfilter를 거치겠다
