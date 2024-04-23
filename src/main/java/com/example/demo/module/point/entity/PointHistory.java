@@ -1,6 +1,7 @@
 package com.example.demo.module.point.entity;
 
 
+import com.example.demo.module.common.entity.BaseEntity;
 import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class PointHistory {
+public class PointHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

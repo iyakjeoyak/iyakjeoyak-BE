@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,6 +21,12 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     @Override
     public PageResult<PointHistoryResult> findAllByUserId(Long userId, Pageable pageable) {
         return new PageResult<>(pointHistoryRepository.findAllByUserUserId(userId, pageable).map(pointResultMapper::toDto));
+    }
+
+    @Override
+    public void cleanupExpiredPoint() {
+        LocalDateTime time = LocalDateTime.now().minusHours(1);
+        pointHistoryRepository.deleteAll(pointHistoryRepository.findByCreatedDateBefore(time));
     }
 
 }
