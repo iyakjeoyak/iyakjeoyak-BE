@@ -2,6 +2,7 @@ package com.example.demo.module.point.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.point.dto.result.PointHistoryResult;
+import com.example.demo.module.point.entity.PointHistory;
 import com.example.demo.module.point.repository.PointHistoryRepository;
 import com.example.demo.util.mapper.PointResultMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     }
 
     @Override
+    @Transactional
     public void cleanupExpiredPoint() {
         LocalDateTime time = LocalDateTime.now().minusHours(1);
         pointHistoryRepository.deleteAll(pointHistoryRepository.findByCreatedDateBefore(time));

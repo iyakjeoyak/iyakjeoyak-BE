@@ -11,11 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final MedicineRepository medicineRepository;
@@ -38,6 +40,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
+    @Transactional
     public Long save(Long medicineId, Long userId) {
         if(!isChecked(medicineId, userId)) {
             return bookmarkRepository.save(Bookmark
@@ -50,6 +53,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
+    @Transactional
     public Long delete(Long medicineId, Long userId) {
         if(!medicineRepository.existsById(medicineId)){
             throw new IllegalArgumentException("해당 영양제는 없습니다.");

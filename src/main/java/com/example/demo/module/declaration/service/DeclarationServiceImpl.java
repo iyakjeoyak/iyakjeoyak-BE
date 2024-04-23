@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DeclarationServiceImpl implements DeclarationService{
     private final DeclarationRepository declarationRepository;
     private final UserRepository userRepository;
@@ -39,6 +41,7 @@ public class DeclarationServiceImpl implements DeclarationService{
     }
 
     @Override
+    @Transactional
     public Long save(DeclarationPayload declarationPayload, Long userId) {
         if(!declarationRepository.existsByReviewIdAndUserUserId(declarationPayload.getReviewId(), userId)) {
             return declarationRepository.save(Declaration
@@ -53,6 +56,7 @@ public class DeclarationServiceImpl implements DeclarationService{
     }
 
     @Override
+    @Transactional
     public Long delete(Long declarationId, Long userId) {
         if(declarationRepository.existsByIdAndUserUserId(declarationId, userId)){
             declarationRepository.deleteById(declarationId);
