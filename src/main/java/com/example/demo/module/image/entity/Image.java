@@ -1,11 +1,10 @@
 package com.example.demo.module.image.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,4 +22,7 @@ public class Image extends BaseEntity {
     private String storeName;
 
     private String fullPath;
+
+    @OneToMany(mappedBy = "image", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReviewImage> reviewImageList;
 }

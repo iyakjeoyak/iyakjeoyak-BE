@@ -1,6 +1,8 @@
 package com.example.demo.module.review.controller;
 
 
+import com.example.demo.module.review.dto.payload.ReviewImageAddPayload;
+import com.example.demo.module.review.dto.payload.ReviewImageDeletePayload;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.service.ReviewService;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
@@ -19,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,7 +54,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload , @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload , @AuthenticationPrincipal Long userId) throws IOException {
         return new ResponseEntity<>(reviewService.save(userId,reviewPayload), HttpStatus.CREATED);
     }
 
@@ -81,5 +85,20 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.findPageByUserId(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
-
+    @PostMapping("/image")
+    @Operation(summary = "리뷰 이미지 추가(복수)", description = "반환값 : 리뷰 PK")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Long> addReviewImages(@RequestBody ReviewImageAddPayload payload , @AuthenticationPrincipal Long userId) throws IOException {
+        return new ResponseEntity<>(reviewService.addReviewImage(userId, payload.getReviewId(), payload.getImages()), HttpStatus.CREATED);
+    }
+    @DeleteMapping("/image")
+    @Operation(summary = "리뷰 이미지 삭제", description = "반환값 : 리뷰 PK")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Long> deleteReviewImage(@RequestBody ReviewImageDeletePayload payload , @AuthenticationPrincipal Long userId) throws IOException {
+        return new ResponseEntity<>(reviewService.deleteReviewImage(userId, payload.getReviewId(), payload.getImageId()), HttpStatus.CREATED);
+    }
 }

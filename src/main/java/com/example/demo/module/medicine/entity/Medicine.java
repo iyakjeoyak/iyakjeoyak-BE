@@ -90,7 +90,6 @@ public class Medicine extends BaseTimeEntity {
     @Setter
     private Integer heartCount;
 
-    // ToDo :평균 평점 계산하는 로직 추가해야 함
     private Double grade;
 
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)

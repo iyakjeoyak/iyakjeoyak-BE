@@ -6,8 +6,10 @@ import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
 import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
 import com.example.demo.module.common.result.PageResult;
 
+import java.io.IOException;
+
 public interface UserStorageService {
-    Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload);
+    Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload) throws IOException;
 
     PageResult<UserStorageSimpleResult> getAllByUserId(Long userId, Integer page, Integer size);
 
@@ -15,5 +17,5 @@ public interface UserStorageService {
 
     Long deleteById(Long userId ,Long storageId);
 
-    Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload);
+    Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload) throws IOException;
 }
