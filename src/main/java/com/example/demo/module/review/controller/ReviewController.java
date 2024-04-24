@@ -1,14 +1,13 @@
 package com.example.demo.module.review.controller;
 
 
-import com.example.demo.module.review.dto.payload.ReviewImageAddPayload;
-import com.example.demo.module.review.dto.payload.ReviewImageDeletePayload;
-import com.example.demo.module.review.dto.result.ReviewMyPageResult;
-import com.example.demo.module.review.service.ReviewService;
-import com.example.demo.module.review.dto.payload.ReviewEditPayload;
-import com.example.demo.module.review.dto.payload.ReviewPayload;
-import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.common.result.PageResult;
+import com.example.demo.module.review.dto.payload.ReviewEditPayload;
+import com.example.demo.module.review.dto.payload.ReviewImageAddPayload;
+import com.example.demo.module.review.dto.payload.ReviewPayload;
+import com.example.demo.module.review.dto.result.ReviewMyPageResult;
+import com.example.demo.module.review.dto.result.ReviewResult;
+import com.example.demo.module.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -98,7 +97,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteReviewImage(@RequestBody ReviewImageDeletePayload payload , @AuthenticationPrincipal Long userId) throws IOException {
-        return new ResponseEntity<>(reviewService.deleteReviewImage(userId, payload.getReviewId(), payload.getImageId()), HttpStatus.CREATED);
+    public ResponseEntity<Long> deleteReviewImage(@RequestParam("reviewId")Long reviewId, @RequestParam("imageId")Long imageId, @AuthenticationPrincipal Long userId) throws IOException {
+        return new ResponseEntity<>(reviewService.deleteReviewImage(userId, reviewId, imageId), HttpStatus.CREATED);
     }
 }

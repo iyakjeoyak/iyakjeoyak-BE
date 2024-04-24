@@ -1,6 +1,7 @@
 package com.example.demo.module.userStorage.service;
 
 import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.user.entity.User;
@@ -34,6 +35,7 @@ public class UserStorageServiceImpl implements UserStorageService {
     private final UserStorageSimpleResultMapper simpleResultMapper;
     private final UserStorageDetailResultMapper detailResultMapper;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Transactional
     @Override
@@ -102,10 +104,30 @@ public class UserStorageServiceImpl implements UserStorageService {
         if (payload.getImage() != null && payload.getImage().isEmpty()) {
             image = imageService.saveImage(payload.getImage());
         }
-        
+
         imageService.deleteImage(userId, userStorage.getImage().getStoreName());
 
         return userStorage.edit(medicine, payload.getMedicineName(), payload.getExpirationDate(), payload.getMemo() , image);
     }
+
+    @Override
+    @Transactional
+    public Long deleteStorageImage(Long userId, Long storageId, Long imageId) throws IOException {
+        UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관 내역이 없습니다."));
+        if (!userStorage.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("작성자가 아니면 수정할 수 없습니다.");
+        }
+        if (!userStorage.getImage().getId().equals(imageId)) {
+            throw new IllegalArgumentException("해당 보관함의 이미지가 아닙니다.");
+        }
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("해당하는 이미지가 없습니다."));
+        imageService.deleteImage(userId, image.getStoreName());
+
+        imageRepository.deleteById(imageId);
+
+        userStorage.deleteImage();
+        return storageId;
+    }
+
 
 }

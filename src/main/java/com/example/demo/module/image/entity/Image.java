@@ -22,7 +22,4 @@ public class Image extends BaseEntity {
     private String storeName;
 
     private String fullPath;
-
-    @OneToMany(mappedBy = "image", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ReviewImage> reviewImageList;
 }

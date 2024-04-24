@@ -177,9 +177,6 @@ public class ReviewServiceImpl implements ReviewService {
                 .getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("리뷰 작성자만 이미지 삭제 가능합니다.");
         }
-        if (!reviewImageRepository.existsByReviewIdAndImageId(reviewId, imageId)) {
-            throw new IllegalArgumentException("해당 이미지는 해당 리뷰의 이미지가 아닙니다.");
-        }
 
         /* 이하 이미지 삭제 로직 */
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 파일이 없습니다."));
@@ -187,8 +184,9 @@ public class ReviewServiceImpl implements ReviewService {
         //S3에서 파일 삭제하는 로직 실행
         imageService.deleteImage(userId, image.getStoreName());
 
-        /* DB 테이블 삭제 : CaseCade.REMOVE , orphanRemoval = true 설정으로 중간테이블까지 삭제 */
-        imageRepository.delete(image);
+        /* Image 기록은 남기고 중간 테이블만 삭제 */
+        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
+        reviewImageRepository.delete(reviewImage);
 
         return reviewId;
     }

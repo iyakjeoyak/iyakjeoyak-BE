@@ -44,4 +44,8 @@ public class UserStorage extends BaseTimeEntity {
 
         return this.getId();
     }
+
+    public void deleteImage() {
+        this.image = null;
+    }
 }

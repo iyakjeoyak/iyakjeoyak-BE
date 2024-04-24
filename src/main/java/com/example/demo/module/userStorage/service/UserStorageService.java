@@ -18,4 +18,6 @@ public interface UserStorageService {
     Long deleteById(Long userId ,Long storageId);
 
     Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload) throws IOException;
+
+    Long deleteStorageImage(Long userId, Long storageId, Long imageId) throws IOException;
 }
