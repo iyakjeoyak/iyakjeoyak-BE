@@ -72,8 +72,8 @@ public class S3FileService implements ImageService {
     }
 
     @Override
-    public Long deleteImage(Long userId, String filePath) {
-        Image image = imageRepository.findByFullPath(filePath).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."));
+    public Long deleteImage(Long userId, String storeName) {
+        Image image = imageRepository.findByStoreName(storeName).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."));
         User createdBy = image.getCreatedBy();
         if (createdBy == null || !createdBy.getUserId().equals(userId)) {
             throw new IllegalArgumentException("이미지를 저장한 사용자가 아닙니다.");
