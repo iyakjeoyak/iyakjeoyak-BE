@@ -2,10 +2,14 @@ package com.example.demo.module.user.entity;
 
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
+import com.example.demo.module.hashtag.entity.Hashtag;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 @Getter
@@ -34,12 +38,17 @@ public class User extends BaseTimeEntity {
     private Integer age;
 
     //TODO enum or table
-    private String role;
+/*    @OneToOne(mappedBy = "user")
+    private Role role;*/
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserRole> userRoleList = new ArrayList<>();
 
     private Integer point;
 
-    //TODO tag 부활? List<>, 연관관계
-//    private String tag;
+    // 중간 테이블 두기 태그는 여러개
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserHashtag> userHashTagList = new ArrayList<>();
 
     @PrePersist
     public void init() {
@@ -54,5 +63,9 @@ public class User extends BaseTimeEntity {
     public Integer cancelReviewPoint(Integer point) {
         this.point -= point;
         return this.point;
+    }
+
+    public List<Hashtag> getHashtagList() {
+       return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
     }
 }

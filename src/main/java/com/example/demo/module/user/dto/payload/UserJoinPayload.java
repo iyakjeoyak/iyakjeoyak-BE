@@ -1,9 +1,11 @@
 package com.example.demo.module.user.dto.payload;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,7 +26,12 @@ public class UserJoinPayload {
 
     private Integer age;
 
-    //TODO tag
-    private List<Long> tag;
+    // 중간 테이블(user + role)
+    @NotEmpty
+    private List<Long> userRoleList = new ArrayList<>();
+
+    //중간 테이블(user + hashtag)
+    @NotEmpty
+    private List<Long> userHashtagList = new ArrayList<>();
 
 }

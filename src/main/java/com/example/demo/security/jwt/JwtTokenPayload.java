@@ -13,4 +13,5 @@ public class JwtTokenPayload {
     private Long userId;
     private String username;
     private String nickname;
+
 }
