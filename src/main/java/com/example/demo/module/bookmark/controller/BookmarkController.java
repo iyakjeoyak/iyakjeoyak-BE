@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,7 +30,7 @@ public class BookmarkController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<BookmarkResult>> findAllByUser(@RequestParam(defaultValue = "0", name = "page") int page,
                                                                     @RequestParam(defaultValue = "10", name = "size") int size,
-                                                                    @RequestParam("userId") Long userId){
+                                                                    @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(bookmarkService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
@@ -38,7 +39,7 @@ public class BookmarkController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = BookmarkResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<BookmarkResult> findOneByUser(@PathVariable("bookmarkId") Long bookmarkId, @RequestParam("userId") Long userId){
+    public ResponseEntity<BookmarkResult> findOneByUser(@PathVariable("bookmarkId") Long bookmarkId, @AuthenticationPrincipal Long userId){
         // todo bookmark단일 조회 medicine단일조회 차이?
         return new ResponseEntity<>(bookmarkService.findOneByUser(bookmarkId, userId), HttpStatus.OK);
     }
@@ -48,7 +49,7 @@ public class BookmarkController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> save(@RequestBody Long medicineId,@RequestParam("userId") Long userId){
+    public ResponseEntity<Long> save(@RequestBody Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(bookmarkService.save(medicineId, userId), HttpStatus.OK);
     }
 
@@ -57,7 +58,7 @@ public class BookmarkController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> delete(@PathVariable("medicineId") Long medicineId, @RequestParam("userId") Long userId){
+    public ResponseEntity<Long> delete(@PathVariable("medicineId") Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(bookmarkService.delete(medicineId, userId), HttpStatus.OK);
     }
 
@@ -66,7 +67,7 @@ public class BookmarkController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Boolean> checkBookmark(@PathVariable("medicineId") Long medicineId, @RequestParam("userId") Long userId){
+    public ResponseEntity<Boolean> checkBookmark(@PathVariable("medicineId") Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(bookmarkService.isChecked(medicineId, userId), HttpStatus.OK);
     }
 

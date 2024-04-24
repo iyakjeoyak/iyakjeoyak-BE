@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +30,8 @@ public class DeclarationController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<DeclarationResult>> findAllByUser(@RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                 @RequestParam("userId") Long userId){
+                                                                       @RequestParam(defaultValue = "10") int size,
+                                                                       @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(declarationService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
@@ -38,8 +39,8 @@ public class DeclarationController {
     @Operation(summary = "신고 단일 조회", description = "유저의 신고 단일 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = DeclarationResult.class))),
-            @ApiResponse(responseCode = "500", description = "성공", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<DeclarationResult> findOneByUser(@PathVariable("declarationId") Long declarationId, @RequestParam("userId") Long userId){
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<DeclarationResult> findOneByUser(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(declarationService.findOneByUser(declarationId, userId), HttpStatus.OK);
     }
 
@@ -48,7 +49,7 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> declareReview(@RequestBody DeclarationPayload declarationPayload, @RequestParam("userId") Long userId){
+    public ResponseEntity<Long> declareReview(@RequestBody DeclarationPayload declarationPayload, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(declarationService.save(declarationPayload, userId), HttpStatus.OK);
     }
 
@@ -57,7 +58,7 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteDeclaration(@PathVariable("declarationId") Long declarationId, @RequestParam("userId") Long userId){
+    public ResponseEntity<Long> deleteDeclaration(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(declarationService.delete(declarationId, userId), HttpStatus.OK);
     }
 
