@@ -30,8 +30,8 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public Long save(MedicinePayload medicinePayload) {
         return medicineRepository.save(Medicine.builder()
-                .BSSH_NM(medicinePayload.getBssh_NM())
-                .PRDLST_NM(medicinePayload.getPrdlst_NM())
+                .BSSH_NM(medicinePayload.getBSSH_NM())
+                .PRDLST_NM(medicinePayload.getPRDLST_NM())
                 .build()).getId();
     }
 
