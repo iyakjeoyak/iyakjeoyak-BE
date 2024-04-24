@@ -1,15 +1,18 @@
 package com.example.demo.module.image.service;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.user.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +20,34 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-public class ImageServiceImpl implements ImageService {
+@Primary
+public class S3FileService implements ImageService {
+    private final AmazonS3 s3;
     private final ImageRepository imageRepository;
 
-    @Value("${file.path}")
-    private String filePath;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
+    @Value("${cloud.aws.s3.endPointUrl}")
+    private String endPointUrl;
+
+
+    public S3FileService(ImageRepository imageRepository,
+            //의존성 생성을 위한 값
+            @Value("${cloud.aws.credentials.access-key}")
+            String accessKey,
+            @Value("${cloud.aws.credentials.secret-key}")
+            String secretKey,
+            @Value("${cloud.aws.region.static}")
+            String region) {
+        this.imageRepository = imageRepository;
+        this.s3 = AmazonS3ClientBuilder.standard()
+                .withRegion(region)
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
+                .build();
+        ;
+    }
 
     @Override
     public Image saveImage(MultipartFile file) throws IOException {
@@ -33,7 +58,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    @Transactional
     public List<Image> saveImageList(List<MultipartFile> files) throws IOException {
         List<Image> ids = new ArrayList<>();
         if (!files.isEmpty()) {
@@ -58,22 +82,21 @@ public class ImageServiceImpl implements ImageService {
         return image.getId();
     }
 
-
-    //이하 공용 메서드
-
     private Image saveFileAndGetEntity(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();
         String storeFileName = createFileName(originalFilename);
         String fullPath = getFullPath(storeFileName);
 
-        file.transferTo(new File(getFullPath(storeFileName)));
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        s3.putObject(bucket, storeFileName, file.getInputStream(), metadata);
 
         return Image.builder().originName(originalFilename).storeName(storeFileName).fullPath(fullPath).build();
     }
 
-
     public String getFullPath(String storeName) {
-        return filePath + storeName;
+        return endPointUrl + storeName;
     }
 
 

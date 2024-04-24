@@ -33,8 +33,8 @@ public class ImageTestController {
 
     @DeleteMapping("/test/{imgId}")
     public ResponseEntity<Long> delete(
-            @PathVariable(name = "imgId") Long imgId , @RequestParam("userId")Long userId) {
-        return new ResponseEntity<>(imageService.deleteImage(userId, imgId), HttpStatus.OK);
+            @PathVariable(name = "pullPath") String pullPath , @RequestParam("userId")Long userId) {
+        return new ResponseEntity<>(imageService.deleteImage(userId, pullPath), HttpStatus.OK);
     }
 
 }

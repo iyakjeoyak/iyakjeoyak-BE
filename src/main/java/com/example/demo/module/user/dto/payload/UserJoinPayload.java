@@ -24,6 +24,8 @@ public class UserJoinPayload {
 
     private Integer age;
 
+    private Long roleId;
+
     //TODO tag
     private List<Long> tag;
 

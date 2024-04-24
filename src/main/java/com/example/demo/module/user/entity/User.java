@@ -2,10 +2,12 @@ package com.example.demo.module.user.entity;
 
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
+import com.example.demo.module.hashtag.entity.Hashtag;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +35,7 @@ public class User extends BaseTimeEntity {
 
     private Integer age;
 
-    //TODO enum or table
+    //TODO enum or table 테이블을 추천드립니다. enum 으로하면 리스트 타입 관리가 어렵다.
     private String role;
 
     private Integer point;

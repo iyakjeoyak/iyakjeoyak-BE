@@ -1,9 +1,10 @@
 package com.example.demo.module.image.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
-import com.example.demo.module.common.entity.BaseTimeEntity;
-import com.example.demo.module.user.entity.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 @Entity
@@ -20,4 +21,6 @@ public class Image extends BaseEntity {
     private String originName;
 
     private String storeName;
+
+    private String fullPath;
 }

@@ -13,4 +13,6 @@ public class JwtTokenPayload {
     private Long userId;
     private String username;
     private String nickname;
+
+    // 여기에 이사람 권한이 뭔지
 }
