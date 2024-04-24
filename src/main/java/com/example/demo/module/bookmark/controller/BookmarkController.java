@@ -39,7 +39,7 @@ public class BookmarkController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = BookmarkResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<BookmarkResult> findOneByUser(@PathVariable("bookmarkId") Long bookmarkId, @RequestParam("userId") Long userId){
-        // todo bookmark단일 조회 medicine단일조회 차이?
+        // todo bookmark단일 조회 medicine단일조회 차이? -> 답변 : 북마크 삭제할 수도 있게 하려면 단일 조회에서 북마크의 PK를 던져줘야할 것 같아용
         return new ResponseEntity<>(bookmarkService.findOneByUser(bookmarkId, userId), HttpStatus.OK);
     }
 
