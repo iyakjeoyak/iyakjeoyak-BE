@@ -34,13 +34,13 @@ public class S3FileService implements ImageService {
 
 
     public S3FileService(ImageRepository imageRepository,
-            //의존성 생성을 위한 값
-            @Value("${cloud.aws.credentials.access-key}")
-            String accessKey,
-            @Value("${cloud.aws.credentials.secret-key}")
-            String secretKey,
-            @Value("${cloud.aws.region.static}")
-            String region) {
+                         //의존성 생성을 위한 값
+                         @Value("${cloud.aws.credentials.access-key}")
+                         String accessKey,
+                         @Value("${cloud.aws.credentials.secret-key}")
+                         String secretKey,
+                         @Value("${cloud.aws.region.static}")
+                         String region) {
         this.imageRepository = imageRepository;
         this.s3 = AmazonS3ClientBuilder.standard()
                 .withRegion(region)
