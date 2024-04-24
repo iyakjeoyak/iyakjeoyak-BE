@@ -45,8 +45,8 @@ public class HeartReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveHeartReview(@RequestBody HeartReviewPayload payload) {
-        return new ResponseEntity<>(heartReviewService.save(payload.getUserId(), payload.getReviewId()), HttpStatus.OK);
+    public ResponseEntity<Long> saveHeartReview(@RequestBody HeartReviewPayload payload, @AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(heartReviewService.save(userId, payload.getReviewId()), HttpStatus.OK);
     }
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "영양제 리뷰 좋아요 삭제", description = "쿼리파라미터로 review PK")
