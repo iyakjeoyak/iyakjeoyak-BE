@@ -2,6 +2,7 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
+import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.common.result.PageResult;
 import org.springframework.data.domain.PageRequest;
@@ -18,4 +19,6 @@ public interface ReviewService {
     Long deleteByReviewId(Long userId , Long reviewId);
 
     PageResult<ReviewResult> findPageByMedicineId(Long medicineId, PageRequest pageRequest);
+
+    PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest of);
 }

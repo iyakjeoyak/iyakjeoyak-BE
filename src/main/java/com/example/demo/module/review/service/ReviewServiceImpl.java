@@ -8,6 +8,7 @@ import com.example.demo.module.point.entity.PointHistory;
 import com.example.demo.module.point.repository.PointHistoryRepository;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
+import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.review.entity.ReviewHashtag;
@@ -16,6 +17,7 @@ import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewMapper;
+import com.example.demo.util.mapper.ReviewMyPageResultMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -40,6 +42,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final HashtagRepository hashtagRepository;
     private final UserRepository userRepository;
     private final PointHistoryRepository pointHistoryRepository;
+    private final ReviewMyPageResultMapper reviewMyPageResultMapper;
 
     @Value("${point.review}")
     private Integer reviewCreatePoint;
@@ -123,7 +126,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Long deleteByReviewId(Long userId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다."));
-        Medicine medicine = review.getMedicine();
         if (!review.getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("후기 작성자만 삭제할 수 있습니다.");
         }
@@ -149,6 +151,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public PageResult<ReviewResult> findPageByMedicineId(Long medicineId, PageRequest pageRequest) {
         Page<ReviewResult> result = reviewRepository.findAllByMedicineId(medicineId, pageRequest).map(reviewMapper::toDto);
+        return new PageResult<>(result);
+    }
+
+    @Override
+    public PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest pageRequest) {
+        Page<ReviewMyPageResult> result = reviewRepository.findAllByCreatedByUserId(userId, pageRequest).map(reviewMyPageResultMapper::toDto);
         return new PageResult<>(result);
     }
 }
