@@ -2,11 +2,6 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
-import com.example.demo.module.image.entity.Image;
-import com.example.demo.module.image.entity.ReviewImage;
-import com.example.demo.module.image.repository.ImageRepository;
-import com.example.demo.module.image.repository.ReviewImageRepository;
-import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.entity.PointHistory;
@@ -33,7 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.example.demo.module.point.entity.ReserveUse.*;
 
@@ -95,8 +92,9 @@ public class ReviewServiceImpl implements ReviewService {
                 PointHistory.builder()
                         .domain("review")
                         .changedValue(reviewCreatePoint)
-                        .pointSum(user.reviewPoint(reviewCreatePoint))
-                        .reserveUse(RESERVE).build());
+                        .pointSum(user.plusPoint(reviewCreatePoint))
+                        .reserveUse(RESERVE)
+                        .reviewId(review.getId()).build());
 
         return review.getId();
     }
@@ -148,12 +146,17 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         // 포인트 삭감 메서드
-        pointHistoryRepository.save(PointHistory.builder()
-                .domain("review")
-                .changedValue(reviewCreatePoint * (-1))
-                .pointSum(user.cancelReviewPoint(reviewCreatePoint))
-                .reserveUse(CANCELED).build());
-
+        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(1);
+        Optional<PointHistory> pointHistory =  pointHistoryRepository
+                .findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(userId, reviewId, localDateTime);
+        if(pointHistory.isPresent()) {
+            pointHistoryRepository.save(PointHistory.builder()
+                    .domain("review")
+                    .changedValue(reviewCreatePoint * (-1))
+                    .pointSum(user.minusPoint(reviewCreatePoint))
+                    .reserveUse(CANCELED)
+                    .reviewId(reviewId).build());
+        }
         // 영양제 평점 구하는 메서드
         return reviewId;
     }

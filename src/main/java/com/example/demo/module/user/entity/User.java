@@ -48,12 +48,12 @@ public class User extends BaseTimeEntity {
         this.point = 0;
     }
 
-    public Integer reviewPoint(Integer point) {
+    public Integer plusPoint(Integer point) {
         this.point += point;
         return this.point;
     }
 
-    public Integer cancelReviewPoint(Integer point) {
+    public Integer minusPoint(Integer point) {
         this.point -= point;
         return this.point;
     }
