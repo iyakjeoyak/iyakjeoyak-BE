@@ -3,12 +3,14 @@ package com.example.demo.module.medicine.dto.result;
 import com.example.demo.module.category.dto.result.CategoryResult;
 import com.example.demo.module.hashtag.dto.result.HashtagResult;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
 public class MedicineSimpleResult {
 
     @Schema(description = "영양제 PK")

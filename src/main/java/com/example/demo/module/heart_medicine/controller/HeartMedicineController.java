@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,9 +28,8 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveHeartMedicine(@RequestBody Long medicineId, /*@AuthenticationPrincipal Long userId*/@RequestParam Long userId){
-        return new ResponseEntity<>(heartMedicineService.like(medicineId, userId), HttpStatus.OK);
-//        return new ResponseEntity<>(heartMedicineService.like(medicineId, userId), HttpStatus.CREATED);
+    public ResponseEntity<Long> saveHeartMedicine(@RequestBody Long medicineId, @AuthenticationPrincipal Long userId){
+        return new ResponseEntity<>(heartMedicineService.like(medicineId, userId), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{medicineId}")
@@ -37,8 +37,7 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteHeartMedicine(@PathVariable("medicineId") Long medicineId, /*@AuthenticationPrincipal Long userId*/ @RequestParam("userId") Long userId){
-//        return new ResponseEntity<>(heartMedicineService.cancel(medicineId, userId), HttpStatus.OK);
+    public ResponseEntity<Long> deleteHeartMedicine(@PathVariable("medicineId") Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(heartMedicineService.cancel(medicineId, userId), HttpStatus.OK);
     }
 
@@ -48,7 +47,8 @@ public class HeartMedicineController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<HeartMedicineResult>> findAllByUser(@RequestParam(defaultValue = "0") int page,
-                                                                         @RequestParam(defaultValue = "10") int size,/*@AuthenticationPrincipal Long userId*/@RequestParam("userId") Long userId){
+                                                                         @RequestParam(defaultValue = "10") int size,
+                                                                         @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(heartMedicineService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class HeartMedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Boolean> checkHeartMedicine(@PathVariable("medicineId") Long medicineId, /*@AuthenticationPrincipal Long userId*/@RequestParam("userId") Long userId){
+    public ResponseEntity<Boolean> checkHeartMedicine(@PathVariable("medicineId") Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(heartMedicineService.isChecked(medicineId, userId), HttpStatus.OK);
     }
 }

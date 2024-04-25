@@ -2,6 +2,11 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.entity.ReviewImage;
+import com.example.demo.module.image.repository.ImageRepository;
+import com.example.demo.module.image.repository.ReviewImageRepository;
+import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.entity.PointHistory;
@@ -24,8 +29,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.example.demo.module.point.entity.ReserveUse.*;
 
@@ -41,15 +51,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final ReviewMyPageResultMapper reviewMyPageResultMapper;
+    private final ImageService imageService;
+    private final ReviewImageRepository reviewImageRepository;
+    private final ImageRepository imageRepository;
 
     @Value("${point.review}")
     private Integer reviewCreatePoint;
 
     @Override
     @Transactional
-    public Long save(Long userId, ReviewPayload reviewPayload) {
+    public Long save(Long userId, ReviewPayload reviewPayload) throws IOException {
 
-        //TODO : 이미지 저장 로직 추가 필요
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다."));
 
         if (reviewRepository.existsByMedicineIdAndCreatedByUserId(reviewPayload.getMedicineId(), user.getUserId())) {
@@ -66,6 +78,14 @@ public class ReviewServiceImpl implements ReviewService {
                         .medicine(medicine)
                         .build());
 
+        List<Image> images = imageService.saveImageList(reviewPayload.getImgList());
+
+        images.forEach(i ->
+                reviewImageRepository.save(
+                        ReviewImage.builder()
+                                .review(review)
+                                .image(i).build()));
+
         reviewPayload.getTagList().forEach(
                 ht -> reviewHashtagRepository.save(
                         ReviewHashtag.builder()
@@ -78,7 +98,8 @@ public class ReviewServiceImpl implements ReviewService {
                         .domain("review")
                         .changedValue(reviewCreatePoint)
                         .pointSum(user.reviewPoint(reviewCreatePoint))
-                        .reserveUse(RESERVE).build());
+                        .reserveUse(RESERVE)
+                        .reviewId(review.getId()).build());
 
         return review.getId();
     }
@@ -130,12 +151,17 @@ public class ReviewServiceImpl implements ReviewService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 정보를 찾을 수 없습니다."));
 
         // 포인트 삭감 메서드
-        pointHistoryRepository.save(PointHistory.builder()
-                .domain("review")
-                .changedValue(reviewCreatePoint * (-1))
-                .pointSum(user.cancelReviewPoint(reviewCreatePoint))
-                .reserveUse(CANCELED).build());
-
+        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(1);
+        Optional<PointHistory> pointHistory =  pointHistoryRepository
+                .findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(userId, reviewId, localDateTime);
+        if(pointHistory.isPresent()) {
+            pointHistoryRepository.save(PointHistory.builder()
+                    .domain("review")
+                    .changedValue(reviewCreatePoint * (-1))
+                    .pointSum(user.minusPoint(reviewCreatePoint))
+                    .reserveUse(CANCELED)
+                    .reviewId(reviewId).build());
+        }
         // 영양제 평점 구하는 메서드
         return reviewId;
     }
@@ -150,5 +176,44 @@ public class ReviewServiceImpl implements ReviewService {
     public PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest pageRequest) {
         Page<ReviewMyPageResult> result = reviewRepository.findAllByCreatedByUserId(userId, pageRequest).map(reviewMyPageResultMapper::toDto);
         return new PageResult<>(result);
+    }
+
+    @Transactional
+    @Override
+    public Long deleteReviewImage(Long userId, Long reviewId, Long imageId) {
+        if (reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("유저 정보가 없습니다."))
+                .getCreatedBy().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("리뷰 작성자만 이미지 삭제 가능합니다.");
+        }
+
+        /* 이하 이미지 삭제 로직 */
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 파일이 없습니다."));
+
+        //S3에서 파일 삭제하는 로직 실행
+        imageService.deleteImage(userId, image.getStoreName());
+
+        /* Image 기록은 남기고 중간 테이블만 삭제 */
+        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
+        reviewImageRepository.delete(reviewImage);
+
+        return reviewId;
+    }
+
+    @Transactional
+    @Override
+    public Long addReviewImage(Long userId, Long reviewId, List<MultipartFile> img) throws IOException {
+        if (reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("유저 정보가 없습니다."))
+                .getCreatedBy().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("리뷰 작성자만 이미지 추가 가능합니다.");
+        }
+        List<Image> images = imageService.saveImageList(img);
+
+        images.forEach(i ->
+                reviewImageRepository.save(
+                        ReviewImage.builder()
+                                .review(reviewRepository.findById(reviewId).orElseThrow(()-> new NoSuchElementException("해당 리뷰를 찾을 수 없습니다.")))
+                                .image(i).build()));
+
+        return reviewId;
     }
 }

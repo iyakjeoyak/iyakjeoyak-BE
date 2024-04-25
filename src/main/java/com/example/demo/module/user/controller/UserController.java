@@ -1,12 +1,11 @@
 package com.example.demo.module.user.controller;
 
 import com.example.demo.module.user.dto.payload.UserEditPayload;
-import com.example.demo.module.user.dto.result.UserResult;
-import com.example.demo.module.user.dto.result.UserValidationResult;
-import com.example.demo.module.user.entity.CustomUserDetails;
-import com.example.demo.module.user.service.UserService;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
+import com.example.demo.module.user.dto.result.UserResult;
+import com.example.demo.module.user.dto.result.UserValidationResult;
+import com.example.demo.module.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,7 @@ public class UserController {
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
 
     @PostMapping
-    @Operation(summary = "유저 생성", description = "유저 생성")
+    @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
     public ResponseEntity<Long> createUser(@RequestBody UserJoinPayload userJoinPayload) {
         return new ResponseEntity<>(userService.createUser(userJoinPayload), HttpStatus.CREATED);
     }
@@ -42,6 +41,7 @@ public class UserController {
 
     //TODO
     @GetMapping("/checkToken")
+    @Operation(summary = "토큰 검증", description = "토큰 검증")
     public ResponseEntity<UserValidationResult> validationUser(@AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(userService.validationUser(userId), HttpStatus.OK);
     }
@@ -62,11 +62,6 @@ public class UserController {
     @Operation(summary = "유저 변경", description = "유저 변경")
     public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestBody UserEditPayload userEditPayload) {
         return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
-    }
-    // Authentication 객체가 잘 생성되어 있는 지 확인하는 테스트 컨트롤러
-    @GetMapping("/test")
-    public void getToken(@AuthenticationPrincipal Long userId) {
-        System.out.println(userId);
     }
 
 }

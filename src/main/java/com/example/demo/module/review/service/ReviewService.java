@@ -6,11 +6,13 @@ import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.common.result.PageResult;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ReviewService {
-    Long save(Long userId,ReviewPayload reviewPayload);
+    Long save(Long userId,ReviewPayload reviewPayload) throws IOException;
 
     ReviewResult findOneByReviewId(Long reviewId);
 
@@ -21,4 +23,8 @@ public interface ReviewService {
     PageResult<ReviewResult> findPageByMedicineId(Long medicineId, PageRequest pageRequest);
 
     PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest of);
+
+    Long deleteReviewImage(Long userId, Long reviewId, Long imageId);
+
+    Long addReviewImage(Long userId, Long reviewId, List<MultipartFile> img) throws IOException;
 }

@@ -10,8 +10,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Entity
 @Getter
 @Builder
@@ -38,10 +36,6 @@ public class User extends BaseTimeEntity {
     private Gender gender;
 
     private Integer age;
-
-    //TODO enum or table
-/*    @OneToOne(mappedBy = "user")
-    private Role role;*/
 
     // 한 줄 소개
     private String introduce;
@@ -73,7 +67,7 @@ public class User extends BaseTimeEntity {
         return this.point;
     }
 
-    public Integer cancelReviewPoint(Integer point) {
+    public Integer minusPoint(Integer point) {
         this.point -= point;
         return this.point;
     }

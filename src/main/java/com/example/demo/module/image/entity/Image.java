@@ -1,10 +1,10 @@
 package com.example.demo.module.image.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
-import com.example.demo.module.common.entity.BaseTimeEntity;
-import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,4 +20,6 @@ public class Image extends BaseEntity {
     private String originName;
 
     private String storeName;
+
+    private String fullPath;
 }
