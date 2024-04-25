@@ -3,6 +3,7 @@ package com.example.demo.module.user.entity;
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,24 +32,41 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private Integer age;
 
-    //TODO enum or table 테이블을 추천드립니다. enum 으로하면 리스트 타입 관리가 어렵다.
-    private String role;
+    //TODO enum or table
+/*    @OneToOne(mappedBy = "user")
+    private Role role;*/
+
+    // 한 줄 소개
+    private String introduce;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserRole> userRoleList = new ArrayList<>();
 
     private Integer point;
 
-    //TODO tag 부활? List<>, 연관관계
-//    private String tag;
+    // 중간 테이블 두기 태그는 여러개
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserHashtag> userHashTagList = new ArrayList<>();
 
     @PrePersist
     public void init() {
         this.point = 0;
     }
 
-    public Integer plusPoint(Integer point) {
+    public void editUser(UserEditPayload userEditPayload) {
+        this.nickname = userEditPayload.getNickname();
+        this.introduce = userEditPayload.getIntroduce();
+        this.gender = userEditPayload.getGender();
+        this.age = userEditPayload.getAge();
+//        this.userHashTagList = userEditPayload.getUserHashtagList();
+    }
+
+    public Integer reviewPoint(Integer point) {
         this.point += point;
         return this.point;
     }
@@ -56,5 +74,9 @@ public class User extends BaseTimeEntity {
     public Integer minusPoint(Integer point) {
         this.point -= point;
         return this.point;
+    }
+
+    public List<Hashtag> getHashtagList() {
+       return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
     }
 }

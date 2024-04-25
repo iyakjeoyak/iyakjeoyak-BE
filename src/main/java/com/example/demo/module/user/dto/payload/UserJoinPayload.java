@@ -20,13 +20,16 @@ public class UserJoinPayload {
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     private String nickname;
     @NotBlank(message = "성별 선택은 필수 입력 값입니다.")
-    private String gender;
+    private Gender gender;
 
     private Integer age;
 
-    private Long roleId;
+    // 중간 테이블(user + role)
+    @NotEmpty
+    private List<Long> userRoleList = new ArrayList<>();
 
-    //TODO tag
-    private List<Long> tag;
+    //중간 테이블(user + hashtag)
+    @NotEmpty
+    private List<Long> userHashtagList = new ArrayList<>();
 
 }

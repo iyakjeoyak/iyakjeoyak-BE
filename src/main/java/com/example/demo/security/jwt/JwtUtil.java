@@ -36,10 +36,15 @@ public class JwtUtil {
         /*
         *  JwtTokenPayload : userId, username, nickname
         * */
+
+        /*
+        * front에서 필요한 정보 : 패스워드 아이디 빼고 다
+        * */
         Claims claims = Jwts.claims();
         claims.put("userId" ,user.getUserId());
         claims.put("username" ,user.getUsername());
         claims.put("nickname", user.getNickname());
+//        claims.put("", user.)
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidty = now.plusSeconds(expireTime);
 
@@ -67,6 +72,7 @@ public class JwtUtil {
 
         return JwtTokenPayload.builder().username(username).nickname(nickname).userId(userId).build();
     }
+
 
     /*
      * JWT 유효성 검증
