@@ -1,5 +1,7 @@
 package com.example.demo.module.heart_review.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.heart_review.entity.HeartReview;
 import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.review.entity.Review;
@@ -14,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,7 +135,7 @@ class HeartReviewServiceImplTest {
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.ofNullable(null));
 
         //then
-        assertThatThrownBy(() -> heartReviewService.save(user.getUserId(), review.getId())).isInstanceOf(NoSuchElementException.class).hasMessage("후기를 찾을 수 없습니다.");
+        assertThatThrownBy(() -> heartReviewService.save(user.getUserId(), review.getId())).isInstanceOf(CustomException.class).hasMessage(ErrorCode.REVIEW_NOT_FOUND.getMessage());
     }
     @Test
     @DisplayName("(실패) : 유저정보가 잘못됨")
@@ -152,7 +153,7 @@ class HeartReviewServiceImplTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(null));
 
         //then
-        assertThatThrownBy(() -> heartReviewService.save(user.getUserId(), review.getId())).isInstanceOf(NoSuchElementException.class).hasMessage("유저 정보를 찾지 못했습니다.");
+        assertThatThrownBy(() -> heartReviewService.save(user.getUserId(), review.getId())).isInstanceOf(CustomException.class).hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
     @Test

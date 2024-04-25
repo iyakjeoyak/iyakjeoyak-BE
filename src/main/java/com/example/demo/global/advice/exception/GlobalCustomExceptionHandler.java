@@ -1,5 +1,7 @@
 package com.example.demo.global.advice.exception;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -18,11 +20,19 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class GlobalCustomExceptionHandler {
 
+
+    //커스텀 익셉션 사용 예
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResult> validException(CustomException e) {
+        return ErrorResult.ofResponse(e.getErrorCode());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> validException(MethodArgumentNotValidException e) {
         String resultData = getFieldError(e);
         return new ResponseEntity<>(resultData, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> nullPointException(NullPointerException e) {
         return new ResponseEntity<>("잣됐다 널포인트임....", HttpStatus.BAD_REQUEST);
