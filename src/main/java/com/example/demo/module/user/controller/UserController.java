@@ -1,5 +1,6 @@
 package com.example.demo.module.user.controller;
 
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.entity.CustomUserDetails;
@@ -59,8 +60,8 @@ public class UserController {
 
     @PatchMapping
     @Operation(summary = "유저 변경", description = "유저 변경")
-    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId) {
-        return new ResponseEntity<>(userService.editUser(userId), HttpStatus.OK);
+    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestBody UserEditPayload userEditPayload) {
+        return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
     }
     // Authentication 객체가 잘 생성되어 있는 지 확인하는 테스트 컨트롤러
     @GetMapping("/test")

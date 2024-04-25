@@ -1,5 +1,6 @@
 package com.example.demo.module.user.dto.result;
 
+import com.example.demo.module.user.entity.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class UserValidationResult {
     private String username;
 
     private String nickname;
-    private String gender;
+    private Gender gender;
 
     private Integer age;
 

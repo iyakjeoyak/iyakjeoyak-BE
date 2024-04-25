@@ -1,5 +1,6 @@
 package com.example.demo.module.user.dto.payload;
 
+import com.example.demo.module.user.entity.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -22,7 +23,7 @@ public class UserJoinPayload {
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     private String nickname;
     @NotBlank(message = "성별 선택은 필수 입력 값입니다.")
-    private String gender;
+    private Gender gender;
 
     private Integer age;
 

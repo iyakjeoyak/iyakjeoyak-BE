@@ -3,6 +3,7 @@ package com.example.demo.module.user.entity;
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,13 +34,17 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private Integer age;
 
     //TODO enum or table
 /*    @OneToOne(mappedBy = "user")
     private Role role;*/
+
+    // 한 줄 소개
+    private String introduce;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserRole> userRoleList = new ArrayList<>();
@@ -53,6 +58,14 @@ public class User extends BaseTimeEntity {
     @PrePersist
     public void init() {
         this.point = 0;
+    }
+
+    public void editUser(UserEditPayload userEditPayload) {
+        this.nickname = userEditPayload.getNickname();
+        this.introduce = userEditPayload.getIntroduce();
+        this.gender = userEditPayload.getGender();
+        this.age = userEditPayload.getAge();
+//        this.userHashTagList = userEditPayload.getUserHashtagList();
     }
 
     public Integer reviewPoint(Integer point) {

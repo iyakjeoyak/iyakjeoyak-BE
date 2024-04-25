@@ -1,6 +1,7 @@
 package com.example.demo.module.user.service;
 
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
 import com.example.demo.module.user.dto.result.UserResult;
@@ -20,6 +21,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -142,8 +145,21 @@ public class UserServiceImpl implements UserService {
     //TODO edit 개발
     @Transactional
     @Override
-    public Long editUser(Long userId) {
-        return null;
+    public Long editUser(Long userId, UserEditPayload userEditPayload) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+
+        // UserHashtag에 있는 애들 일단 가져오기
+        //TODO hashtag를 어케 바꿀까?
+//        List<UserHashtag> findUserHashtagList = userHashTagRepository.findAllByUserId(userId);
+
+/*        for(UserHashtag userHashtag : findUserHashtagList) {
+            if (userHashtag.get)
+        }*/
+
+        user.editUser(userEditPayload);
+
+        return userId;
     }
 
     @Override

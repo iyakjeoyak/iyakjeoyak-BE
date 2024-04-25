@@ -1,5 +1,6 @@
 package com.example.demo.module.user.service;
 
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
 import com.example.demo.module.user.dto.result.UserResult;
@@ -14,7 +15,7 @@ public interface UserService {
     UserResult findOneByUserId(Long userId);
 
     Long deleteByUserId(Long userId);
-    Long editUser(Long userId);
+    Long editUser(Long userId, UserEditPayload userEditPayload);
 
     UserValidationResult validationUser(Long userId);
 }
