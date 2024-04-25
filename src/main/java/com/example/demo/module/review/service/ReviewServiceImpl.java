@@ -2,6 +2,11 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.entity.ReviewImage;
+import com.example.demo.module.image.repository.ImageRepository;
+import com.example.demo.module.image.repository.ReviewImageRepository;
+import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.entity.PointHistory;

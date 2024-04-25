@@ -25,5 +25,6 @@ public class PointHistory extends BaseEntity {
 
     private Integer pointSum;
 
+    //ToDo (준혁) : 아예 위의 도메인 컬럼을 뺴고 연관관계를 갖는거도 고려해볼만 할 듯
     private Long reviewId;
 }
