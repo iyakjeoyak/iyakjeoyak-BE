@@ -56,7 +56,7 @@ public class GlobalCustomExceptionHandler {
     public String makeResult(Exception e){
         e.printStackTrace();
         log.warn(e.getMessage());
-        log.warn("custom exception by wonhyeok. you can check this in GlobalCustomDetailExceptionHandler.java");
+        log.warn("custom exception by junhyuk. you can check this in GlobalCustomDetailExceptionHandler.java");
         return e.getMessage();
     }
 
