@@ -1,6 +1,7 @@
 package com.example.demo.module.medicine.repository;
 
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
+import com.example.demo.module.medicine.dto.payload.OrderField;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.querydsl.core.types.Order;
@@ -100,23 +101,15 @@ public class QueryMedicineRepository {
     private OrderSpecifier<?> setOrderBy(OrderSortCond orderSortCond) {
         if(orderSortCond==null) return new OrderSpecifier<>(Order.ASC, medicine.id);
 
-        Integer sortPayload = orderSortCond.getSort();
-        String orderBy = orderSortCond.getOrderField();
+        OrderField orderField = orderSortCond.getOrderField()==null ? OrderField.ID : orderSortCond.getOrderField();
+        Order sort = orderSortCond.getSort() == Order.ASC ? Order.ASC : Order.DESC;
 
-        Order order;
-        if (sortPayload.equals(1)) {
-            order = Order.ASC;
-        } else if (sortPayload.equals(-1)) {
-            order = Order.DESC;
-        } else {
-            throw new IllegalArgumentException("오름차순 : 1 , 내림차순 : -1");
-        }
 
-        return switch (orderBy) {
-            case "grade" -> new OrderSpecifier<>(order, medicine.grade);
-            case "heartCount" -> new OrderSpecifier<>(order, medicine.heartCount);
-            case "createdDate" -> new OrderSpecifier<>(order, medicine.createdDate);
-            default -> new OrderSpecifier<>(order, medicine.id);
+        return switch (orderField) {
+            case GRADE -> new OrderSpecifier<>(sort, medicine.grade);
+            case HEART_COUNT -> new OrderSpecifier<>(sort, medicine.heartCount);
+            case CREATED_DATE -> new OrderSpecifier<>(sort, medicine.createdDate);
+            case ID -> new OrderSpecifier<>(sort, medicine.id);
         };
     }
 }
