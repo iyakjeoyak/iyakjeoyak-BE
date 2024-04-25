@@ -37,10 +37,6 @@ public class User extends BaseTimeEntity {
 
     private Integer age;
 
-    //TODO enum or table
-/*    @OneToOne(mappedBy = "user")
-    private Role role;*/
-
     // 한 줄 소개
     private String introduce;
 

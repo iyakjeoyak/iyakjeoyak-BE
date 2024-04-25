@@ -97,7 +97,7 @@ public class ReviewServiceImpl implements ReviewService {
                 PointHistory.builder()
                         .domain("review")
                         .changedValue(reviewCreatePoint)
-                        .pointSum(user.plusPoint(reviewCreatePoint))
+                        .pointSum(user.reviewPoint(reviewCreatePoint))
                         .reserveUse(RESERVE)
                         .reviewId(review.getId()).build());
 
