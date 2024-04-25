@@ -1,9 +1,12 @@
 package com.example.demo.module.user.dto.payload;
 
+import com.example.demo.module.user.entity.Gender;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,11 +23,16 @@ public class UserJoinPayload {
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     private String nickname;
     @NotBlank(message = "성별 선택은 필수 입력 값입니다.")
-    private String gender;
+    private Gender gender;
 
     private Integer age;
 
-    //TODO tag
-    private List<Long> tag;
+    // 중간 테이블(user + role)
+    @NotEmpty
+    private List<Long> userRoleList = new ArrayList<>();
+
+    //중간 테이블(user + hashtag)
+    @NotEmpty
+    private List<Long> userHashtagList = new ArrayList<>();
 
 }

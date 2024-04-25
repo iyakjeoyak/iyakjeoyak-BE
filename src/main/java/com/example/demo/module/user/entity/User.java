@@ -2,10 +2,15 @@ package com.example.demo.module.user.entity;
 
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
+import com.example.demo.module.hashtag.entity.Hashtag;
+import com.example.demo.module.user.dto.payload.UserEditPayload;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 @Getter
@@ -29,21 +34,38 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private Integer age;
 
     //TODO enum or table
-    private String role;
+/*    @OneToOne(mappedBy = "user")
+    private Role role;*/
+
+    // 한 줄 소개
+    private String introduce;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserRole> userRoleList = new ArrayList<>();
 
     private Integer point;
 
-    //TODO tag 부활? List<>, 연관관계
-//    private String tag;
+    // 중간 테이블 두기 태그는 여러개
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserHashtag> userHashTagList = new ArrayList<>();
 
     @PrePersist
     public void init() {
         this.point = 0;
+    }
+
+    public void editUser(UserEditPayload userEditPayload) {
+        this.nickname = userEditPayload.getNickname();
+        this.introduce = userEditPayload.getIntroduce();
+        this.gender = userEditPayload.getGender();
+        this.age = userEditPayload.getAge();
+//        this.userHashTagList = userEditPayload.getUserHashtagList();
     }
 
     public Integer reviewPoint(Integer point) {
@@ -54,5 +76,9 @@ public class User extends BaseTimeEntity {
     public Integer cancelReviewPoint(Integer point) {
         this.point -= point;
         return this.point;
+    }
+
+    public List<Hashtag> getHashtagList() {
+       return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
     }
 }

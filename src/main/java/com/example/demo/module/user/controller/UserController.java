@@ -1,5 +1,8 @@
 package com.example.demo.module.user.controller;
 
+import com.example.demo.module.user.dto.payload.UserEditPayload;
+import com.example.demo.module.user.dto.result.UserResult;
+import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.entity.CustomUserDetails;
 import com.example.demo.module.user.service.UserService;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
@@ -37,6 +40,29 @@ public class UserController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
+    //TODO
+    @GetMapping("/checkToken")
+    public ResponseEntity<UserValidationResult> validationUser(@AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(userService.validationUser(userId), HttpStatus.OK);
+    }
+
+    @GetMapping
+    @Operation(summary = "유저 단건 조회", description = "유저 단건 조회")
+    public ResponseEntity<UserResult> findOneByUserId(@AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(userService.findOneByUserId(userId), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "유저 삭제", description = "유저 삭제")
+    public ResponseEntity<Long> deleteUser(@AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(userService.deleteByUserId(userId), HttpStatus.OK);
+    }
+
+    @PatchMapping
+    @Operation(summary = "유저 변경", description = "유저 변경")
+    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestBody UserEditPayload userEditPayload) {
+        return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
+    }
     // Authentication 객체가 잘 생성되어 있는 지 확인하는 테스트 컨트롤러
     @GetMapping("/test")
     public void getToken(@AuthenticationPrincipal Long userId) {
