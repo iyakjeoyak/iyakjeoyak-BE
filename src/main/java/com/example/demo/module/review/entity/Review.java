@@ -1,11 +1,9 @@
 package com.example.demo.module.review.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
-import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
-import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
