@@ -51,7 +51,7 @@ public class DeclarationServiceImpl implements DeclarationService{
             return declarationRepository.save(Declaration
                     .builder()
                     .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
-                    .review(reviewRepository.findById(declarationPayload.getReviewId()).orElseThrow(() -> new NoSuchElementException("해당하는 리뷰는 없습니다.")))
+                    .review(reviewRepository.findById(declarationPayload.getReviewId()).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)))
                     .title(declarationPayload.getTitle())
                     .content(declarationPayload.getContent())
                     .build()).getId();

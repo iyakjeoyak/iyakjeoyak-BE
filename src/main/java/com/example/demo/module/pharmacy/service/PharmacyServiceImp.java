@@ -1,5 +1,7 @@
 package com.example.demo.module.pharmacy.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
@@ -14,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static com.example.demo.global.exception.ErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,7 +29,7 @@ public class PharmacyServiceImp implements PharmacyService{
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
         return pharmacyRepository.save(Pharmacy.builder()
-                .user(userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다.")))
+                .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
                 .name(pharmacyPayload.getName())
                 .latitude(pharmacyPayload.getLatitude())
                 .longitude(pharmacyPayload.getLongitude())
