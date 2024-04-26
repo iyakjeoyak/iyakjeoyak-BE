@@ -1,5 +1,7 @@
 package com.example.demo.module.heart_review.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.heart_review.entity.HeartReview;
 import com.example.demo.module.heart_review.repository.HeartReviewRepository;
@@ -25,12 +27,12 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         if (checkReviewHeart(userId, reviewId)) {
             throw new IllegalArgumentException("이미 좋아요 클릭한 후기입니다.");
         }
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다."));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
         review.addHeartCount();
 
         return heartReviewRepository.save(
                 HeartReview.builder()
-                        .user(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("유저 정보를 찾지 못했습니다.")))
+                        .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND)))
                         .review(review)
                         .build()).getId();
     }
@@ -41,7 +43,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         if (!checkReviewHeart(userId, reviewId)) {
             throw new IllegalArgumentException("좋아요 클릭 되지 않은 후기입니다.");
         }
-        reviewRepository.findById(reviewId).orElseThrow(() -> new NoSuchElementException("후기를 찾을 수 없습니다.")).decreaseHeartCount();
+        reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)).decreaseHeartCount();
 
         Long hrId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
         heartReviewRepository.deleteById(hrId);

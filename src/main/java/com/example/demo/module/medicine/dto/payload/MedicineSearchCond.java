@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class MedicineSearchCond {
 
     @Schema(description = "카테고리 PK")
