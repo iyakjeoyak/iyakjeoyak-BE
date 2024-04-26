@@ -1,5 +1,7 @@
 package com.example.demo.module.declaration.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.declaration.dto.payload.DeclarationPayload;
 import com.example.demo.module.declaration.dto.result.DeclarationResult;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+
+import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +50,7 @@ public class DeclarationServiceImpl implements DeclarationService{
         if(!declarationRepository.existsByReviewIdAndUserUserId(declarationPayload.getReviewId(), userId)) {
             return declarationRepository.save(Declaration
                     .builder()
-                    .user(userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저는 없습니다.")))
+                    .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
                     .review(reviewRepository.findById(declarationPayload.getReviewId()).orElseThrow(() -> new NoSuchElementException("해당하는 리뷰는 없습니다.")))
                     .title(declarationPayload.getTitle())
                     .content(declarationPayload.getContent())
