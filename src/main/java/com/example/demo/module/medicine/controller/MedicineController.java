@@ -46,7 +46,7 @@ public class MedicineController {
     }
 
     @GetMapping
-    @Operation(summary = "영양제 전체 조회", description = "이후 페이지네이션으로 바꿀 예정")
+    @Operation(summary = "영양제 전체 조회(페이지네이션)", description = "필터 없이 전체 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
