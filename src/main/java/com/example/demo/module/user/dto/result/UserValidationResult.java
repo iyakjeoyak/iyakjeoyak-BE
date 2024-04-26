@@ -1,14 +1,10 @@
 package com.example.demo.module.user.dto.result;
 
 import com.example.demo.module.user.entity.Gender;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @Builder
