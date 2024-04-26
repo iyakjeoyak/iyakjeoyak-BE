@@ -59,7 +59,6 @@ public class User extends BaseTimeEntity {
         this.introduce = userEditPayload.getIntroduce();
         this.gender = userEditPayload.getGender();
         this.age = userEditPayload.getAge();
-//        this.userHashTagList = userEditPayload.getUserHashtagList();
     }
 
     public Integer reviewPoint(Integer point) {
