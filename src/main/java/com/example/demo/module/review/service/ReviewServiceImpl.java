@@ -10,8 +10,7 @@ import com.example.demo.module.image.repository.ReviewImageRepository;
 import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
-import com.example.demo.module.point.entity.PointHistory;
-import com.example.demo.module.point.repository.PointHistoryRepository;
+import com.example.demo.module.point.service.PointHistoryService;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
@@ -25,6 +24,7 @@ import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewMapper;
 import com.example.demo.util.mapper.ReviewMyPageResultMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,11 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
+import static com.example.demo.module.point.entity.PointDomain.REVIEW;
 import static com.example.demo.module.point.entity.ReserveUse.CANCELED;
 import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
 
@@ -51,11 +50,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewHashtagRepository reviewHashtagRepository;
     private final HashtagRepository hashtagRepository;
     private final UserRepository userRepository;
-    private final PointHistoryRepository pointHistoryRepository;
     private final ReviewMyPageResultMapper reviewMyPageResultMapper;
     private final ImageService imageService;
     private final ReviewImageRepository reviewImageRepository;
+    private final PointHistoryService pointHistoryService;
 
+    //테스트를 위한 setter
+    @Setter
     @Value("${point.review}")
     private Integer reviewCreatePoint;
 
@@ -94,13 +95,7 @@ public class ReviewServiceImpl implements ReviewService {
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
 
-        pointHistoryRepository.save(
-                PointHistory.builder()
-                        .domain("review")
-                        .changedValue(reviewCreatePoint)
-                        .pointSum(user.reviewPoint(reviewCreatePoint))
-                        .reserveUse(RESERVE)
-                        .reviewId(review.getId()).build());
+        pointHistoryService.savePointHistory(REVIEW, RESERVE, reviewCreatePoint, user.reviewPoint(reviewCreatePoint), review.getId());
 
         return review.getId();
     }
@@ -148,22 +143,14 @@ public class ReviewServiceImpl implements ReviewService {
         if (!review.getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("후기 작성자만 삭제할 수 있습니다.");
         }
-        reviewRepository.delete(review);
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        Integer minusPoint = user.minusPoint(reviewCreatePoint);
         // 포인트 삭감 메서드
-        LocalDateTime localDateTime = LocalDateTime.now().minusMinutes(1);
-        Optional<PointHistory> pointHistory =  pointHistoryRepository
-                .findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(userId, reviewId, localDateTime);
-        if(pointHistory.isPresent()) {
-            pointHistoryRepository.save(PointHistory.builder()
-                    .domain("review")
-                    .changedValue(reviewCreatePoint * (-1))
-                    .pointSum(user.minusPoint(reviewCreatePoint))
-                    .reserveUse(CANCELED)
-                    .reviewId(reviewId).build());
-        }
+        pointHistoryService.saveDeletePointHistory(REVIEW, CANCELED, reviewCreatePoint * (-1), minusPoint, reviewId);
+
         // 영양제 평점 구하는 메서드
+        reviewRepository.delete(review);
         return reviewId;
     }
 
