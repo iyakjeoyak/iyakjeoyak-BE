@@ -56,9 +56,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final PointHistoryService pointHistoryService;
 
     //테스트를 위한 setter
-    @Setter
-    @Value("${point.review}")
-    private Integer reviewCreatePoint;
 
     @Override
     @Transactional
@@ -95,7 +92,7 @@ public class ReviewServiceImpl implements ReviewService {
                                 .hashtag(hashtagRepository.findById(ht).orElseThrow())
                                 .build()));
 
-        pointHistoryService.savePointHistory(REVIEW, RESERVE, reviewCreatePoint, user.reviewPoint(reviewCreatePoint), review.getId());
+        pointHistoryService.savePointHistory(REVIEW, RESERVE, REVIEW.getPoint(), user.reviewPoint(REVIEW.getPoint()), review.getId());
 
         return review.getId();
     }
@@ -145,9 +142,9 @@ public class ReviewServiceImpl implements ReviewService {
         }
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Integer minusPoint = user.minusPoint(reviewCreatePoint);
+        Integer minusPoint = user.minusPoint(REVIEW.getPoint());
         // 포인트 삭감 메서드
-        pointHistoryService.saveDeletePointHistory(REVIEW, CANCELED, reviewCreatePoint * (-1), minusPoint, reviewId);
+        pointHistoryService.saveDeletePointHistory(REVIEW, CANCELED, REVIEW.getPoint() * (-1), minusPoint, reviewId);
 
         // 영양제 평점 구하는 메서드
         reviewRepository.delete(review);

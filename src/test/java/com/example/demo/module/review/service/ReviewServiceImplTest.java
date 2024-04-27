@@ -82,7 +82,6 @@ class ReviewServiceImplTest {
         for (int i = 1; i <= 3; i++) {
             imageList.add(Image.builder().id(i * 100L).originName(String.valueOf(i)).build());
         }
-        reviewService.setReviewCreatePoint(10);
     }
     
     @Test
