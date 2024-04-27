@@ -6,6 +6,8 @@ import com.example.demo.module.mail.service.MailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +21,13 @@ public class MailTestController {
     private final MailService mailService;
 
     @PostMapping("/send")
-    public Integer joinMail(@RequestBody EmailPayload payload) throws MessagingException {
-        return mailService.joinForm(payload.getEmail());
+    public ResponseEntity<Integer> joinMail(@RequestBody EmailPayload payload) throws MessagingException {
+        return ResponseEntity.status(HttpStatus.OK).body(mailService.joinForm(payload.getEmail()));
     }
 
     @PostMapping("/verify")
-    public Boolean verifyMail(@RequestBody EmailVerifyPayload payload) {
-        return mailService.verifyMail(payload.getEmail(), payload.getAuthCode());
+    public ResponseEntity<Boolean> verifyMail(@RequestBody EmailVerifyPayload payload) {
+        return ResponseEntity.status(HttpStatus.OK).body(mailService.verifyMail(payload.getEmail(), payload.getAuthCode()));
     }
 
 }

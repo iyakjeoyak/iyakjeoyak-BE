@@ -31,8 +31,8 @@ public class ImageTestController {
         return new ResponseEntity<>(imageService.saveImage(uploadImg), HttpStatus.OK);
     }
 
-    @DeleteMapping("/test/{storeName}")
-    public ResponseEntity<Long> delete(@PathVariable(name = "storeName") String storeName , @AuthenticationPrincipal Long userId) {
-        return new ResponseEntity<>(imageService.deleteImage(userId, storeName), HttpStatus.OK);
+    @DeleteMapping("/test/{imageId}")
+    public ResponseEntity<Long> delete(@PathVariable(name = "imageId") Long imageId , @AuthenticationPrincipal Long userId) {
+        return new ResponseEntity<>(imageService.deleteImage(userId, imageId), HttpStatus.OK);
     }
 }

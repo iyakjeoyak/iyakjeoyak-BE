@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class MailService {
 
     private Integer authNumber;
 
+    @Value("${spring.data.redis.custom-expiration_time.mail}")
+    private Long mailExpirationTime;
+
     public Integer joinForm(String email) throws MessagingException {
         setNum();
         String setFrom = "ddoly0106@bu.ac.kr"; // email-config에 설정한 자신의 이메일 주소를 입력
@@ -32,7 +36,7 @@ public class MailService {
                         "<br>" +
                         "인증번호를 입력해주세요"; //이메일 내용 삽입
         mailSend(setFrom, toMail, title, content);
-        repository.setData(email, authNumber.toString(), 60L);
+        repository.setData(email, authNumber.toString(), mailExpirationTime);
         return authNumber;
     }
 
@@ -50,7 +54,7 @@ public class MailService {
     private void setNum() {
         Random random = new Random();
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i <= 10; i++) {
             str.append(random.nextInt(10));
         }
         authNumber = Integer.valueOf(str.toString());
