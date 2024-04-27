@@ -40,11 +40,11 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReviewImage> imageList = new ArrayList<>();
 
-    public Long update(ReviewEditPayload reviewEditPayload) {
+    public void update(ReviewEditPayload reviewEditPayload) {
         this.content = reviewEditPayload.getContent();
         this.title = reviewEditPayload.getTitle();
         this.star = reviewEditPayload.getStar();
-        return this.id;
+        medicine.gradeAvg();
     }
 
     public void addHeartCount() {
@@ -61,8 +61,10 @@ public class Review extends BaseEntity {
         medicine.gradeAvg();
     }
 
+
     @PreRemove
-    public void postRemove() {
+    public void preRemove() {
+//        medicine.gradeAvg();
         medicine.gradeAvgByDelete(this.star);
     }
 }

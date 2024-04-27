@@ -115,7 +115,11 @@ public class Medicine extends BaseTimeEntity {
 
     // 도메인 로직
     public void gradeAvg() {
-        this.grade = roundAvg(reviewStarSum() / reviewList.size());
+        if (reviewList.isEmpty()) {
+            this.grade = 0.0;
+        } else {
+            this.grade = roundAvg(reviewStarSum() / reviewList.size());
+        }
     }
 
 
@@ -123,8 +127,7 @@ public class Medicine extends BaseTimeEntity {
         if (reviewList.size() - 1 == 0) {
             this.grade = 0.0;
         } else {
-            Double newSum = Math.max(reviewStarSum() - deleteReviewStar, 0d);
-            this.grade = roundAvg(newSum / (reviewList.size() - 1));
+            this.grade = roundAvg(Math.max(reviewStarSum() - deleteReviewStar, 0d) / (reviewList.size() - 1));
         }
     }
     // 내부 계산 로직용 메서드

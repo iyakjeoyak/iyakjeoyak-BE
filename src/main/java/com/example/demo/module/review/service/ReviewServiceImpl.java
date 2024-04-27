@@ -130,7 +130,8 @@ public class ReviewServiceImpl implements ReviewService {
         });
 
         Review review = reviewRepository.findById(reviewId).orElseThrow();
-        return review.update(reviewEditPayload);
+        review.update(reviewEditPayload);
+        return review.getId();
     }
 
     @Transactional
