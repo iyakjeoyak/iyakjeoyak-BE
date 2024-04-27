@@ -4,8 +4,6 @@ import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,13 +14,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
+    private final String filePath;
 
-    @Value("${file.path}")
-    private String filePath;
 
     @Override
     public Image saveImage(MultipartFile file) throws IOException {
@@ -48,8 +44,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Long deleteImage(Long userId, String storeName) {
-        Image image = imageRepository.findByStoreName(storeName).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."));
+    public Long deleteImage(Long userId, Long imageId) {
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지 경로가 잘못되었습니다."));
         User createdBy = image.getCreatedBy();
         if (createdBy == null || !createdBy.getUserId().equals(userId)) {
             throw new IllegalArgumentException("이미지를 저장한 사용자가 아닙니다.");

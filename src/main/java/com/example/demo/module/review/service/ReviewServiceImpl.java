@@ -6,7 +6,6 @@ import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.entity.ReviewImage;
-import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.image.repository.ReviewImageRepository;
 import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
@@ -34,12 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.example.demo.module.point.entity.ReserveUse.*;
+import static com.example.demo.module.point.entity.ReserveUse.CANCELED;
+import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +55,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMyPageResultMapper reviewMyPageResultMapper;
     private final ImageService imageService;
     private final ReviewImageRepository reviewImageRepository;
-    private final ImageRepository imageRepository;
 
     @Value("${point.review}")
     private Integer reviewCreatePoint;
@@ -189,12 +188,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         /* 이하 이미지 삭제 로직 */
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
-
         //S3에서 파일 삭제하는 로직 실행
-        imageService.deleteImage(userId, image.getStoreName());
+        imageService.deleteImage(userId, imageId);
 
-        /* Image 기록은 남기고 중간 테이블만 삭제 */
+        /* 중간 테이블만 삭제 */
         ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
         reviewImageRepository.delete(reviewImage);
 

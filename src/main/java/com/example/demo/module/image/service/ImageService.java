@@ -11,5 +11,5 @@ public interface ImageService {
 
     List<Image> saveImageList(List<MultipartFile> files) throws IOException;
 
-    Long deleteImage(Long userId, String storeName);
+    Long deleteImage(Long userId, Long imageId);
 }

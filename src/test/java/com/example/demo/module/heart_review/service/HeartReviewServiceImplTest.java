@@ -45,7 +45,6 @@ class HeartReviewServiceImplTest {
 
         user = User.builder().userId(2000L).username("testUsername").build();
         review = Review.builder().id(3000L).title("testTitle").heartCount(0).build();
-
     }
 
     @Test

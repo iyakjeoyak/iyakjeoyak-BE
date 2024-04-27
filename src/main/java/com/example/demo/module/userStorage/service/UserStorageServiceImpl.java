@@ -1,21 +1,20 @@
 package com.example.demo.module.userStorage.service;
 
+import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.image.entity.Image;
-import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.image.service.ImageService;
 import com.example.demo.module.medicine.entity.Medicine;
-import com.example.demo.module.user.entity.User;
 import com.example.demo.module.medicine.repository.MedicineRepository;
-import com.example.demo.module.userStorage.entity.UserStorage;
-import com.example.demo.module.userStorage.repository.UserStorageRepository;
+import com.example.demo.module.user.entity.User;
+import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.userStorage.dto.payload.UserStorageCreatePayload;
 import com.example.demo.module.userStorage.dto.payload.UserStorageEditPayload;
 import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
 import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
-import com.example.demo.module.user.repository.UserRepository;
+import com.example.demo.module.userStorage.entity.UserStorage;
+import com.example.demo.module.userStorage.repository.UserStorageRepository;
 import com.example.demo.util.mapper.UserStorageDetailResultMapper;
 import com.example.demo.util.mapper.UserStorageSimpleResultMapper;
-import com.example.demo.module.common.result.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +34,6 @@ public class UserStorageServiceImpl implements UserStorageService {
     private final UserStorageSimpleResultMapper simpleResultMapper;
     private final UserStorageDetailResultMapper detailResultMapper;
     private final ImageService imageService;
-    private final ImageRepository imageRepository;
 
     @Transactional
     @Override
@@ -100,14 +98,18 @@ public class UserStorageServiceImpl implements UserStorageService {
             medicine = medicineRepository.findById(payload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
         }
 
-        Image image =null;
-        if (payload.getImage() != null && payload.getImage().isEmpty()) {
-            image = imageService.saveImage(payload.getImage());
+        // 수정 Image 를 받으면 이미지도 수정
+        if (payload.getImage() != null && !payload.getImage().isEmpty()) {
+            //기존 이미지 삭제
+            imageService.deleteImage(userId, userStorage.getImage().getId());
+
+            //새로운 이미지 저장
+            Image image = imageService.saveImage(payload.getImage());
+            userStorage.changeImage(image);
         }
 
-        imageService.deleteImage(userId, userStorage.getImage().getStoreName());
-
-        return userStorage.edit(medicine, payload.getMedicineName(), payload.getExpirationDate(), payload.getMemo() , image);
+        // 이미지 이외 정보 수정
+        return userStorage.edit(medicine, payload.getMedicineName(), payload.getExpirationDate(), payload.getMemo());
     }
 
     @Override
@@ -120,10 +122,7 @@ public class UserStorageServiceImpl implements UserStorageService {
         if (!userStorage.getImage().getId().equals(imageId)) {
             throw new IllegalArgumentException("해당 보관함의 이미지가 아닙니다.");
         }
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("해당하는 이미지가 없습니다."));
-        imageService.deleteImage(userId, image.getStoreName());
-
-        imageRepository.deleteById(imageId);
+        imageService.deleteImage(userId, imageId);
 
         userStorage.deleteImage();
         return storageId;
