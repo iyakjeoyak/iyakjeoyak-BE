@@ -34,12 +34,12 @@ public class GlobalCustomExceptionHandler {
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> nullPointException(NullPointerException e) {
-        return new ResponseEntity<>("잣됐다 널포인트임....", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResult> nullPointException(NullPointerException e) {
+        return ErrorResult.ofResponse(e, HttpStatus.valueOf(500));
     }
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleCustomException(NoSuchElementException e) {
-        return new ResponseEntity<>(makeResult( e), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(makeResult(e), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

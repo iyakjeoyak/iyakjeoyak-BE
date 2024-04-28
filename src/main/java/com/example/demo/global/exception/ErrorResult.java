@@ -16,7 +16,7 @@ public class ErrorResult {
     private String message;
 
     //모든 예외에서 사용가능
-    public static ResponseEntity<ErrorResult> ofResponse(Error e, HttpStatus httpStatus) {
+    public static ResponseEntity<ErrorResult> ofResponse(Exception e, HttpStatus httpStatus) {
         return ResponseEntity
                 .status(httpStatus)
                 .body(ErrorResult.builder()
