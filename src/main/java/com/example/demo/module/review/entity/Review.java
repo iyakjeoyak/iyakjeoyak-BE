@@ -4,6 +4,7 @@ import com.example.demo.module.common.entity.BaseEntity;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
+import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,9 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,7 +63,17 @@ public class Review extends BaseEntity {
 
     @PreRemove
     public void preRemove() {
-//        medicine.gradeAvg();
         medicine.gradeAvgByDelete(this.star);
+    }
+
+    @Builder
+    public Review(User createdBy, User lastModifiedBy, Long id, String title, String content, Double star, Integer heartCount, Medicine medicine) {
+        super(createdBy, lastModifiedBy);
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.star = star;
+        this.heartCount = heartCount;
+        this.medicine = medicine;
     }
 }
