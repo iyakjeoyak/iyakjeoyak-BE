@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 public class ErrorResult {
     private int status;
     private String code;
+    private String detail;
     private String message;
 
     //모든 예외에서 사용가능
@@ -32,7 +33,8 @@ public class ErrorResult {
                 .status(e.getHttpStatus())
                 .body(ErrorResult.builder()
                         .status(e.getHttpStatus().value())
-                        .code(e.name())
+                        .code(e.getErrorDefinition().toString())
+                        .detail(e.name())
                         .message(e.getMessage())
                         .build()
                 );
