@@ -115,7 +115,7 @@ public class Medicine extends BaseTimeEntity {
 
     // 도메인 로직
     public void gradeAvg() {
-        if (reviewList.isEmpty()) {
+        if (reviewList==null || reviewList.isEmpty()) {
             this.grade = 0.0;
         } else {
             this.grade = roundAvg(reviewStarSum() / reviewList.size());
