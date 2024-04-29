@@ -1,5 +1,7 @@
 package com.example.demo.module.bookmark.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.bookmark.entity.Bookmark;
 import com.example.demo.module.bookmark.repository.BookmarkRepository;
 import com.example.demo.module.medicine.repository.MedicineRepository;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+
+import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +36,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Override
     public BookmarkResult findOneByUser(Long bookmarkId, Long userId) {
-        if(bookmarkRepository.existsByIdAndUserUserId(bookmarkId, userId)) {
-            return bookmarkRepository.findById(bookmarkId)
-                    .orElseThrow(() -> new NoSuchElementException("해당 북마크는 없습니다.")).toDto(medicineMapper);
-        }
-        throw new IllegalArgumentException("해당 유저는 북마크 등록을 하지 않았습니다.");
+        return bookmarkRepository.findByIdAndUserUserId(bookmarkId, userId)
+                .orElseThrow(() -> new CustomException(BOOKMARK_NOT_FOUND)).toDto(medicineMapper);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class BookmarkServiceImpl implements BookmarkService {
         if(!isChecked(medicineId, userId)) {
             return bookmarkRepository.save(Bookmark
                     .builder()
-                    .medicine(medicineRepository.findById(medicineId).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")))
-                    .user(userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다.")))
+                    .medicine(medicineRepository.findById(medicineId).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)))
+                    .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
                     .build()).getId();
         }
         throw new IllegalArgumentException("해당유저는 이미 북마크 등록을 했습니다.");
@@ -56,13 +57,13 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Transactional
     public Long delete(Long medicineId, Long userId) {
         if(!medicineRepository.existsById(medicineId)){
-            throw new IllegalArgumentException("해당 영양제는 없습니다.");
+            throw new CustomException(MEDICINE_NOT_FOUND);
         }
         if(!userRepository.existsById(userId)){
-            throw new IllegalArgumentException("해당 유저는 없습니다.");
+            throw new CustomException(USER_NOT_FOUND);
         }
         BookmarkResult bookmarkResult = bookmarkRepository.findByMedicineIdAndUserUserId(medicineId, userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 유저는 영양제를 북마크 하지 않았습니다.")).toDto(medicineMapper);
+                .orElseThrow(() -> new CustomException(BOOKMARK_NOT_FOUND)).toDto(medicineMapper);
         bookmarkRepository.deleteById(bookmarkResult.getId());
         return bookmarkResult.getId();
     }

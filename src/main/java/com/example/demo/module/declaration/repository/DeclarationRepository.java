@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface DeclarationRepository extends JpaRepository<Declaration, Long> {
 
@@ -14,4 +16,6 @@ public interface DeclarationRepository extends JpaRepository<Declaration, Long> 
     boolean existsByIdAndUserUserId(Long declarationId, Long userId);
 
     boolean existsByReviewIdAndUserUserId(Long reviewId, Long userId);
+
+    Optional<Declaration> findByIdAndUserUserId(Long declarationId, Long userId);
 }

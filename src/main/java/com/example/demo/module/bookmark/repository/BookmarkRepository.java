@@ -19,4 +19,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     Optional<Bookmark> findByMedicineIdAndUserUserId(Long medicineId, Long userId);
 
     boolean existsByIdAndUserUserId(Long bookmarkId, Long userId);
+
+    Optional<Bookmark> findByIdAndUserUserId(Long bookmarkId, Long userId);
 }
