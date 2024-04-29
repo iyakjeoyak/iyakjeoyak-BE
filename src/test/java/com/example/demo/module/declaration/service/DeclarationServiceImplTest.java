@@ -78,8 +78,7 @@ class DeclarationServiceImplTest {
         Declaration declaration = Declaration.builder()
                 .id(1L).user(user).title(declarationPayload.getTitle()).content(declarationPayload.getContent()).build();
         DeclarationResult declarationResult = declaration.toDto(reviewMapper);
-        when(declarationRepository.existsByIdAndUserUserId(1L, user.getUserId())).thenReturn(true);
-        when(declarationRepository.findById(anyLong())).thenReturn(Optional.of(declaration));
+        when(declarationRepository.findByIdAndUserUserId(declaration.getId(), user.getUserId())).thenReturn(Optional.of(declaration));
 
         DeclarationResult result = declarationService.findOneByUser(1L, user.getUserId());
 

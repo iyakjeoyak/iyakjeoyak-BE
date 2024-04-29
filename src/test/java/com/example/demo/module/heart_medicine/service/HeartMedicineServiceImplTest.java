@@ -1,5 +1,6 @@
 package com.example.demo.module.heart_medicine.service;
 
+import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.heart_medicine.dto.result.HeartMedicineResult;
 import com.example.demo.module.heart_medicine.entity.HeartMedicine;
@@ -8,7 +9,6 @@ import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +22,8 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.*;
 
+import static com.example.demo.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -61,30 +63,21 @@ class HeartMedicineServiceImplTest {
         assertEquals(1L, id);
         assertEquals(1, medicine.getHeartCount());
     }
+
     @Test
     @DisplayName("좋아요 실패(영양제 없음)")
-    void like_fail1(){
+    void like_fail_medicineNotFound(){
         when(medicineRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId)).thenReturn(false);
 
-        assertThrows(NoSuchElementException.class, () -> heartMedicineService.like(userId, medicineId));
-    }
-    @Test
-    @DisplayName("좋아요 실패(영양제 없음)")
-    void like_fail2(){
-        when(medicineRepository.findById(anyLong())).thenReturn(Optional.empty());
-        when(heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId)).thenReturn(false);
-
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> heartMedicineService.like(userId, medicineId));
-        assertEquals("해당하는 영양제가 없습니다.", exception.getMessage());
+        assertThatThrownBy(() -> heartMedicineService.like(userId, medicineId)).isInstanceOf(CustomException.class).hasMessage(MEDICINE_NOT_FOUND.getMessage());
     }
     @Test
     @DisplayName("좋아요 실패(이미 좋아요 누름)")
     void like_fail3(){
         when(heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId)).thenReturn(true);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> heartMedicineService.like(medicineId, userId));
-        assertEquals("좋아요를 이미 누름", exception.getMessage());
+        assertThatThrownBy(() -> heartMedicineService.like(medicineId, userId)).isInstanceOf(CustomException.class).hasMessage(ACCESS_BLOCKED.getMessage());
     }
     @Test
     @DisplayName("좋아요 취소 성공")
@@ -104,16 +97,14 @@ class HeartMedicineServiceImplTest {
         when(heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId)).thenReturn(true);
         when(medicineRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> heartMedicineService.cancel(medicineId, userId));
-        assertEquals("해당하는 영양제가 없습니다.", exception.getMessage());
+        assertThatThrownBy(() -> heartMedicineService.cancel(medicineId, userId)).isInstanceOf(CustomException.class).hasMessage(MEDICINE_NOT_FOUND.getMessage());
     }
     @Test
     @DisplayName("좋아요 취소 실패(좋아요를 누른 회원 아님)")
     void cancel_fail2(){
         when(heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> heartMedicineService.cancel(medicineId, userId));
-        assertEquals("좋아요 누른 회원이 아님.", exception.getMessage());
+        assertThatThrownBy(() -> heartMedicineService.cancel(medicineId, userId)).isInstanceOf(CustomException.class).hasMessage(ACCESS_BLOCKED.getMessage());
     }
     @Test
     void findAll(){

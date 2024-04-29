@@ -1,6 +1,7 @@
 package com.example.demo.module.bookmark.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.bookmark.dto.result.BookmarkResult;
 import com.example.demo.module.bookmark.entity.Bookmark;
 import com.example.demo.module.bookmark.repository.BookmarkRepository;
@@ -22,11 +23,9 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.example.demo.global.exception.ErrorCode.MEDICINE_NOT_FOUND;
-import static com.example.demo.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.example.demo.global.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,8 +78,7 @@ class BookmarkServiceImplTest {
     @Test
     void findOneByUser() {
         BookmarkResult bookmarkResult = bookmark.toDto(medicineMapper);
-        when(bookmarkRepository.existsByIdAndUserUserId(bookmark.getId(), user.getUserId())).thenReturn(true);
-        when(bookmarkRepository.findById(bookmark.getId())).thenReturn(Optional.ofNullable(bookmark));
+        when(bookmarkRepository.findByIdAndUserUserId(bookmark.getId(), user.getUserId())).thenReturn(Optional.ofNullable(bookmark));
 
         BookmarkResult result = bookmarkService.findOneByUser(bookmark.getId(), user.getUserId());
 
@@ -88,16 +86,9 @@ class BookmarkServiceImplTest {
     }
     @Test
     void findOneByUser_fail_notFoundBookmark(){
-        when(bookmarkRepository.existsByIdAndUserUserId(bookmark.getId(), user.getUserId())).thenReturn(true);
-        when(bookmarkRepository.findById(bookmark.getId())).thenReturn(Optional.empty());
+        when(bookmarkRepository.findByIdAndUserUserId(bookmark.getId(), user.getUserId())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookmarkService.findOneByUser(bookmark.getId(), user.getUserId())).isInstanceOf(NoSuchElementException.class).hasMessage("해당 북마크는 없습니다.");
-    }
-    @Test
-    void findOneByUser_fail_notExistBookmarkOrUser(){
-        when(bookmarkRepository.existsByIdAndUserUserId(bookmark.getId(), user.getUserId())).thenReturn(false);
-
-        assertThatThrownBy(() -> bookmarkService.findOneByUser(bookmark.getId(), user.getUserId())).isInstanceOf(IllegalArgumentException.class).hasMessage("해당 유저는 북마크 등록을 하지 않았습니다.");
+        assertThatThrownBy(() -> bookmarkService.findOneByUser(bookmark.getId(), user.getUserId())).isInstanceOf(CustomException.class).hasMessage(BOOKMARK_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -163,7 +154,7 @@ class BookmarkServiceImplTest {
         when(userRepository.existsById(user.getUserId())).thenReturn(true);
         when(bookmarkRepository.findByMedicineIdAndUserUserId(medicine.getId(), user.getUserId())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> bookmarkService.delete(medicine.getId(), user.getUserId())).isInstanceOf(NoSuchElementException.class).hasMessage("해당 유저는 영양제를 북마크 하지 않았습니다.");
+        assertThatThrownBy(() -> bookmarkService.delete(medicine.getId(), user.getUserId())).isInstanceOf(CustomException.class).hasMessage(ErrorCode.ACCESS_BLOCKED.getMessage());
     }
     @Test
     void isChecked() {
