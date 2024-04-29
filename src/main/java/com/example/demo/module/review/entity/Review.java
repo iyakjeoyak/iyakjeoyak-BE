@@ -1,7 +1,6 @@
 package com.example.demo.module.review.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
-import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
@@ -14,9 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +39,11 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReviewImage> imageList = new ArrayList<>();
 
-    public Long update(ReviewEditPayload reviewEditPayload) {
+    public void update(ReviewEditPayload reviewEditPayload) {
         this.content = reviewEditPayload.getContent();
         this.title = reviewEditPayload.getTitle();
         this.star = reviewEditPayload.getStar();
-        return this.id;
+        medicine.gradeAvg();
     }
 
     public void addHeartCount() {
@@ -63,8 +60,20 @@ public class Review extends BaseEntity {
         medicine.gradeAvg();
     }
 
+
     @PreRemove
-    public void postRemove() {
+    public void preRemove() {
         medicine.gradeAvgByDelete(this.star);
+    }
+
+    @Builder
+    public Review(User createdBy, User lastModifiedBy, Long id, String title, String content, Double star, Integer heartCount, Medicine medicine) {
+        super(createdBy, lastModifiedBy);
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.star = star;
+        this.heartCount = heartCount;
+        this.medicine = medicine;
     }
 }

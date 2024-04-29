@@ -1,5 +1,7 @@
 package com.example.demo.module.medicine.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+
+import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +54,6 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public MedicineResult findOneById(Long medicineId) {
         return medicineMapper.toDto(medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다.")));
+                .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)));
     }
 }

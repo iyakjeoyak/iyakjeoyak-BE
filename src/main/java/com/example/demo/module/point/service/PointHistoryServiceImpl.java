@@ -2,7 +2,9 @@ package com.example.demo.module.point.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.point.dto.result.PointHistoryResult;
+import com.example.demo.module.point.entity.PointDomain;
 import com.example.demo.module.point.entity.PointHistory;
+import com.example.demo.module.point.entity.ReserveUse;
 import com.example.demo.module.point.repository.PointHistoryRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.util.mapper.PointResultMapper;
@@ -14,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.example.demo.module.point.entity.ReserveUse.*;
+import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
 
 @Service
 @RequiredArgsConstructor
@@ -25,22 +27,48 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     @Value("${point.review}")
     private Integer point;
+
     @Override
     public PageResult<PointHistoryResult> findAllByUserId(Long userId, Pageable pageable) {
         return new PageResult<>(pointHistoryRepository.findAllByCreatedByUserId(userId, pageable).map(pointResultMapper::toDto));
     }
 
     @Override
-    @Transactional
-    public void cleanupExpiredPoint() {
-        LocalDateTime time = LocalDateTime.now().minusMinutes(1);
-        for (PointHistory pointHistory : pointHistoryRepository.findByCreatedDateBefore(time)) {
-            User user = pointHistory.getCreatedBy();
-            if(pointHistory.getReserveUse().equals(RESERVE)){
-                user.minusPoint(point);
-                pointHistoryRepository.delete(pointHistory);
-            }
-        }
+    public PointHistoryResult savePointHistory(PointDomain domain, ReserveUse reserveUse, Integer changedValue, Integer pointSum, Long domainPk) {
+        PointHistory save = pointHistoryRepository.save(
+                PointHistory.builder().
+                        reserveUse(reserveUse)
+                        .pointSum(pointSum)
+                        .changedValue(changedValue)
+                        .domain(domain)
+                        .domainPk(domainPk)
+                        .build());
+        return pointResultMapper.toDto(save);
     }
+
+    @Override
+    public PointHistoryResult saveDeletePointHistory(PointDomain domain, ReserveUse reserveUse, Integer changedValue, Integer pointSum, Long domainPk) {
+        PointHistory save = pointHistoryRepository.save(PointHistory.builder()
+                .domain(domain)
+                .changedValue(changedValue)
+                .pointSum(pointSum)
+                .reserveUse(reserveUse)
+                .domainPk(domainPk)
+                .build());
+        return pointResultMapper.toDto(save);
+    }
+
+//    @Override
+//    @Transactional
+//    public void cleanupExpiredPoint() {
+//        LocalDateTime time = LocalDateTime.now().minusMinutes(1);
+//        for (PointHistory pointHistory : pointHistoryRepository.findByCreatedDateBefore(time)) {
+//            User user = pointHistory.getCreatedBy();
+//            if (pointHistory.getReserveUse().equals(RESERVE)) {
+//                user.minusPoint(point);
+//                pointHistoryRepository.delete(pointHistory);
+//            }
+//        }
+//    }
 
 }

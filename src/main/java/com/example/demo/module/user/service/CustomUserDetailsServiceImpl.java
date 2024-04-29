@@ -26,12 +26,5 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService, CustomU
         return null;
     }
 
-/*    @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-       User user = userRepository.findById(Long.parseLong(userId)).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저가 없습니다."));
-
-       return new CustomUserDetails(user);
-    }*/
-
 
 }

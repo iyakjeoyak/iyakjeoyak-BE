@@ -1,5 +1,7 @@
 package com.example.demo.module.heart_medicine.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.heart_medicine.entity.HeartMedicine;
 import com.example.demo.module.heart_medicine.repository.HeartMedicineRepository;
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+import static com.example.demo.global.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,11 +32,11 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     public Long like(Long medicineId, Long userId) {
         if(!isChecked(medicineId, userId)) {
             Medicine medicine = medicineRepository.findById(medicineId)
-                    .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+                    .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
 
             Long id = heartMedicineRepository.save(HeartMedicine.builder()
                     .medicine(medicine)
-                    .user(userRepository.findById(userId).orElseThrow(()-> new NoSuchElementException("유저 정보가 잘못되었습니다.")))
+                    .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(USER_NOT_FOUND)))
                     .build()).getId();
             medicine.setHeartCount(medicine.getHeartCount() + 1);
             medicineRepository.save(medicine);
@@ -46,7 +50,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     public Long cancel(Long medicineId, Long userId) {
         if(isChecked(medicineId, userId)){
             Medicine medicine = medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+                .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
            medicine.setHeartCount(medicine.getHeartCount()-1);
            medicineRepository.save(medicine);
 
@@ -62,7 +66,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
             Page<HeartMedicineResult> heartMedicines = heartMedicineRepository.findAllByUserUserId(userId, pageable).map(HeartMedicine::toDto);
             return new PageResult<>(heartMedicines);
         }
-        throw new IllegalArgumentException("해당 유저 없음.");
+        throw new CustomException(USER_NOT_FOUND);
     }
 
     @Override

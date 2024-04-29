@@ -8,10 +8,12 @@ import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,10 +25,9 @@ public class UserController {
     private final UserService userService;
 
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
-
     @PostMapping
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
-    public ResponseEntity<Long> createUser(@RequestBody UserJoinPayload userJoinPayload) {
+    public ResponseEntity<Long> createUser(@RequestBody @Valid UserJoinPayload userJoinPayload) {
         return new ResponseEntity<>(userService.createUser(userJoinPayload), HttpStatus.CREATED);
     }
 
@@ -39,7 +40,7 @@ public class UserController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    //TODO
+
     @GetMapping("/checkToken")
     @Operation(summary = "토큰 검증", description = "토큰 검증")
     public ResponseEntity<UserValidationResult> validationUser(@AuthenticationPrincipal Long userId) {

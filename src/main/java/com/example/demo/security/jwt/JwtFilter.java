@@ -1,7 +1,6 @@
 package com.example.demo.security.jwt;
 
 import com.example.demo.module.user.entity.CustomUserDetails;
-import com.example.demo.module.user.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +19,7 @@ import java.io.IOException;
 //TODO keyword jwtfilter, jwtutil // Authentication 세팅
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
-    // private final repository;
 
     /*
     * JWT 토큰 검증 필터 수행
@@ -41,14 +38,6 @@ public class JwtFilter extends OncePerRequestFilter {
             // JWT 유효성 검증
             if (jwtUtil.validateToken(token)) {
 
-                // 토큰에서 userId 가져오기
-                // claims
-//                Long userId = jwtUtil.getUserId(token);
-                // new JwtTokenPayload();
-                // 유저와 토큰과 일치하면 userDetails를 생성한다
-                // Authtication(뭘 넣을지) << claims() -> 다 뿌린다
-//                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
-
                 JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
 
                 // UserDetails가 비어있지 않다면?
@@ -57,8 +46,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     // Authentication Token 생성
                     // usernamepasswordAuthenticationToken은 username = principal, password = credential
                     CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
-
-//                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                     // Security context에 저장한다? username password 이
                     SecurityContextHolder.getContext().setAuthentication(customUserDetails);

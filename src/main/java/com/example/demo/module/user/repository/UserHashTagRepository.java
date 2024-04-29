@@ -4,7 +4,6 @@ import com.example.demo.module.user.entity.UserHashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
 public interface UserHashTagRepository extends JpaRepository<UserHashtag, Long> {

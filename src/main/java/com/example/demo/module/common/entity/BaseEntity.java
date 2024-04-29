@@ -6,7 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseEntity extends BaseTimeEntity {
 
     @CreatedBy

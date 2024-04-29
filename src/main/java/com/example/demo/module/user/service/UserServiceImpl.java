@@ -22,8 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -101,20 +99,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 이전 버전
-        // JWT 엑세스 토큰 만들기
-        //String accessToken = jwtUtil.createAccessToken(new JwtTokenPayload(user.getUserId(), user.getUsername()));
-
         // 다음 버전 (디비를 조회할 필요없이 loginPayload로 조회한 녀석으로 JwtTokenPayload 채우기)
         // TODO 여기서 다 채우기
         JwtTokenPayload buildPayload = JwtTokenPayload.builder()
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .username(user.getUsername())
-//                .gender(user.getGender())
-//                .age(user.getAge())
-//                .userHashtagList(userHashTagRepository.)
-//                .userRoleList(userRoleRepository.)
                 .build();
         // 그대로 토큰을 만드는데 사용하기
         String accessToken = jwtUtil.createAccessToken(buildPayload);
@@ -131,6 +121,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /*
+    * 회원 삭제
+    * */
     @Transactional
     @Override
     public Long deleteByUserId(Long userId) {
@@ -142,6 +135,10 @@ public class UserServiceImpl implements UserService {
         return userId;
     }
 
+
+    /*
+    * 회원 수정
+    * */
     //TODO edit 개발
     @Transactional
     @Override
@@ -150,18 +147,25 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
 
         // UserHashtag에 있는 애들 일단 가져오기
-        //TODO hashtag를 어케 바꿀까?
-//        List<UserHashtag> findUserHashtagList = userHashTagRepository.findAllByUserId(userId);
+        // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
+        userHashTagRepository.deleteAll();
 
-/*        for(UserHashtag userHashtag : findUserHashtagList) {
-            if (userHashtag.get)
-        }*/
+        userEditPayload.getHashtagResultList().forEach(
+                ht -> userHashTagRepository.save(UserHashtag
+                        .builder()
+                        .user(user)
+                        .hashtag(hashtagRepository.findById(ht.getId()).orElseThrow())
+                        .build()));
+
 
         user.editUser(userEditPayload);
 
         return userId;
     }
 
+    /*
+    * 유저 벨리데이션, 인터셉터?
+    * */
     @Override
     public UserValidationResult validationUser(Long userId) {
 

@@ -3,8 +3,8 @@ package com.example.demo.module.userStorage.entity;
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.image.entity.Image;
-import com.example.demo.module.user.entity.User;
 import com.example.demo.module.medicine.entity.Medicine;
+import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,14 +35,17 @@ public class UserStorage extends BaseTimeEntity {
 
     private String memo;
 
-    public Long edit(Medicine medicine, String medicineName, LocalDateTime expirationDate, String memo, Image image) {
+    public Long edit(Medicine medicine, String medicineName, LocalDateTime expirationDate, String memo) {
         this.medicine = medicine;
         this.medicineName = medicineName;
         this.expirationDate = expirationDate;
         this.memo = memo;
-        this.image = image == null ? this.image : image;
 
         return this.getId();
+    }
+
+    public void changeImage(Image image) {
+        this.image = image;
     }
 
     public void deleteImage() {
