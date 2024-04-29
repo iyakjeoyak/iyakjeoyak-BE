@@ -1,5 +1,6 @@
 package com.example.demo.module.userStorage.controller;
 
+import com.example.demo.module.review.dto.payload.ReviewOrderField;
 import com.example.demo.module.userStorage.service.UserStorageService;
 import com.example.demo.module.userStorage.dto.payload.UserStorageCreatePayload;
 import com.example.demo.module.userStorage.dto.payload.UserStorageEditPayload;
@@ -32,7 +33,13 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(@RequestParam("userId") Long userId, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(
+            @RequestParam("userId") Long userId,
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size,
+            @RequestParam(name = "orderBy", defaultValue = "ID", required = false) ReviewOrderField reviewOrderField,
+            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort
+            ) {
         return new ResponseEntity<>(userStorageService.getAllByUserId(userId, page, size), HttpStatus.OK);
     }
 

@@ -1,7 +1,7 @@
 package com.example.demo.module.medicine.repository;
 
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
-import com.example.demo.module.medicine.dto.payload.OrderField;
+import com.example.demo.module.medicine.dto.payload.MedicineOrderField;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.querydsl.core.types.Order;
@@ -101,11 +101,11 @@ public class QueryMedicineRepository {
     private OrderSpecifier<?> setOrderBy(OrderSortCond orderSortCond) {
         if(orderSortCond==null) return new OrderSpecifier<>(Order.ASC, medicine.id);
 
-        OrderField orderField = orderSortCond.getOrderField()==null ? OrderField.ID : orderSortCond.getOrderField();
+        MedicineOrderField medicineOrderField = orderSortCond.getMedicineOrderField()==null ? MedicineOrderField.ID : orderSortCond.getMedicineOrderField();
         Order sort = orderSortCond.getSort() == Order.ASC ? Order.ASC : Order.DESC;
 
 
-        return switch (orderField) {
+        return switch (medicineOrderField) {
             case GRADE -> new OrderSpecifier<>(sort, medicine.grade);
             case HEART_COUNT -> new OrderSpecifier<>(sort, medicine.heartCount);
             case CREATED_DATE -> new OrderSpecifier<>(sort, medicine.createdDate);
