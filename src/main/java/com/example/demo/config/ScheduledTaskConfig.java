@@ -12,9 +12,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class ScheduledTaskConfig {
     private final PointHistoryService pointHistoryService;
 
+    // 포인트를 삭제하기 애매해서 다른곳에서 적용 예정
     // 매 시간 정각에 실행
-    @Scheduled(cron = "0 0 * * * *")
-    public void cleanupExpiredPoint(){
-        pointHistoryService.cleanupExpiredPoint();
-    }
+//    @Scheduled(cron = "0 0 * * * *")
+//    public void cleanupExpiredPoint(){
+//        pointHistoryService.cleanupExpiredPoint();
+//    }
 }

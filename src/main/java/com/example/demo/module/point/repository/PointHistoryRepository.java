@@ -17,5 +17,5 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 
     List<PointHistory> findByCreatedDateBefore(LocalDateTime localDateTime);
 
-    Optional<PointHistory> findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(Long userId, Long reviewId, LocalDateTime localDateTime);
+//    Optional<PointHistory> findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(Long userId, Long reviewId, LocalDateTime localDateTime);
 }

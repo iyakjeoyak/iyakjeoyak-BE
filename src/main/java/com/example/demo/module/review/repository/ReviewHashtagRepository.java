@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface ReviewHashtagRepository extends JpaRepository<ReviewHashtag, Long> {
     Optional<ReviewHashtag> findByReviewIdAndHashtagId(Long reviewId, Long hashtagId);
 
+    Boolean existsByReviewIdAndHashtagId(Long reviewId, Long hashtagId);
+
     List<ReviewHashtag> findAllByReviewId(Long reviewId);
 }
