@@ -1,12 +1,10 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
-import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import static com.example.demo.global.exception.ErrorCode.PHARMACY_NOT_FOUND;
-import static com.example.demo.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +40,7 @@ public class PharmacyServiceImp implements PharmacyService{
             pharmacyRepository.deleteById(pharmacyId);
             return pharmacyId;
         }
-        throw new IllegalArgumentException("해당유저가 저장한 약국이 아닙니다.");
+        throw new CustomException(ACCESS_BLOCKED);
     }
 
     @Override
@@ -59,6 +55,6 @@ public class PharmacyServiceImp implements PharmacyService{
             return pharmacyResultMapper.toDto(pharmacyRepository
                     .findById(pharmacyId).orElseThrow(() -> new CustomException(PHARMACY_NOT_FOUND)));
         }
-        throw new IllegalArgumentException("해당 유저가 저장한 약국이 아닙니다.");
+        throw new CustomException(ACCESS_BLOCKED);
     }
 }
