@@ -18,6 +18,7 @@ import com.example.demo.util.mapper.UserStorageSimpleResultMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,8 +62,8 @@ public class UserStorageServiceImpl implements UserStorageService {
     }
 
     @Override
-    public PageResult<UserStorageSimpleResult> getAllByUserId(Long userId, Integer page, Integer size) {
-        Page<UserStorageSimpleResult> results = userStorageRepository.findAllByUserUserId(userId, PageRequest.of(page, size)).map(simpleResultMapper::toDto);
+    public PageResult<UserStorageSimpleResult> getAllByUserId(Long userId, Pageable pageable) {
+        Page<UserStorageSimpleResult> results = userStorageRepository.findAllByUserUserId(userId, pageable).map(simpleResultMapper::toDto);
         return new PageResult<>(results);
     }
 

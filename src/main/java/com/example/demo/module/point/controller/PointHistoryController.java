@@ -1,9 +1,9 @@
 package com.example.demo.module.point.controller;
 
 import com.example.demo.module.common.result.PageResult;
+import com.example.demo.module.point.dto.payload.PointOrderField;
 import com.example.demo.module.point.dto.result.PointHistoryResult;
 import com.example.demo.module.point.service.PointHistoryService;
-import com.example.demo.module.review.dto.payload.ReviewOrderField;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,11 +36,11 @@ public class PointHistoryController {
     public ResponseEntity<PageResult<PointHistoryResult>> findAllByUser(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
-            @RequestParam(name = "orderBy", defaultValue = "ID", required = false) ReviewOrderField reviewOrderField,
+            @RequestParam(name = "orderBy", defaultValue = "ID", required = false) PointOrderField pointOrderField,
             @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort,
             @AuthenticationPrincipal Long userId) {
         Sort orderBy = sort.equals("ASC") ?
-                Sort.by(Sort.Direction.ASC, reviewOrderField.getValue()) : Sort.by(Sort.Direction.DESC, reviewOrderField.getValue());
+                Sort.by(Sort.Direction.ASC, pointOrderField.getValue()) : Sort.by(Sort.Direction.DESC, pointOrderField.getValue());
         return new ResponseEntity<>(pointService.findAllByUserId(userId, PageRequest.of(page, size, orderBy)), HttpStatus.OK);
     }
 }
