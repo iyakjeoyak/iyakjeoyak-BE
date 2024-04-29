@@ -37,11 +37,8 @@ public class DeclarationServiceImpl implements DeclarationService{
 
     @Override
     public DeclarationResult findOneByUser(Long declarationId, Long userId) {
-        if(declarationRepository.existsByIdAndUserUserId(declarationId, userId)){
-            return declarationRepository.findById(declarationId)
-                    .orElseThrow(() -> new NoSuchElementException("신고내역이 없습니다.")).toDto(reviewMapper);
-        }
-        throw new IllegalArgumentException("해당 유저의 신고내역이 아닙니다.");
+        return declarationRepository.findByIdAndUserUserId(declarationId, userId)
+                    .orElseThrow(() -> new CustomException(DECLARATION_NOT_FOUND)).toDto(reviewMapper);
     }
 
     @Override
@@ -66,6 +63,6 @@ public class DeclarationServiceImpl implements DeclarationService{
             declarationRepository.deleteById(declarationId);
             return declarationId;
         }
-        throw new IllegalArgumentException("해당 유저의 신고내역이 아닙니다.");
+        throw new CustomException(DECLARATION_NOT_FOUND);
     }
 }

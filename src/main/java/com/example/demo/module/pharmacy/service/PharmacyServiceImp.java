@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static com.example.demo.global.exception.ErrorCode.PHARMACY_NOT_FOUND;
 import static com.example.demo.global.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
@@ -56,8 +57,8 @@ public class PharmacyServiceImp implements PharmacyService{
     public PharmacyResult getOneById(Long pharmacyId, Long userId) {
         if(pharmacyRepository.existsByUserUserIdAndId(userId, pharmacyId)){
             return pharmacyResultMapper.toDto(pharmacyRepository
-                    .findById(pharmacyId).orElseThrow(() -> new NoSuchElementException("약국 저장내역이 없습니다.")));
+                    .findById(pharmacyId).orElseThrow(() -> new CustomException(PHARMACY_NOT_FOUND)));
         }
-        throw new IllegalArgumentException("해당 유저가 저장한 pharmacyId가 아닙니다.");
+        throw new IllegalArgumentException("해당 유저가 저장한 약국이 아닙니다.");
     }
 }
