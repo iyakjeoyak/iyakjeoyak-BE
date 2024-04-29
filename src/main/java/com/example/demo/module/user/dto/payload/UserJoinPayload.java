@@ -12,6 +12,10 @@ import java.util.List;
 public class UserJoinPayload {
 
     // TODO 아이디 벨리데이션
+    // TODO email (naver, kakao, google, nate << social 가입을 안 하고 자체 서비스로 가입을 했다)
+    // naver.com // social -> 자동으로 회원가입이 되게 만들거잖아요? -> 이미 있는 아이디라고 뜨겠죠 ?
+    // 이미 아이디 있으니깐 -> 아이디 보여주면서 너 이걸로 로그인할래?
+    // login,
     @Schema(description = "로그인 ID")
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
     @Pattern(regexp = "^[a-zA-Z]{1}[a-zA-Z0-9_]{4,12}$", message = "아이디는 4~12자의 영문 또는 숫자만 허용됩니다.")
