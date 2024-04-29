@@ -84,7 +84,7 @@ public class JwtUtil {
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
 
         } catch (ExpiredJwtException e) {
-
+            throw e;
         } catch (UnsupportedJwtException e) {
 
         } catch (IllegalArgumentException e) {

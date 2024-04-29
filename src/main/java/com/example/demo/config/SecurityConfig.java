@@ -1,5 +1,8 @@
 package com.example.demo.config;
 
+import com.example.demo.module.user.oauth.CustomOAuthUserService;
+import com.example.demo.module.user.oauth.Oauth2LoginFailureHandler;
+import com.example.demo.module.user.oauth.Oauth2LoginSuccessHandler;
 import com.example.demo.security.jwt.JwtUtil;
 import com.example.demo.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
+    private final CustomOAuthUserService customOAuthUserService;
+    private final Oauth2LoginSuccessHandler successHandler;
+    private final Oauth2LoginFailureHandler failureHandler;
     @Bean
     public AuthenticationManager  authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
@@ -50,7 +56,11 @@ public class SecurityConfig {
 
                 )
                 //세션 관리 상태 없음으로 구성한다, Spring Security가 세션 생성과 사용을 하지 않겠다. 무상태
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oauth -> oauth.userInfoEndpoint(config -> config.userService(customOAuthUserService)));
+//                .oauth2Login(oauth2Configurer -> oauth2Configurer.loginPage("/login").successHandler(successHandler).failureHandler(failureHandler).userInfoEndpoint(c -> c.userService(customOAuthUserService)));
+
+
         return http.build();
     }
 

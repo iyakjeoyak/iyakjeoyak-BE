@@ -22,6 +22,7 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    // email
     @Column(nullable = false)
     private String username;
 
@@ -35,6 +36,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    //oauth
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
+    private String socialId;
+
+    //TODO
+    private String imageUrl;
     private Integer age;
 
     // 한 줄 소개

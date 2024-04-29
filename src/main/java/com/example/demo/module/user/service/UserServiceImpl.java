@@ -1,7 +1,5 @@
 package com.example.demo.module.user.service;
 
-import com.example.demo.module.hashtag.dto.result.HashtagResult;
-import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
@@ -23,8 +21,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 
 @Service
