@@ -1,5 +1,7 @@
 package com.example.demo.module.declaration.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.declaration.dto.payload.DeclarationPayload;
 import com.example.demo.module.declaration.dto.result.DeclarationResult;
@@ -10,7 +12,6 @@ import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +23,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DeclarationServiceImplTest {
@@ -85,6 +86,14 @@ class DeclarationServiceImplTest {
         assertEquals(declarationResult, result);
     }
     @Test
+    void findOneByUser_declarationNotFound(){
+        Declaration declaration = Declaration.builder()
+                .id(1L).user(user).title(declarationPayload.getTitle()).content(declarationPayload.getContent()).build();
+        when(declarationRepository.findByIdAndUserUserId(declaration.getId(), user.getUserId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> declarationService.findOneByUser(declaration.getId(), user.getUserId())).isInstanceOf(CustomException.class).hasMessage(DECLARATION_NOT_FOUND.getMessage());
+    }
+    @Test
     void save(){
         Review review = Review.builder().build();
         when(reviewRepository.findById(declarationPayload.getReviewId())).thenReturn(Optional.ofNullable(review));
@@ -99,11 +108,42 @@ class DeclarationServiceImplTest {
         assertEquals(declaration.getId(), id);
     }
     @Test
+    void save_declarationDuplication(){
+        when(declarationRepository.existsByReviewIdAndUserUserId(declarationPayload.getReviewId(), user.getUserId())).thenReturn(true);
+
+        assertThatThrownBy(() -> declarationService.save(declarationPayload, user.getUserId())).isInstanceOf(CustomException.class).hasMessage(DECLARATION_DUPLICATION.getMessage());
+    }
+    @Test
+    void save_userNotFound(){
+        when(declarationRepository.existsByReviewIdAndUserUserId(declarationPayload.getReviewId(), user.getUserId())).thenReturn(false);
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> declarationService.save(declarationPayload, user.getUserId())).isInstanceOf(CustomException.class).hasMessage(USER_NOT_FOUND.getMessage());
+    }
+    @Test
+    void save_reviewNotFound(){
+        when(declarationRepository.existsByReviewIdAndUserUserId(declarationPayload.getReviewId(), user.getUserId())).thenReturn(false);
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(user));
+        when(reviewRepository.findById(declarationPayload.getReviewId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> declarationService.save(declarationPayload, user.getUserId())).isInstanceOf(CustomException.class).hasMessage(REVIEW_NOT_FOUND.getMessage());
+    }
+    @Test
     void delete(){
-        when(declarationRepository.existsByIdAndUserUserId(1L, user.getUserId())).thenReturn(true);
+        Declaration declaration = Declaration.builder()
+                .id(1L).user(user).title(declarationPayload.getTitle()).content(declarationPayload.getContent()).build();
+        when(declarationRepository.existsByIdAndUserUserId(declaration.getId(), user.getUserId())).thenReturn(true);
 
-        Long id = declarationService.delete(1L, user.getUserId());
+        Long id = declarationService.delete(declaration.getId(), user.getUserId());
 
-        assertEquals(1L, id);
+        assertEquals(declaration.getId(), id);
+    }
+    @Test
+    void delete_declarationNotFound(){
+        Declaration declaration = Declaration.builder()
+                .id(1L).user(user).title(declarationPayload.getTitle()).content(declarationPayload.getContent()).build();
+        when(declarationRepository.existsByIdAndUserUserId(declaration.getId(), user.getUserId())).thenReturn(false);
+
+        assertThatThrownBy(() -> declarationService.delete(declaration.getId(),user.getUserId())).isInstanceOf(CustomException.class).hasMessage(DECLARATION_NOT_FOUND.getMessage());
     }
 }
