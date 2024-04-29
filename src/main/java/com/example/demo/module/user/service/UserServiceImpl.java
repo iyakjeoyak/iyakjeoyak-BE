@@ -1,5 +1,7 @@
 package com.example.demo.module.user.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
@@ -21,6 +23,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.demo.global.exception.ErrorCode.*;
 
 
 @Service
@@ -92,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
         // 유효성 검증
         if (ObjectUtils.isEmpty(user)) {
-            throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
+            throw new CustomException(USER_NOT_FOUND);
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
