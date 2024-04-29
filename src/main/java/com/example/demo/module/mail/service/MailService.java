@@ -54,7 +54,7 @@ public class MailService {
     private void setNum() {
         Random random = new Random();
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i < 8; i++) {
             str.append(random.nextInt(10));
         }
         authNumber = Integer.valueOf(str.toString());
