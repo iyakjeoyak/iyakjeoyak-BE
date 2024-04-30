@@ -32,7 +32,7 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .nameAttributeKey(userNameAttributeName)
-                .oauth2UserInfo(new KakaoOAuth2UserInfo(attributes))
+                .oauth2UserInfo(new GoogleOAuth2UserInfo(attributes))
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .nameAttributeKey(userNameAttributeName)
-                .oauth2UserInfo(new GoogleOAuth2UserInfo(attributes))
+                .oauth2UserInfo(new KakaoOAuth2UserInfo(attributes))
                 .build();
     }
 }
