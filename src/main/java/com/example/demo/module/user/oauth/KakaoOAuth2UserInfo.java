@@ -22,7 +22,7 @@ public class KakaoOAuth2UserInfo extends Oauth2UserInfo{
         }
 
         // 형변환 하는 이유는 뭘까?
-        Map<String, Object> profile = (Map<String, Object>) account.get("profiles");
+        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
 
         if (profile.isEmpty()) {
             throw new IllegalArgumentException("찾는 유저 정보가 없습니다.");
@@ -42,9 +42,38 @@ public class KakaoOAuth2UserInfo extends Oauth2UserInfo{
 
         Map<String, Object> profile = (Map<String, Object>) account.get("profile");
 
-        if(account.isEmpty()) {
+        if(profile.isEmpty()) {
             throw new IllegalArgumentException("찾는 유저 정보가 없습니다");
         }
         return (String) profile.get("thumbnail_image_url");
+    }
+
+    @Override
+    public String getEmail() {
+
+        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
+
+        if (account.isEmpty()) {
+            throw new IllegalArgumentException("찾는 유저 정보가 없습니다.");
+        }
+
+//        Map<String, Object> profile = (Map<String, Object>) account.get("profile");
+        Object email = account.get("email");
+
+/*        if (profile.isEmpty()) {
+            throw new IllegalArgumentException("찾는 유저 정보가 없습니다.");
+        }*/
+
+        return (String) email;
+    }
+
+    @Override
+    public String getGender() {
+        return null;
+    }
+
+    @Override
+    public String getAge() {
+        return null;
     }
 }

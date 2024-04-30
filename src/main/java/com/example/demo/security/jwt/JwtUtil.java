@@ -31,6 +31,8 @@ public class JwtUtil {
         return createToken(user, accessTokenExpTime);
     }
 
+
+
     private String createToken(JwtTokenPayload user, long expireTime) {
         // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
         /*
