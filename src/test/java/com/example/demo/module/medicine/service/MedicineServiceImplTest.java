@@ -1,16 +1,14 @@
 package com.example.demo.module.medicine.service;
 
+import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.medicine.dto.payload.MedicinePayload;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import com.example.demo.module.medicine.dto.result.MedicineSimpleResult;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
-import com.example.demo.module.medicine.repository.QueryMedicineRepository;
-import com.example.demo.util.mapper.CategoryResultMapper;
 import com.example.demo.util.mapper.MedicineMapper;
 import com.example.demo.util.mapper.MedicineSimpleResultMapper;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
+import static com.example.demo.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -92,5 +92,12 @@ class MedicineServiceImplTest {
         MedicineResult actualMedicine = medicineService.findOneById(1L);
 
         assertEquals(medicineResult, actualMedicine);
+    }
+    @Test
+    void findOneById_medicineNotFound(){
+        Medicine medicine = Medicine.builder().id(1L).build();
+        when(medicineRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> medicineService.findOneById(1L)).isInstanceOf(CustomException.class).hasMessage(MEDICINE_NOT_FOUND.getMessage());
     }
 }
