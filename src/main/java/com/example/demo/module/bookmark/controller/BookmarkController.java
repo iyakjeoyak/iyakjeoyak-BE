@@ -50,7 +50,7 @@ public class BookmarkController {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> save(@RequestBody Long medicineId, @AuthenticationPrincipal Long userId){
-        return new ResponseEntity<>(bookmarkService.save(medicineId, userId), HttpStatus.OK);
+        return new ResponseEntity<>(bookmarkService.save(medicineId, userId), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{medicineId}")
@@ -71,4 +71,15 @@ public class BookmarkController {
         return new ResponseEntity<>(bookmarkService.isChecked(medicineId, userId), HttpStatus.OK);
     }
 
+    @PostMapping("/click")
+    @Operation(summary = "북마크 생성/삭제", description = "북마크 클릭하면 tre / 취소하면 false 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "북마크 생성", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "200", description = "북마크 삭제", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Boolean> bookmarkClick(@RequestBody Long medicineId, @AuthenticationPrincipal Long userId){
+        if (bookmarkService.click(medicineId, userId)){
+            return new ResponseEntity<>(true, HttpStatus.CREATED);
+        } return new ResponseEntity<>(false, HttpStatus.OK);
+    }
 }
