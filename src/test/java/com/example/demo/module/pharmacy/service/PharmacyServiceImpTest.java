@@ -1,5 +1,6 @@
 package com.example.demo.module.pharmacy.service;
 
+import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -30,7 +33,7 @@ class PharmacyServiceImpTest {
     @Mock
     private PharmacyResultMapper pharmacyResultMapper;
     @InjectMocks
-    private PharmacyServiceImp pharmacyServiceImp;
+    private PharmacyServiceImp pharmacyService;
 
     User user;
     Pharmacy pharmacy;
@@ -42,46 +45,56 @@ class PharmacyServiceImpTest {
     @Test
     void save() {
         PharmacyPayload pharmacyPayload = new PharmacyPayload();
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(user));
         when(pharmacyRepository.save(any(Pharmacy.class))).thenReturn(pharmacy);
 
-        Long id = pharmacyServiceImp.save(user.getUserId(), pharmacyPayload);
+        Long id = pharmacyService.save(user.getUserId(), pharmacyPayload);
 
         assertEquals(pharmacy.getId(), id);
     }
+    @Test
+    void save_userNotFound(){
+        PharmacyPayload pharmacyPayload = new PharmacyPayload();
+        when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
 
+        assertThatThrownBy(() -> pharmacyService.save(user.getUserId(), pharmacyPayload)).isInstanceOf(CustomException.class).hasMessage(USER_NOT_FOUND.getMessage());
+    }
     @Test
     void delete() {
         when(pharmacyRepository.existsByUserUserIdAndId(user.getUserId(), pharmacy.getId())).thenReturn(true);
 
-        Long id = pharmacyServiceImp.delete(user.getUserId(), pharmacy.getId());
+        Long id = pharmacyService.delete(user.getUserId(), pharmacy.getId());
 
         assertEquals(pharmacy.getId(), id);
     }
+    @Test
+    void delete_userNotAccess(){
+        when(pharmacyRepository.existsByUserUserIdAndId(user.getUserId(), pharmacy.getId())).thenReturn(false);
 
-//    @Test
-//    void getAllByUserId() {
-//        Pharmacy pharmacy1 = Pharmacy.builder().id(1L).user(user).build();
-//        Pharmacy pharmacy2 = Pharmacy.builder().id(2L).user(user).build();
-//        Pharmacy pharmacy3 = Pharmacy.builder().id(3L).user(user).build();
-//        PharmacyResult pharmacyResult1 = new PharmacyResult();
-//        PharmacyResult pharmacyResult2 = new PharmacyResult();
-//        PharmacyResult pharmacyResult3 = new PharmacyResult();
-//        pharmacyResult1.setName("약국1");
-//        pharmacyResult2.setName("약국2");
-//        pharmacyResult3.setName("약국3");
-//
-//        List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
-//        pharmacies.forEach(p -> when);
-//        System.out.println("pharmacies = " + pharmacies);
-//        List<PharmacyResult> expected = Arrays.asList(pharmacy1, pharmacy2, pharmacy3).stream().map().toList();
-//        System.out.println("expected = " + expected);
-//
-//        when(pharmacyRepository.findAllByUserUserId(user.getUserId())).thenReturn(pharmacies);
-//        List<PharmacyResult> result = pharmacyServiceImp.getAllByUserId(user.getUserId());
-//
-//        assertEquals(expected, result);
-//    }
+        assertThatThrownBy(() -> pharmacyService.delete(user.getUserId(), pharmacy.getId())).isInstanceOf(CustomException.class).hasMessage(ACCESS_BLOCKED.getMessage());
+    }
+
+    @Test
+    void getAllByUserId() {
+        Pharmacy pharmacy1 = Pharmacy.builder().id(1L).user(user).build();
+        Pharmacy pharmacy2 = Pharmacy.builder().id(2L).user(user).build();
+        Pharmacy pharmacy3 = Pharmacy.builder().id(3L).user(user).build();
+        PharmacyResult pharmacyResult1 = new PharmacyResult();
+        PharmacyResult pharmacyResult2 = new PharmacyResult();
+        PharmacyResult pharmacyResult3 = new PharmacyResult();
+        pharmacyResult1.setName("약국1");
+        pharmacyResult2.setName("약국2");
+        pharmacyResult3.setName("약국3");
+
+        List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
+        List<PharmacyResult> expected = Arrays.asList(pharmacyResult1, pharmacyResult2, pharmacyResult3);
+        when(pharmacyRepository.findAllByUserUserId(user.getUserId())).thenReturn(pharmacies);
+        when(pharmacyResultMapper.toDtoList(pharmacies)).thenReturn(expected);
+
+        List<PharmacyResult> result = pharmacyService.getAllByUserId(user.getUserId());
+
+        assertEquals(expected, result);
+    }
 
     @Test
     void getOneById() {
@@ -89,8 +102,21 @@ class PharmacyServiceImpTest {
         when(pharmacyRepository.findById(pharmacy.getId())).thenReturn(Optional.ofNullable(pharmacy));
         PharmacyResult expected = pharmacyResultMapper.toDto(pharmacy);
 
-        PharmacyResult pharmacyResult = pharmacyServiceImp.getOneById(pharmacy.getId(), user.getUserId());
+        PharmacyResult pharmacyResult = pharmacyService.getOneById(pharmacy.getId(), user.getUserId());
 
         assertEquals(expected, pharmacyResult);
+    }
+    @Test
+    void getOneById_userNotAccess(){
+        when(pharmacyRepository.existsByUserUserIdAndId(user.getUserId(), pharmacy.getId())).thenReturn(false);
+
+        assertThatThrownBy(() -> pharmacyService.getOneById(pharmacy.getId(), user.getUserId())).isInstanceOf(CustomException.class).hasMessage(ACCESS_BLOCKED.getMessage());
+    }
+    @Test
+    void getOneById_pharmacyNotFound(){
+        when(pharmacyRepository.existsByUserUserIdAndId(user.getUserId(), pharmacy.getId())).thenReturn(true);
+        when(pharmacyRepository.findById(pharmacy.getId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> pharmacyService.getOneById(pharmacy.getId(), user.getUserId())).isInstanceOf(CustomException.class).hasMessage(PHARMACY_NOT_FOUND.getMessage());
     }
 }
