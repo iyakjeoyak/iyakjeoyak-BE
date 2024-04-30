@@ -36,9 +36,9 @@ public class UserStorageController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(
-            @RequestParam("userId") Long userId,
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size,
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(name = "page",required = false) Integer page,
+            @RequestParam(name = "size",required = false) Integer size,
             @RequestParam(name = "orderBy", defaultValue = "ID", required = false) StorageOrderField storageOrderField,
             @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort
             ) {
@@ -61,7 +61,7 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveStorage(@RequestParam("userId") Long userId, @RequestBody UserStorageCreatePayload payload) throws IOException {
+    public ResponseEntity<Long> saveStorage(@AuthenticationPrincipal Long userId, @RequestBody UserStorageCreatePayload payload) throws IOException {
         return new ResponseEntity<>(userStorageService.saveUserStorage(userId, payload), HttpStatus.CREATED);
     }
 
@@ -70,7 +70,7 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveStorage(@PathVariable("storageId") Long storageId, @RequestParam("userId") Long userId, @RequestBody UserStorageEditPayload payload) throws IOException {
+    public ResponseEntity<Long> saveStorage(@PathVariable("storageId") Long storageId, @AuthenticationPrincipal Long userId, @RequestBody UserStorageEditPayload payload) throws IOException {
         return new ResponseEntity<>(userStorageService.editUserStorage(userId, storageId, payload), HttpStatus.CREATED);
     }
 
@@ -79,7 +79,7 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteById(@PathVariable("storageId") Long storageId, @RequestParam("userId")Long userId) {
+    public ResponseEntity<Long> deleteById(@PathVariable("storageId") Long storageId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(userStorageService.deleteById(userId,storageId), HttpStatus.OK);
     }
 
