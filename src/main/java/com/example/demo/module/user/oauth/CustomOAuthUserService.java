@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 
 @Slf4j
@@ -29,7 +30,7 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     private static final String GOOGLE = "google";
 
     // spring boot 3 -> spring boot 2
-    // application.yml
+    // application.ymloAuthattricustom
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -49,9 +50,9 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
         User createdUser = getUser(extractAttributes, socialType);
 
-//        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes , extractAttributes.getNameAttributeKey());
+        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes , extractAttributes.getNameAttributeKey(), createdUser.getUsername());
 
-        return super.loadUser(userRequest);
+//        return super.loadUser(userRequest);
     }
 
     private SocialType getSocialType(String registrationId) {
@@ -63,23 +64,29 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
     private User getUser(OAuthAttributes attributes, SocialType socialType) {
 
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId());
+        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId()).orElse(null);
 
         if(ObjectUtils.isEmpty(findUser)) {
             saveUser(attributes, socialType);
         }
 
-        return null;
+        return findUser;
     }
 
-    private User saveUser(OAuthAttributes oAuthAttributes, SocialType socialType) {
-        return User.builder().age(28)
+    private Long saveUser(OAuthAttributes oAuthAttributes, SocialType socialType) {
+        User user = User.builder()
+                .age(28)
                 .imageUrl(oAuthAttributes.getOauth2UserInfo().getImageUrl())
-//                .email("ssssss@naver.com")
+                .username(oAuthAttributes.getOauth2UserInfo().getEmail())
+                .password("social" + UUID.randomUUID())
                 .nickname(oAuthAttributes.getOauth2UserInfo().getNickName())
                 .socialType(socialType)
                 .socialId(oAuthAttributes.getOauth2UserInfo().getId())
                 .gender(Gender.MALE)
                 .build();
+
+        userRepository.save(user);
+
+        return user.getUserId();
     }
 }

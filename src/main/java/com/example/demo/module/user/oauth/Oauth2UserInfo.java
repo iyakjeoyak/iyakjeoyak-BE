@@ -19,4 +19,10 @@ public abstract class Oauth2UserInfo {
 
     public abstract String getImageUrl();
 
+    public abstract String getEmail();
+
+    public abstract String getGender();
+
+    public abstract String getAge();
+
 }
