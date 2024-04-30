@@ -76,7 +76,7 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     private Long saveUser(OAuthAttributes oAuthAttributes, SocialType socialType) {
         User user = User.builder()
                 .age(28)
-                .imageUrl(oAuthAttributes.getOauth2UserInfo().getImageUrl())
+//                .imageUrl(oAuthAttributes.getOauth2UserInfo().getImageUrl())
                 .username(oAuthAttributes.getOauth2UserInfo().getEmail())
                 .password("social" + UUID.randomUUID())
                 .nickname(oAuthAttributes.getOauth2UserInfo().getNickName())
