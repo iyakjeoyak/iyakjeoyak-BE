@@ -1,7 +1,6 @@
 package com.example.demo.module.heart_medicine.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.heart_medicine.entity.HeartMedicine;
 import com.example.demo.module.heart_medicine.repository.HeartMedicineRepository;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
@@ -42,7 +39,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
             medicineRepository.save(medicine);
             return id;
         }
-        throw new IllegalArgumentException("좋아요를 이미 누름");
+        throw new CustomException(ACCESS_BLOCKED);
     }
 
     @Override
@@ -57,7 +54,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
            heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, userId);
            return medicineId;
         }
-        throw new IllegalArgumentException("좋아요 누른 회원이 아님.");
+        throw new CustomException(ACCESS_BLOCKED);
     }
 
     @Override
