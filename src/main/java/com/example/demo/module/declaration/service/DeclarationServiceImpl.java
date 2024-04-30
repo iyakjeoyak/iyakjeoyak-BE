@@ -1,7 +1,6 @@
 package com.example.demo.module.declaration.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.declaration.dto.payload.DeclarationPayload;
 import com.example.demo.module.declaration.dto.result.DeclarationResult;
@@ -15,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
@@ -53,7 +50,7 @@ public class DeclarationServiceImpl implements DeclarationService{
                     .content(declarationPayload.getContent())
                     .build()).getId();
         }
-        throw new IllegalArgumentException("이미 신고한 리뷰입니다.");
+        throw new CustomException(DECLARATION_DUPLICATION);
     }
 
     @Override

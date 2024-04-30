@@ -63,7 +63,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             throw new CustomException(USER_NOT_FOUND);
         }
         BookmarkResult bookmarkResult = bookmarkRepository.findByMedicineIdAndUserUserId(medicineId, userId)
-                .orElseThrow(() -> new CustomException(BOOKMARK_NOT_FOUND)).toDto(medicineMapper);
+                .orElseThrow(() -> new CustomException(ACCESS_BLOCKED)).toDto(medicineMapper);
         bookmarkRepository.deleteById(bookmarkResult.getId());
         return bookmarkResult.getId();
     }

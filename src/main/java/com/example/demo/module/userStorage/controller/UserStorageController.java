@@ -1,11 +1,12 @@
 package com.example.demo.module.userStorage.controller;
 
-import com.example.demo.module.userStorage.service.UserStorageService;
+import com.example.demo.module.common.result.PageResult;
+import com.example.demo.module.userStorage.dto.payload.StorageOrderField;
 import com.example.demo.module.userStorage.dto.payload.UserStorageCreatePayload;
 import com.example.demo.module.userStorage.dto.payload.UserStorageEditPayload;
 import com.example.demo.module.userStorage.dto.result.UserStorageDetailResult;
 import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
-import com.example.demo.module.common.result.PageResult;
+import com.example.demo.module.userStorage.service.UserStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,8 +35,16 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(@RequestParam("userId") Long userId, @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
-        return new ResponseEntity<>(userStorageService.getAllByUserId(userId, page, size), HttpStatus.OK);
+    public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(
+            @RequestParam("userId") Long userId,
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size,
+            @RequestParam(name = "orderBy", defaultValue = "ID", required = false) StorageOrderField storageOrderField,
+            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort
+            ) {
+        Sort orderBy = sort.equals("ASC") ?
+                Sort.by(Sort.Direction.ASC, storageOrderField.getValue()) : Sort.by(Sort.Direction.DESC, storageOrderField.getValue());
+        return new ResponseEntity<>(userStorageService.getAllByUserId(userId, PageRequest.of(page,size,orderBy)), HttpStatus.OK);
     }
 
     @GetMapping("/{storageId}")

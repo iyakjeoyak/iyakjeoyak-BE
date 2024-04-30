@@ -6,17 +6,11 @@ import com.example.demo.module.point.entity.PointDomain;
 import com.example.demo.module.point.entity.PointHistory;
 import com.example.demo.module.point.entity.ReserveUse;
 import com.example.demo.module.point.repository.PointHistoryRepository;
-import com.example.demo.module.user.entity.User;
 import com.example.demo.util.mapper.PointResultMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
-import static com.example.demo.module.point.entity.ReserveUse.RESERVE;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +19,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     private final PointHistoryRepository pointHistoryRepository;
     private final PointResultMapper pointResultMapper;
 
-    @Value("${point.review}")
-    private Integer point;
 
     @Override
     public PageResult<PointHistoryResult> findAllByUserId(Long userId, Pageable pageable) {
