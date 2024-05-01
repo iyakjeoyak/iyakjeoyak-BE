@@ -51,6 +51,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     // Security context에 저장한다? username password 이
                     SecurityContextHolder.getContext().setAuthentication(customUserDetails);
                 }
+            } else {
+                response.setStatus(401);
             }
         }
 
