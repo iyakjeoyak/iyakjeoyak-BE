@@ -60,4 +60,25 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         return heartReviewRepository.findAllByReviewId(reviewId).size();
     }
 
+    @Override
+    @Transactional
+    public boolean click(Long reviewId, Long userId) {
+        if(!userRepository.existsById(userId)){
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        if (checkReviewHeart(userId, reviewId)){
+            review.decreaseHeartCount();
+            Long heartReviewId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
+            heartReviewRepository.deleteById(heartReviewId);
+            return false;
+        }
+        review.addHeartCount();
+        heartReviewRepository.save(HeartReview
+                .builder()
+                .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND)))
+                .review(review)
+                .build());
+        return true;
+    }
 }

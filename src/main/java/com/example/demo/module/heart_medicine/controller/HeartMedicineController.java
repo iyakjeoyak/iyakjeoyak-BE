@@ -60,4 +60,16 @@ public class HeartMedicineController {
     public ResponseEntity<Boolean> checkHeartMedicine(@PathVariable("medicineId") Long medicineId, @AuthenticationPrincipal Long userId){
         return new ResponseEntity<>(heartMedicineService.isChecked(medicineId, userId), HttpStatus.OK);
     }
+
+    @PostMapping("/click")
+    @Operation(summary = "영양제 좋아요 생성/삭제", description = "영양제 좋아요 클릭하면 true / 취소하면 false ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "좋아요 생성", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "200", description = "좋아요 삭제", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Boolean> clickHeartMedicine(@RequestBody Long medicineId, @AuthenticationPrincipal Long userId){
+        if (heartMedicineService.click(medicineId, userId)){
+            return new ResponseEntity<>(true, HttpStatus.CREATED);
+        } return new ResponseEntity<>(false, HttpStatus.OK);
+    }
 }

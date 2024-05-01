@@ -17,4 +17,6 @@ public interface HeartMedicineRepository extends JpaRepository<HeartMedicine, Lo
     Page<HeartMedicine> findAllByUserUserId(Long userId, Pageable pageable);
 
     Boolean existsByMedicineIdAndUserUserId(Long medicineId, Long userId);
+
+    Optional<HeartMedicine> findByMedicineIdAndUserUserId(Long medicineId, Long userId);
 }
