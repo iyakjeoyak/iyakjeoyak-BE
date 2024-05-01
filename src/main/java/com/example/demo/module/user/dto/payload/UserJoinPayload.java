@@ -1,9 +1,11 @@
 package com.example.demo.module.user.dto.payload;
 
+import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.user.entity.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,8 @@ public class UserJoinPayload {
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$", message = "비밀번호는 영문자, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.")
     private String password;
+
+    private String confirmPassword;
 
     @Schema(description = "닉네임")
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
@@ -52,5 +56,8 @@ public class UserJoinPayload {
     @Schema(description = "관심 태그 리스트")
     @NotEmpty(message = "관심 태그가 들어 가지 않았습니다.")
     private List<Long> userHashtagList = new ArrayList<>();
+
+    @Schema(description = "이미지")
+    private MultipartFile profileImage;
 
 }
