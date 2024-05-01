@@ -14,4 +14,6 @@ public interface BookmarkService {
     Long delete(Long medicineId, Long userId);
 
     Boolean isChecked(Long medicineId, Long userId);
+
+    Boolean click(Long medicineId, Long userId);
 }

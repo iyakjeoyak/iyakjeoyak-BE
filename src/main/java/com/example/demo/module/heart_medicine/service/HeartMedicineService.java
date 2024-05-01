@@ -13,4 +13,6 @@ public interface HeartMedicineService {
     PageResult<HeartMedicineResult> findAll(Long userId, Pageable pageable);
 
     Boolean isChecked(Long medicineId, Long userId);
+
+    boolean click(Long medicineId, Long userId);
 }
