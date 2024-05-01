@@ -23,8 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,12 +61,12 @@ public class ReviewController {
     }
 
     @PostMapping("")
-    @Operation(summary = "리뷰 생성", description = "리부 생성")
+    @Operation(summary = "리뷰 생성", description = "리뷰 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload, @AuthenticationPrincipal Long userId) throws IOException {
-        return new ResponseEntity<>(reviewService.save(userId, reviewPayload), HttpStatus.CREATED);
+    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile") List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+        return new ResponseEntity<>(reviewService.save(userId, reviewPayload, imgFile), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{reviewId}")
@@ -106,7 +108,10 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> addReviewImages(@RequestBody ReviewImageAddPayload payload, @AuthenticationPrincipal Long userId) throws IOException {
+    public ResponseEntity<Long> addReviewImages(@RequestParam("reviewId") Long reviewId,  @RequestPart(name = "imgFile") List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+        ReviewImageAddPayload payload = new ReviewImageAddPayload();
+        payload.setReviewId(reviewId);
+        payload.setImages(imgFile);
         return new ResponseEntity<>(reviewService.addReviewImage(userId, payload.getReviewId(), payload.getImages()), HttpStatus.CREATED);
     }
 

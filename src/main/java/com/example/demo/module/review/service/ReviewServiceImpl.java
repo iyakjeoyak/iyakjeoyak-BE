@@ -59,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Long save(Long userId, ReviewPayload reviewPayload) throws IOException {
+    public Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -77,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .medicine(medicine)
                         .build());
 
-        List<Image> images = imageService.saveImageList(reviewPayload.getImgList());
+        List<Image> images = imageService.saveImageList(imgFile);
 
         images.forEach(i ->
                 reviewImageRepository.save(
@@ -113,10 +113,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
         //없어진 해쉬태그 삭제
         reviewHashtagRepository.findAllByReviewId(reviewId).forEach(ht -> {
-                    if (!reviewEditPayload.getTagList().contains(ht)) {
-                        reviewHashtagRepository.delete(ht);
-                    }
-                });
+            if (!reviewEditPayload.getTagList().contains(ht)) {
+                reviewHashtagRepository.delete(ht);
+            }
+        });
 
         // 새로 추가된 hashtag 테이블 생성
         reviewEditPayload.getTagList().forEach(htId -> {

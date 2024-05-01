@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ReviewService {
-    Long save(Long userId,ReviewPayload reviewPayload) throws IOException;
+    Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException;
 
     ReviewDetailResult findOneByReviewId(Long reviewId);
 
-    Long editReview(Long userId , Long reviewId, ReviewEditPayload reviewEditPayload);
+    Long editReview(Long userId, Long reviewId, ReviewEditPayload reviewEditPayload);
 
-    Long deleteByReviewId(Long userId , Long reviewId);
+    Long deleteByReviewId(Long userId, Long reviewId);
 
     PageResult<ReviewResult> findPageByMedicineId(Long medicineId, PageRequest pageRequest);
 
