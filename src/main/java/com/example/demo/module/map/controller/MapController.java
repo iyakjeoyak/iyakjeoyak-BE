@@ -34,8 +34,8 @@ public class MapController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<MapSelectResult>> findPageByLocation(
             @RequestParam(name = "size", defaultValue = "20", required = false) int size,
-            @RequestParam(name = "WGS84_LON") String lon,
-            @RequestParam(name = "WGS84_LAT") String lat) throws JSONException, IOException, ParseException {
+            @RequestParam(name = "lon") String lon,
+            @RequestParam(name = "lat") String lat) throws JSONException, IOException, ParseException {
         return ResponseEntity.status(HttpStatus.OK).body(mapService.findByLocation(lon,lat,size));
     }
 }
