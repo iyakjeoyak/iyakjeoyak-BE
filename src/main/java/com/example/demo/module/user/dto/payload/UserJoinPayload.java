@@ -58,6 +58,6 @@ public class UserJoinPayload {
     private List<Long> userHashtagList = new ArrayList<>();
 
     @Schema(description = "이미지")
-    private MultipartFile image;
+    private MultipartFile profileImage;
 
 }

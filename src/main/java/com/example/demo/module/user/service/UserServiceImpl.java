@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요.");
         }
 
-        Image image = imageService.saveImage(userJoinPayload.getImage());
+        Image image = imageService.saveImage(userJoinPayload.getProfileImage());
 
         User saveUser = userRepository.save(User.builder()
                 .username(userJoinPayload.getUsername())
