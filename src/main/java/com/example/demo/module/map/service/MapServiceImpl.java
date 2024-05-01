@@ -2,6 +2,7 @@ package com.example.demo.module.map.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.map.dto.result.MapSelectResult;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MapServiceImpl implements MapService {
     @Value("${open_api.service_key.ermct}")
     private String serviceKey;
