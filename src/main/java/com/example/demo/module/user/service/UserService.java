@@ -9,11 +9,14 @@ import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.entity.UserHashtag;
+import com.example.demo.security.jwt.JwtTokenResult;
+
+import java.io.IOException;
 
 public interface UserService {
-    Long createUser(UserJoinPayload userJoinPayload);
+    Long createUser(UserJoinPayload userJoinPayload) throws IOException;
 
-    String loginUser(UserLoginPayload userLoginPayload);
+    JwtTokenResult loginUser(UserLoginPayload userLoginPayload);
 
     UserResult findOneByUserId(Long userId);
 
@@ -22,4 +25,6 @@ public interface UserService {
     Long editUser(Long userId, UserEditPayload userEditPayload);
 
     UserValidationResult validationUser(Long userId);
+
+    String createAccessByRefresh(String refreshToken);
 }
