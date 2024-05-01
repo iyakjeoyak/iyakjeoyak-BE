@@ -72,4 +72,28 @@ public class BookmarkServiceImpl implements BookmarkService {
     public Boolean isChecked(Long medicineId, Long userId) {
         return bookmarkRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
+
+    @Override
+    @Transactional
+    public Boolean click(Long medicineId, Long userId) {
+        if(!medicineRepository.existsById(medicineId)){
+            throw new CustomException(MEDICINE_NOT_FOUND);
+        }
+        if(!userRepository.existsById(userId)){
+            throw new CustomException(USER_NOT_FOUND);
+        }
+        if(isChecked(medicineId, userId)){
+            BookmarkResult bookmarkResult = bookmarkRepository.findByMedicineIdAndUserUserId(medicineId, userId)
+                    .orElseThrow(() -> new CustomException(ACCESS_BLOCKED)).toDto(medicineMapper);
+            System.out.println("bookmarkResult = " + bookmarkResult.getId());
+            bookmarkRepository.deleteById(bookmarkResult.getId());
+            return false;
+        }
+        bookmarkRepository.save(Bookmark
+                .builder()
+                .medicine(medicineRepository.findById(medicineId).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)))
+                .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
+                .build());
+        return true;
+    }
 }

@@ -56,4 +56,16 @@ public class HeartReviewController {
     public ResponseEntity<Long> deleteHeartReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(heartReviewService.delete(userId, reviewId), HttpStatus.OK);
     }
+
+    @PostMapping("/click")
+    @Operation(summary = "리뷰 좋아요 생성/삭제", description = "리뷰 좋아요 클릭하면 true / 취소하면 false ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "좋아요 생성", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "200", description = "좋아요 삭제", content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<Boolean> clickHeartReview(@RequestBody HeartReviewPayload payload, @AuthenticationPrincipal Long userId){
+        if (heartReviewService.click(payload.getReviewId(), userId)){
+            return new ResponseEntity<>(true, HttpStatus.CREATED);
+        } return new ResponseEntity<>(false, HttpStatus.OK);
+    }
 }

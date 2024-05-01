@@ -139,4 +139,12 @@ public class Medicine extends BaseTimeEntity {
         return Math.round(grade * 10) / 10.0;
     }
 
+    public void addHeartCount() {
+        this.heartCount++;
+    }
+
+    public void decreaseHeartCount() {
+        this.heartCount--;
+        if (this.heartCount < 0) throw new IllegalArgumentException("좋아요가 0 이하가 되었습니다.(비정상)");
+    }
 }
