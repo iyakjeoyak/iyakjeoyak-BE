@@ -65,7 +65,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile") List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile" , required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
         return new ResponseEntity<>(reviewService.save(userId, reviewPayload, imgFile), HttpStatus.CREATED);
     }
 
@@ -108,7 +108,7 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> addReviewImages(@RequestParam("reviewId") Long reviewId,  @RequestPart(name = "imgFile") List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+    public ResponseEntity<Long> addReviewImages(@RequestParam("reviewId") Long reviewId, @RequestPart(name = "imgFile", required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
         ReviewImageAddPayload payload = new ReviewImageAddPayload();
         payload.setReviewId(reviewId);
         payload.setImages(imgFile);

@@ -35,7 +35,7 @@ public class UserController {
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
     @PostMapping
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
-    public ResponseEntity<Long> createUser(@RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload, @RequestPart("imgFile") MultipartFile imgFile) throws IOException {
+    public ResponseEntity<Long> createUser(@RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload, @RequestPart(value = "imgFile" , required = false) MultipartFile imgFile) throws IOException {
         return new ResponseEntity<>(userService.createUser(userJoinPayload, imgFile), HttpStatus.CREATED);
     }
 

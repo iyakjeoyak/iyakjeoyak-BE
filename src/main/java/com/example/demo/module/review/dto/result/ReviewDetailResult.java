@@ -41,5 +41,5 @@ public class ReviewDetailResult {
 
 
     @Schema(description = "해쉬태그 리스트")
-    private List<HashtagResult> hashtagResults = new ArrayList<>();
+    private List<HashtagResult> hashtagResult = new ArrayList<>();
 }

@@ -58,9 +58,25 @@ public class MapServiceImpl implements MapService {
 ////        JSONObject body = (JSONObject) response.get("body");
 
         JSONObject body = getBodyValue(sb.toString());
-        JSONObject items = (JSONObject) body.get("items");
-        JSONArray array = (JSONArray) items.get("item");
+        if(body.get("items").toString().isEmpty()) {
+            PageResult<MapSelectResult> pageResult = new PageResult<>();
+            pageResult.setData(List.of());
+            pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
+            pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
+            pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
+            return pageResult;
+        }
 
+        JSONObject items = (JSONObject) body.get("items");
+        JSONArray array = new JSONArray();
+        try {
+            array = (JSONArray) items.get("item");
+        } catch (ClassCastException e) {
+            JSONObject item = (JSONObject) items.get("item");
+            if (!item.toString().isEmpty()) {
+                array.add(item);
+            }
+        }
         List<MapSelectResult> list = new ArrayList<>();
         for (Object o : array) {
             JSONObject i = (JSONObject) o;
