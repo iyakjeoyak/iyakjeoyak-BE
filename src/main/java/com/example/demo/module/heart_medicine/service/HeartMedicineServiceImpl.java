@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
@@ -69,5 +71,29 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     @Override
     public Boolean isChecked(Long medicineId, Long userId) {
         return heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
+    }
+
+    @Override
+    @Transactional
+    public boolean click(Long medicineId, Long userId) {
+        if(!userRepository.existsById(userId)){
+            throw new CustomException(USER_NOT_FOUND);
+        }
+        Medicine medicine = medicineRepository.findById(medicineId)
+                .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
+        if(isChecked(medicineId, userId)){
+            medicine.decreaseHeartCount();
+
+            Long heartMedicineId = heartMedicineRepository.findByMedicineIdAndUserUserId(medicineId, userId)
+                    .orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 영양제입니다.")).getId();
+            heartMedicineRepository.deleteById(heartMedicineId);
+            return false;
+        }
+        medicine.addHeartCount();
+        heartMedicineRepository.save(HeartMedicine.builder()
+                .medicine(medicine)
+                .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(USER_NOT_FOUND)))
+                .build());
+        return true;
     }
 }
