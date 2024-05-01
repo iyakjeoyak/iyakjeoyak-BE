@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
     * 회원 가입
     * */
     @Transactional
-    public Long createUser(UserJoinPayload userJoinPayload) throws IOException {
+    public Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException {
         Boolean isUsernameExist = userRepository.existsByUsername(userJoinPayload.getUsername());
         Boolean isUserNicknameExist = userRepository.existsByNickname(userJoinPayload.getNickname());
 
@@ -72,7 +73,11 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요.");
         }
 
-        Image image = imageService.saveImage(userJoinPayload.getProfileImage());
+        Image image = imageService.saveImage(imgFile);
+
+        if (ObjectUtils.isEmpty(image)) {
+            throw new IllegalArgumentException("이미지가 생성되지 않았습니다.");
+        }
 
         User saveUser = userRepository.save(User.builder()
                 .username(userJoinPayload.getUsername())
