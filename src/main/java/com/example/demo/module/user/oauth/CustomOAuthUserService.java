@@ -10,7 +10,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -34,11 +33,13 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
+        log.info("loadUser 호출");
 //        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 //        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         Map<String, Object> attributes = super.loadUser(userRequest).getAttributes();
+
+        log.info(attributes.toString());
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         SocialType socialType = getSocialType(registrationId);
@@ -50,7 +51,7 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
         User createdUser = getUser(extractAttributes, socialType);
 
-        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes , extractAttributes.getNameAttributeKey(), createdUser.getUsername());
+        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes, extractAttributes.getNameAttributeKey(), createdUser.getUsername());
 
 //        return super.loadUser(userRequest);
     }
@@ -63,10 +64,10 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     }
 
     private User getUser(OAuthAttributes attributes, SocialType socialType) {
-
+        log.info("get User 호출");
         User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId()).orElse(null);
 
-        if(ObjectUtils.isEmpty(findUser)) {
+        if (ObjectUtils.isEmpty(findUser)) {
             saveUser(attributes, socialType);
         }
 
@@ -74,9 +75,11 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     }
 
     private Long saveUser(OAuthAttributes oAuthAttributes, SocialType socialType) {
+        log.info("save User 호출");
+
         User user = User.builder()
                 .age(28)
-                .imageUrl(oAuthAttributes.getOauth2UserInfo().getImageUrl())
+//                .imageUrl(oAuthAttributes.getOauth2UserInfo().getImageUrl())
                 .username(oAuthAttributes.getOauth2UserInfo().getEmail())
                 .password("social" + UUID.randomUUID())
                 .nickname(oAuthAttributes.getOauth2UserInfo().getNickName())

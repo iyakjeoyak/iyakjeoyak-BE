@@ -27,25 +27,34 @@ public class JwtUtil {
         this.accessTokenExpTime = accessTokenExpTime;
     }
 
+    // access 토큰 단독
     public String createAccessToken(JwtTokenPayload user) {
-        return createToken(user, accessTokenExpTime);
+        return createToken(user,"access" , accessTokenExpTime);
     }
 
 
+    // token 생성시 둘 다 만든다
+    public JwtTokenResult createAccessAndRefreshToken(JwtTokenPayload tokenPayload) {
+        String access = createToken(tokenPayload, "access", accessTokenExpTime);
+        String refresh = createToken(tokenPayload, "refresh", accessTokenExpTime);
 
-    private String createToken(JwtTokenPayload user, long expireTime) {
+        JwtTokenResult jwtTokenResult = new JwtTokenResult(access, refresh);
+
+        return jwtTokenResult;
+    }
+
+
+    private String createToken(JwtTokenPayload user,String type, long expireTime) {
         // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
         /*
         *  JwtTokenPayload : userId, username, nickname
-        * */
-
-        /*
-        * front에서 필요한 정보 : 패스워드 아이디 빼고 다
+        *
         * */
         Claims claims = Jwts.claims();
         claims.put("userId" ,user.getUserId());
         claims.put("username" ,user.getUsername());
         claims.put("nickname", user.getNickname());
+        claims.put("tokenType", type);
 //        claims.put("", user.)
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidty = now.plusSeconds(expireTime);
@@ -81,18 +90,27 @@ public class JwtUtil {
      * */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
 
+            // jWt token parsing
+            Claims claims = parseClaims(token);
+            String tokenType = claims.get("tokenType").toString();
+
+            /*
+            * claim에 들어오는 정보
+            * userid, username, nickname, tokentype, <iat, exp -> 얘넨 뭘까 시간인가 ..?>
+            * */
+            log.info("claims", claims);
+
+            return tokenType.equals("access");
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            throw e;
         } catch (ExpiredJwtException e) {
             throw e;
         } catch (UnsupportedJwtException e) {
-
+            throw e;
         } catch (IllegalArgumentException e) {
-
+            throw e;
         }
-        return false;
     }
 
     /*

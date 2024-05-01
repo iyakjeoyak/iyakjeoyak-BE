@@ -3,6 +3,7 @@ package com.example.demo.module.user.entity;
 
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
+import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,8 +43,10 @@ public class User extends BaseTimeEntity {
 
     private String socialId;
 
-    //TODO
-    private String imageUrl;
+//    private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Image image;
     private Integer age;
 
     // 한 줄 소개

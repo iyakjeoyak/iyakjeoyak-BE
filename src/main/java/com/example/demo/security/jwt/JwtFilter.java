@@ -29,6 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request 헤더에서 Authorization 정보 가져오기
         String authorizationHeader = request.getHeader("Authorization");
+        // access, ref
 
         // JWT가 헤더에 ㅣㅇㅆ는 경우 Bearer가 붙여있는 녀석 가져오기
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

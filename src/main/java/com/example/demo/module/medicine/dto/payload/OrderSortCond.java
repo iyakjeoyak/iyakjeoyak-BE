@@ -2,9 +2,15 @@ package com.example.demo.module.medicine.dto.payload;
 
 import com.querydsl.core.types.Order;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrderSortCond {
 
     @Schema(description = "정렬 필드명 enum 타입 : GRADE , HEART_COUNT , CREATED_DATE ")

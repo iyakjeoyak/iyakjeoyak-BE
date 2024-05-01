@@ -49,18 +49,4 @@ public class PointHistoryServiceImpl implements PointHistoryService {
                 .build());
         return pointResultMapper.toDto(save);
     }
-
-//    @Override
-//    @Transactional
-//    public void cleanupExpiredPoint() {
-//        LocalDateTime time = LocalDateTime.now().minusMinutes(1);
-//        for (PointHistory pointHistory : pointHistoryRepository.findByCreatedDateBefore(time)) {
-//            User user = pointHistory.getCreatedBy();
-//            if (pointHistory.getReserveUse().equals(RESERVE)) {
-//                user.minusPoint(point);
-//                pointHistoryRepository.delete(pointHistory);
-//            }
-//        }
-//    }
-
 }

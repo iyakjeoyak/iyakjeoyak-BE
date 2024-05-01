@@ -1,10 +1,16 @@
 package com.example.demo.module.review.dto.result;
 
+import com.example.demo.module.user.dto.result.UserResult;
+import com.example.demo.module.user.dto.result.UserSimpleResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -26,4 +32,13 @@ public class ReviewResult {
 
     @Schema(description = "후기 좋아요 수")
     private Integer heartCount;
+
+    @Schema(description = "생성자")
+    private UserSimpleResult createdBy;
+
+    @Schema(description = "작성 일자")
+    private LocalDateTime createdDate;
+
+    @Schema(description = "수정 일자")
+    private LocalDateTime modifiedDate;
 }
