@@ -83,5 +83,14 @@ public class UserController {
         return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
     }
 
-
+    @GetMapping("/check/username/{username}")
+    @Operation(summary = "로그인 id 중복체크", description = "로그인 id 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateUsername(@PathVariable("username") String username) {
+        return new ResponseEntity<>(userService.checkDuplicateUsername(username), HttpStatus.OK);
+    }
+    @GetMapping("/check/nickname/{nickname}")
+    @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateNickname(@PathVariable("nickname") String nickname) {
+        return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
+    }
 }

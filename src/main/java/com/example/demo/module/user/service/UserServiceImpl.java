@@ -222,4 +222,13 @@ public class UserServiceImpl implements UserService {
         return jwtUtil.createAccessToken(tokenPayload);
     }
 
+    @Override
+    public Boolean checkDuplicateUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Boolean checkDuplicateNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
 }
