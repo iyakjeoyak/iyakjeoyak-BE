@@ -52,7 +52,7 @@ public class UserController {
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
     public ResponseEntity<String> createAccessByRefresh(@RequestHeader HttpHeaders httpHeaders) {
 
-        String authorization = httpHeaders.get("authorization").getFirst();
+        String authorization = httpHeaders.get("Auhorization").get(0);
 
         return new ResponseEntity<>(userService.createAccessByRefresh(authorization), HttpStatus.OK);
     }

@@ -12,6 +12,7 @@ import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.point.service.PointHistoryService;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
+import com.example.demo.module.review.dto.result.ReviewDetailResult;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.review.entity.Review;
@@ -20,6 +21,7 @@ import com.example.demo.module.review.repository.ReviewHashtagRepository;
 import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
+import com.example.demo.util.mapper.ReviewDetailResultMapper;
 import com.example.demo.util.mapper.ReviewMapper;
 import com.example.demo.util.mapper.ReviewMyPageResultMapper;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ImageService imageService;
     private final ReviewImageRepository reviewImageRepository;
     private final PointHistoryService pointHistoryService;
+    private final ReviewDetailResultMapper reviewDetailResultMapper;
 
 
     @Override
@@ -95,8 +98,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewResult findOneByReviewId(Long reviewId) {
-        return reviewMapper.toDto(
+    public ReviewDetailResult findOneByReviewId(Long reviewId) {
+        return reviewDetailResultMapper.toDto(
                 reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)));
     }
 
@@ -110,10 +113,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
         //없어진 해쉬태그 삭제
         reviewHashtagRepository.findAllByReviewId(reviewId).forEach(ht -> {
-            if (!reviewEditPayload.getTagList().contains(ht)) {
-                reviewHashtagRepository.delete(ht);
-            }
-        });
+                    if (!reviewEditPayload.getTagList().contains(ht)) {
+                        reviewHashtagRepository.delete(ht);
+                    }
+                });
 
         // 새로 추가된 hashtag 테이블 생성
         reviewEditPayload.getTagList().forEach(htId -> {

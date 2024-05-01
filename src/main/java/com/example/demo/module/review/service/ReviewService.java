@@ -2,6 +2,7 @@ package com.example.demo.module.review.service;
 
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
 import com.example.demo.module.review.dto.payload.ReviewPayload;
+import com.example.demo.module.review.dto.result.ReviewDetailResult;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.common.result.PageResult;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface ReviewService {
     Long save(Long userId,ReviewPayload reviewPayload) throws IOException;
 
-    ReviewResult findOneByReviewId(Long reviewId);
+    ReviewDetailResult findOneByReviewId(Long reviewId);
 
     Long editReview(Long userId , Long reviewId, ReviewEditPayload reviewEditPayload);
 

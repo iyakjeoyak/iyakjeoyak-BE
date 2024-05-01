@@ -1,23 +1,16 @@
 package com.example.demo.module.review.dto.result;
 
-import com.example.demo.module.user.dto.result.UserResult;
+import com.example.demo.module.hashtag.dto.result.HashtagResult;
 import com.example.demo.module.user.dto.result.UserSimpleResult;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class ReviewResult {
-
+public class ReviewDetailResult {
     @Schema(description = "후기 PK")
     private Long id;
 
@@ -41,4 +34,13 @@ public class ReviewResult {
 
     @Schema(description = "수정 일자")
     private LocalDateTime modifiedDate;
+
+    @Schema(description = "영양제 PK")
+    private Long medicineId;
+
+    @Schema(description = "영양제 이름")
+    private String medicineName;
+
+    @Schema(description = "해쉬태그 리스트")
+    private List<HashtagResult> hashtagResults = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 package com.example.demo.module.review.entity;
 
 import com.example.demo.module.common.entity.BaseEntity;
+import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.review.dto.payload.ReviewEditPayload;
@@ -44,6 +45,10 @@ public class Review extends BaseEntity {
         this.title = reviewEditPayload.getTitle();
         this.star = reviewEditPayload.getStar();
         medicine.gradeAvg();
+    }
+
+    public List<Hashtag> getHashtagResult() {
+        return this.hashtagList.stream().map(ReviewHashtag::getHashtag).toList();
     }
 
     public void addHeartCount() {
