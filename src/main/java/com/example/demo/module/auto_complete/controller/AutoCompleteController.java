@@ -1,6 +1,7 @@
 package com.example.demo.module.auto_complete.controller;
 
 import com.example.demo.module.auto_complete.service.AutoCompleteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "(자동 완성)", description = "검색 자동완성 관련")
 @RequestMapping("/auto-complete")
 public class AutoCompleteController {
     private final AutoCompleteService autoCompleteService;
