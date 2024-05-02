@@ -38,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authorizationHeader != null&& authorizationHeader.startsWith("Bearer ")) {
             // Bearer 자르기
             String token = authorizationHeader.substring(7);
-            if(token.equals("null") || StringUtils.isEmpty(token)) {
+            if(!token.equals("null") && !StringUtils.isEmpty(token)) {
                 if (jwtUtil.validateToken(token)) {
 
                     JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
