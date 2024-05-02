@@ -86,9 +86,10 @@ class PharmacyServiceImpTest {
         PharmacyResult pharmacyResult1 = new PharmacyResult();
         PharmacyResult pharmacyResult2 = new PharmacyResult();
         PharmacyResult pharmacyResult3 = new PharmacyResult();
-        pharmacyResult1.setName("약국1");
-        pharmacyResult2.setName("약국2");
-        pharmacyResult3.setName("약국3");
+        pharmacyResult1.setDutyName("약국1");
+        pharmacyResult1.setDutyName("약국2");
+        pharmacyResult1.setDutyName("약국3");
+
 
         PageRequest pageRequest = PageRequest.of(0, 3);
         List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
