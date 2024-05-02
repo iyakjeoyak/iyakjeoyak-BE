@@ -19,10 +19,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,13 +49,13 @@ public class MedicineController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<MedicineSimpleResult>> findAllByQuery(
-            @RequestParam(name = "categoryId",required = false) Long categoryId,
-            @RequestParam(name = "hashtagId",required = false) Long hashtagId,
-            @RequestParam(name = "keyword",required = false) String keyword,
-            @RequestParam(name = "medicineOrderField",required = false) MedicineOrderField medicineOrderField,
-            @RequestParam(name = "sort",required = false) Order sort,
-            @RequestParam(name = "page", defaultValue = "0",required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10",required = false) int size) {
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "hashtagId", required = false) Long hashtagId,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "medicineOrderField", required = false) MedicineOrderField medicineOrderField,
+            @RequestParam(name = "sort", required = false) Order sort,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         MedicineSearchCond medicineSearchCond = MedicineSearchCond.builder()
                 .categoryId(categoryId)
                 .hashtagId(hashtagId)
@@ -100,5 +103,17 @@ public class MedicineController {
         long id = medicineService.save(medicinePayload);
         MedicineResult medicineResult = medicineService.findOneById(id);
         return new ResponseEntity<>(medicineResult, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/md")
+    @Operation(summary = "광고 영양제 전체 조회(리스트)", description = "광고 영양제 전체 조회(리스트)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<PageResult<MedicineSimpleResult>> findAllByIsAd(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "5", required = false) int size) {
+        Sort orderBy = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        return new ResponseEntity<>(medicineService.findAllByIsAd(PageRequest.of(page, size, orderBy)), HttpStatus.OK);
     }
 }

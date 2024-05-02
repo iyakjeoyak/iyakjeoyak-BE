@@ -58,7 +58,7 @@ public class MapServiceImpl implements MapService {
 ////        JSONObject body = (JSONObject) response.get("body");
 
         JSONObject body = getBodyValue(sb.toString());
-        if(body.get("items").toString().isEmpty()) {
+        if (body.get("items").toString().isEmpty()) {
             PageResult<MapSelectResult> pageResult = new PageResult<>();
             pageResult.setData(List.of());
             pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
@@ -133,8 +133,8 @@ public class MapServiceImpl implements MapService {
                 .dutyAddr((String) i.get("dutyAddr"))
                 .dutyName((String) i.get("dutyName"))
                 .dutyTel1((String) i.get("dutyTel1"))
-                .wgs84Lon(Double.parseDouble(wgs84Lon))
-                .wgs84Lat(Double.parseDouble(wgs84Lat))
+                .longitude(Double.parseDouble(wgs84Lon))
+                .latitude(Double.parseDouble(wgs84Lat))
                 .hpid((String) i.get("hpid"))
                 .build();
     }
@@ -143,11 +143,13 @@ public class MapServiceImpl implements MapService {
         List<BusinessHours> businessHours = new ArrayList<>();
         for (int n = 1; n <= 8; n++) {
             String str = "dutyTime";
+            Object start = i.get(str + n + "s");
+            Object close = i.get(str + n + "c");
             businessHours.add(
                     BusinessHours.builder()
                             .dayOfWeek(getDayOfWeek(n))
-                            .startHour(i.get(str + n + "s").toString())
-                            .endHour(i.get(str + n + "c").toString())
+                            .startHour(start == null ? "off" : start.toString())
+                            .endHour(close == null ? "off" : close.toString())
                             .build());
         }
         return businessHours;
@@ -162,7 +164,7 @@ public class MapServiceImpl implements MapService {
             case 5 -> "Fri";
             case 6 -> "Sat";
             case 7 -> "Sun";
-            case 8 -> "Off";
+            case 8 -> "Hol";
             default -> "";
         };
     }

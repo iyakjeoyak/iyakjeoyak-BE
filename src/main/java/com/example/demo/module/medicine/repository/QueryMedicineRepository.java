@@ -4,6 +4,7 @@ import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.MedicineOrderField;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
 import com.example.demo.module.medicine.entity.Medicine;
+import com.example.demo.module.medicine.entity.QMedicine;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -16,7 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.demo.module.medicine.entity.QMedicine.medicine;
 import static com.example.demo.module.medicine.entity.QMedicineCategory.medicineCategory;
@@ -73,6 +77,32 @@ public class QueryMedicineRepository {
         return PageableExecutionUtils.getPage(medicines, pageable, count::fetchOne);
     }
 
+    public List<String> getAutoComplete(String keyword, Integer limit) {
+        List<String> nameResult =
+                query.select(medicine.PRDLST_NM)
+                        .from(medicine)
+                        .orderBy(new OrderSpecifier<>(Order.ASC, medicine.PRDLST_NM))
+                        .where(nameLike(keyword))
+                        .offset(0)
+                        .limit(limit)
+                        .fetch();
+
+//        QMedicine sub = new QMedicine("sub");
+//        List<String> companyResult =
+//                query.select(medicine.BSSH_NM)
+//                        .from(medicine)
+//                        .orderBy(new OrderSpecifier<>(Order.ASC, medicine.BSSH_NM))
+//                        .where(companyStart(keyword))
+//                        .offset(0)
+//                        .limit(limit)
+//                        .fetch();
+//        return Stream.concat(companyResult.stream(), nameResult.stream())
+//                .sorted(Comparator.comparing(String::length)).toList();
+        nameResult.sort(Comparator.comparing(String::length));
+
+        return nameResult;
+    }
+
     private BooleanExpression heartCountGoe(Integer heartCount) {
         return (heartCount == null) ? null : medicine.heartCount.goe(heartCount);
     }
@@ -83,6 +113,14 @@ public class QueryMedicineRepository {
 
     private BooleanExpression nameLike(String keyword) {
         return StringUtils.isEmpty(keyword) ? null : medicine.PRDLST_NM.like("%" + keyword + "%");
+    }
+
+    private BooleanExpression nameStart(String keyword) {
+        return StringUtils.isEmpty(keyword) ? null : medicine.PRDLST_NM.like(keyword + "%");
+    }
+
+    private BooleanExpression companyStart(String keyword) {
+        return StringUtils.isEmpty(keyword) ? null : medicine.BSSH_NM.like(keyword + "%");
     }
 
     private BooleanExpression keywordLike(String keyword) {
@@ -99,9 +137,9 @@ public class QueryMedicineRepository {
     }
 
     private OrderSpecifier<?> setOrderBy(OrderSortCond orderSortCond) {
-        if(orderSortCond==null) return new OrderSpecifier<>(Order.ASC, medicine.id);
+        if (orderSortCond == null) return new OrderSpecifier<>(Order.ASC, medicine.id);
 
-        MedicineOrderField medicineOrderField = orderSortCond.getMedicineOrderField()==null ? MedicineOrderField.ID : orderSortCond.getMedicineOrderField();
+        MedicineOrderField medicineOrderField = orderSortCond.getMedicineOrderField() == null ? MedicineOrderField.ID : orderSortCond.getMedicineOrderField();
         Order sort = orderSortCond.getSort() == Order.ASC ? Order.ASC : Order.DESC;
 
 
