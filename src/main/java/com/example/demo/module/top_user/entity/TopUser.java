@@ -20,13 +20,5 @@ public class TopUser extends BaseTimeEntity {
 
     private Integer year;
 
-    private Integer month;
-
     private Integer week;
-
-    private Integer count;
-
-    public void addCount(){
-        this.count++;
-    }
 }
