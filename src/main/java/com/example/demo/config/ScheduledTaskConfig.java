@@ -28,12 +28,10 @@ public class ScheduledTaskConfig {
         LocalDateTime time = LocalDateTime.now().minusWeeks(1);
         LocalDate localDate = LocalDate.now();
         int year = localDate.getYear();
-        int month = localDate.getMonthValue();
         int week = localDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
         for (User user : pointHistoryRepository.findTop3UserAndSumChangedValue(time)) {
             TopUser topUser = topUserRepository.findByUserUserId(user.getUserId())
-                    .orElse(TopUser.builder().user(user).year(year).month(month).week(week).count(0).build());
-            topUser.addCount();
+                    .orElse(TopUser.builder().user(user).year(year).week(week).build());
             topUserRepository.save(topUser);
         }
     }

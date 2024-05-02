@@ -9,4 +9,8 @@ public class PharmacyPayload {
     private String latitude;
 
     private String longitude;
+
+    private String telephone;
+
+    private String hpid;
 }

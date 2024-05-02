@@ -1,6 +1,7 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
@@ -8,6 +9,8 @@ import com.example.demo.module.pharmacy.repository.PharmacyRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,8 @@ public class PharmacyServiceImp implements PharmacyService{
                 .name(pharmacyPayload.getName())
                 .latitude(pharmacyPayload.getLatitude())
                 .longitude(pharmacyPayload.getLongitude())
+                .telephone(pharmacyPayload.getTelephone())
+                .hpid(pharmacyPayload.getHpid())
                 .build()).getId();
     }
 
@@ -44,9 +49,9 @@ public class PharmacyServiceImp implements PharmacyService{
     }
 
     @Override
-    public List<PharmacyResult> getAllByUserId(Long userId) {
-       List<Pharmacy> pharmacies = pharmacyRepository.findAllByUserUserId(userId);
-       return pharmacyResultMapper.toDtoList(pharmacies);
+    public PageResult<PharmacyResult> getAllByUserId(Long userId, PageRequest pageRequest) {
+        Page<PharmacyResult> pharmacyResults = pharmacyRepository.findAllByUserUserId(userId, pageRequest).map(pharmacyResultMapper::toDto);
+        return new PageResult<>(pharmacyResults);
     }
 
     @Override
