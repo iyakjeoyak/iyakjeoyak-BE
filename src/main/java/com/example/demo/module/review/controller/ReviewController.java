@@ -123,4 +123,13 @@ public class ReviewController {
     public ResponseEntity<Long> deleteReviewImage(@RequestParam("reviewId") Long reviewId, @RequestParam("imageId") Long imageId, @AuthenticationPrincipal Long userId) throws IOException {
         return new ResponseEntity<>(reviewService.deleteReviewImage(userId, reviewId, imageId), HttpStatus.CREATED);
     }
+
+    @GetMapping("/top")
+    @Operation(summary = "베스트 리뷰 조회", description = "리뷰 좋아요 개수 기준")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<List<ReviewDetailResult>> findTopReview(@RequestParam(name = "size", defaultValue = "5", required = false) int size) {
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.findTopReview(size));
+    }
 }
