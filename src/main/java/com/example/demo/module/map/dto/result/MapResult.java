@@ -14,7 +14,7 @@ public class MapResult {
     private String dutyName;
     private String dutyTel1;
     private String hpid;
-    private Double wgs84Lat;
-    private Double wgs84Lon;
+    private Double latitude;
+    private Double longitude;
 
 }

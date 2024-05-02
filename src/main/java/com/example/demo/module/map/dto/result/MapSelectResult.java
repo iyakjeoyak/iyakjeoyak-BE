@@ -8,7 +8,7 @@ public class MapSelectResult extends MapResult{
     private String endTime;
 
     public MapSelectResult(MapResult mapResult, String startTime, String endTime) {
-        super(mapResult.getDutyAddr(), mapResult.getDutyName(), mapResult.getDutyTel1(), mapResult.getHpid(), mapResult.getWgs84Lat(), mapResult.getWgs84Lon());
+        super(mapResult.getDutyAddr(), mapResult.getDutyName(), mapResult.getDutyTel1(), mapResult.getHpid(), mapResult.getLatitude(), mapResult.getLongitude());
         this.startTime = startTime;
         this.endTime = endTime;
     }
