@@ -2,6 +2,7 @@ package com.example.demo.module.medicine.service;
 
 import com.example.demo.module.medicine.dto.payload.MedicinePayload;
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
+import com.example.demo.module.medicine.dto.result.MedicineOfWeekResult;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import com.example.demo.module.medicine.dto.result.MedicineSimpleResult;
 import com.example.demo.module.common.result.PageResult;
@@ -19,4 +20,6 @@ public interface MedicineService {
     MedicineResult findOneById(Long medicineId);
 
     PageResult<MedicineSimpleResult> findAllByIsAd(Pageable pageable);
+
+    List<MedicineOfWeekResult> getMedicineOfWeek();
 }

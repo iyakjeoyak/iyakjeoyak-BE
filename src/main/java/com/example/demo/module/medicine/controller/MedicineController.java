@@ -5,6 +5,7 @@ import com.example.demo.module.heart_medicine.service.HeartMedicineService;
 import com.example.demo.module.medicine.dto.payload.MedicineOrderField;
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
+import com.example.demo.module.medicine.dto.result.MedicineOfWeekResult;
 import com.example.demo.module.medicine.service.MedicineService;
 import com.example.demo.module.medicine.dto.payload.MedicinePayload;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
@@ -116,4 +117,14 @@ public class MedicineController {
         Sort orderBy = Sort.by(Sort.Direction.DESC, "modifiedDate");
         return new ResponseEntity<>(medicineService.findAllByIsAd(PageRequest.of(page, size, orderBy)), HttpStatus.OK);
     }
+
+    @GetMapping("/week")
+    @Operation(summary = "이주의 영양제 조회", description = "이주의 영양제 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<List<MedicineOfWeekResult>> getMedicineOfWeek() {
+        return new ResponseEntity<>(medicineService.getMedicineOfWeek(), HttpStatus.OK);
+    }
+
 }
