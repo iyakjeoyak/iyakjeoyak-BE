@@ -10,12 +10,15 @@ import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -28,8 +31,6 @@ public class MapServiceImpl implements MapService {
         this.serviceKey = serviceKey;
     }
 
-    //    @Value("${open_api.service_key.ermct}")
-//    private String serviceKey;
 
     @Override
     public PageResult<MapSelectResult> findByLocation(String lon, String lat, int size) throws IOException, JSONException {
@@ -40,56 +41,9 @@ public class MapServiceImpl implements MapService {
         sb.append("&").append("numOfRows").append("=").append(size);
         sb.append("&").append("_type").append("=").append("json");
 
-//        URL url = new URL(sb.toString());
-////
-////        BufferedReader br;
-////        br = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-////        String result = br.readLine();
-////        JSONParser jsonParser = new JSONParser();
-////        JSONObject jsonObject;
-////
-////        try{
-////            jsonObject = (JSONObject) jsonParser.parse(result);
-////        }catch (Exception e) {
-////            throw new JSONException("파싱 실패");
-////        }
-////
-////        JSONObject response = (JSONObject) jsonObject.get("response");
-////        JSONObject body = (JSONObject) response.get("body");
-
-        JSONObject body = getBodyValue(sb.toString());
-        if (body.get("items").toString().isEmpty()) {
-            PageResult<MapSelectResult> pageResult = new PageResult<>();
-            pageResult.setData(List.of());
-            pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
-            pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
-            pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
-            return pageResult;
-        }
-
-        JSONObject items = (JSONObject) body.get("items");
-        JSONArray array = new JSONArray();
-        try {
-            array = (JSONArray) items.get("item");
-        } catch (ClassCastException e) {
-            JSONObject item = (JSONObject) items.get("item");
-            if (!item.toString().isEmpty()) {
-                array.add(item);
-            }
-        }
-        List<MapSelectResult> list = new ArrayList<>();
-        for (Object o : array) {
-            JSONObject i = (JSONObject) o;
-            list.add(new MapSelectResult(getMapSelectResult(i), i.get("startTime").toString(), i.get("endTime").toString()));
-        }
-
-        PageResult<MapSelectResult> pageResult = new PageResult<>();
-        pageResult.setData(list);
-        pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
-        pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
-        pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
-        return pageResult;
+        return getMapSelectResultPageResult(sb.toString());
     }
+
 
     @Override
     public MapDetailResult getMapDetail(String mapId) throws IOException, JSONException {
@@ -106,7 +60,107 @@ public class MapServiceImpl implements MapService {
         return new MapDetailResult(getMapSelectResult(item), getBusinessHoursList(item));
     }
 
-    // 내무 메서드
+    @Override
+    public PageResult<MapDetailResult> findByNameSortByLocation(String name, String city, String district, Double lon, Double lat, int size) throws IOException, JSONException {
+        StringBuilder sb = new StringBuilder(serviceUrl + "/getParmacyListInfoInqire");
+        sb.append("?").append("serviceKey").append("=").append(serviceKey);
+        if (StringUtils.hasText(name)) {
+            sb.append("&").append("QN").append("=").append(URLEncoder.encode(name, "UTF-8"));
+        }
+        if (StringUtils.hasText(district)) {
+            sb.append("&").append("Q1").append("=").append(URLEncoder.encode(district, "UTF-8"));
+        }
+        if (StringUtils.hasText(city)) {
+            sb.append("&").append("Q0").append("=").append(URLEncoder.encode(city, "UTF-8"));
+        }
+        sb.append("&").append("numOfRows").append("=").append(size);
+        sb.append("&").append("_type").append("=").append("json");
+
+        PageResult<MapDetailResult> mapMapDetailResultPageResult = getMapDetailResultPageResult(sb.toString());
+        mapMapDetailResultPageResult.getData().sort(Comparator.comparingDouble(i -> Math.abs(i.getLongitude() - lon) + Math.abs(i.getLatitude() - lat)));
+
+        return mapMapDetailResultPageResult;
+    }
+
+    // 내부 메서드
+    private PageResult<MapSelectResult> getMapSelectResultPageResult(String result) throws IOException {
+        JSONObject body = getBodyValue(result);
+
+        JSONObject items = (JSONObject) body.get("items");
+        if (items.toString().isEmpty()) {
+            PageResult<MapSelectResult> pageResult = new PageResult<>();
+            pageResult.setData(List.of());
+            pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
+            pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
+            pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
+            return pageResult;
+        }
+        JSONArray array = new JSONArray();
+        try {
+            array = (JSONArray) items.get("item");
+        } catch (ClassCastException e) {
+            JSONObject item = (JSONObject) items.get("item");
+            if (!item.toString().isEmpty()) {
+                array.add(item);
+            }
+        }
+
+        List<MapSelectResult> list = new ArrayList<>();
+        for (Object o : array) {
+            JSONObject i = (JSONObject) o;
+            String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
+            String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
+
+            list.add(new MapSelectResult(getMapSelectResult(i), startTime, endTime));
+        }
+
+        PageResult<MapSelectResult> pageResult = new PageResult<>();
+        pageResult.setData(list);
+        pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
+        pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
+        pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
+        return pageResult;
+    }
+
+    private PageResult<MapDetailResult> getMapDetailResultPageResult(String result) throws IOException {
+        JSONObject body = getBodyValue(result);
+
+        JSONObject items = (JSONObject) body.get("items");
+        if (items.toString().isEmpty()) {
+            PageResult<MapDetailResult> pageResult = new PageResult<>();
+            pageResult.setData(List.of());
+            pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
+            pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
+            pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
+            return pageResult;
+        }
+        JSONArray array = new JSONArray();
+        try {
+            array = (JSONArray) items.get("item");
+        } catch (ClassCastException e) {
+            JSONObject item = (JSONObject) items.get("item");
+            if (!item.toString().isEmpty()) {
+                array.add(item);
+            }
+        }
+
+        List<MapDetailResult> list = new ArrayList<>();
+        for (Object o : array) {
+            JSONObject i = (JSONObject) o;
+            String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
+            String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
+
+            list.add(new MapDetailResult(new MapSelectResult(getMapSelectResult(i), startTime, endTime), getBusinessHoursList(i)));
+        }
+
+        PageResult<MapDetailResult> pageResult = new PageResult<>();
+        pageResult.setData(list);
+        pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
+        pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
+        pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
+        return pageResult;
+    }
+
     private JSONObject getBodyValue(String json) throws IOException, JSONException {
         URL url = new URL(json);
 

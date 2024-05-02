@@ -28,4 +28,6 @@ public interface ReviewService {
     Long deleteReviewImage(Long userId, Long reviewId, Long imageId);
 
     Long addReviewImage(Long userId, Long reviewId, List<MultipartFile> img) throws IOException;
+
+    List<ReviewDetailResult> findTopReview(int size);
 }
