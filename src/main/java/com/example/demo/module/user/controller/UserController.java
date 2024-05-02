@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,18 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/getKakaoAuthCode")
+    @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
+    public String getKakaoAuthorizationCode(@RequestParam String code) throws IOException, ParseException {
+        return userService.authorizationCodeToKakao(code);
+    }
+
+    @GetMapping("/getGoogleAuthCode")
+    @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
+    public String getGoogleAuthorizationCode(@RequestParam String code) {
+        return userService.authorizationCodeToGoogle(code);
+    }
 
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
     @PostMapping

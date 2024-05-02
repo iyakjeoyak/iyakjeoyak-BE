@@ -1,7 +1,6 @@
 package com.example.demo.module.user.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.repository.ImageRepository;
@@ -23,20 +22,27 @@ import com.example.demo.security.jwt.JwtTokenResult;
 import com.example.demo.security.jwt.JwtUtil;
 import com.example.demo.util.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -54,8 +60,8 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     /*
-    * 회원 가입
-    * */
+     * 회원 가입
+     * */
     @Transactional
     public Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException {
         Boolean isUsernameExist = userRepository.existsByUsername(userJoinPayload.getUsername());
@@ -107,14 +113,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /*
-    * 유저 로그인
-    * */
+     * 유저 로그인
+     * */
     @Override
     public JwtTokenResult loginUser(UserLoginPayload userLoginPayload) {
         // body에서 페이로드로 페스워드 꺼내기
         String password = userLoginPayload.getPassword();
         // username으로 user 테이블 조회
-        User user = userRepository.findByUsername(userLoginPayload.getUsername());
+        User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow();
 
         //TODO 더 추가할 수도 있음
 
@@ -151,8 +157,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /*
-    * 회원 삭제
-    * */
+     * 회원 삭제
+     * */
     @Transactional
     @Override
     public Long deleteByUserId(Long userId) {
@@ -166,8 +172,8 @@ public class UserServiceImpl implements UserService {
 
 
     /*
-    * 회원 수정
-    * */
+     * 회원 수정
+     * */
     //TODO edit 개발
     @Transactional
     @Override
@@ -193,8 +199,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /*
-    * 유저 벨리데이션, 인터셉터?
-    * */
+     * 유저 벨리데이션, 인터셉터?
+     * */
     @Override
     public UserValidationResult validationUser(Long userId) {
 
@@ -231,4 +237,129 @@ public class UserServiceImpl implements UserService {
     public Boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
+
+    @Override
+    public String  authorizationCodeToGoogle(String code) {
+
+        //TODO 따로 파는 구글
+
+        String client_id = "308885497470-d9ad3gn7me2elbvkl6suc068h96tm20p.apps.googleusercontent.com";
+        String redirect_uri = "http://localhost:5173/auth/google";
+//        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+client_id+"&redirect_uri="+redirect_uri+"&code=" + code;
+        String accessToken = "";
+        String refreshToken = "";
+
+
+        return "123";
+    }
+
+    @Override
+    public String createTokenByGoogleToken(String token) {
+
+        //TODO 따로 파는 구글
+
+        return "123";
+    }
+
+    @Override
+    public String authorizationCodeToKakao(String code) throws IOException, ParseException {
+        // 인가코드는 한 번 사용되면 끝
+        //kakao request + code
+        String client_id = "de8b9223df12fdd44efb37c8c599e22f";
+        String grant_type = "authorization_code";
+        String redirect_uri = "http://localhost:5173/auth/kakao";
+        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+client_id+"&redirect_uri="+redirect_uri+"&code=" + code;
+        String accessToken = "";
+        String refreshToken = "";
+
+        try {
+            URL url = new URL(requestUrl);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+            BufferedReader bw = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            int responseCode = connection.getResponseCode();
+            log.info("resposnecode = {}", responseCode);
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(result);
+            accessToken = (String) jsonObject.get("access_token");
+            refreshToken = (String) jsonObject.get("refresh_token");
+
+            log.info("access {}", accessToken);
+            log.info("refresh {}", refreshToken);
+
+            br.close();
+            bw.close();
+
+
+        }catch (Exception e) {
+
+        }
+
+        createTokenByKakaoToken(accessToken);
+
+        return null;
+
+    }
+
+    @Override
+    public String createTokenByKakaoToken(String token) {
+
+        try {
+            URL url = new URL("https://kapi.kakao.com/v2/user/me");
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+            conn.setDoOutput(true);
+
+            int responseCode = conn.getResponseCode();
+            log.info("response = {}", responseCode);
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(result);
+            JSONObject properties = (JSONObject) jsonObject.get("properties");
+            JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
+//            String gender = (JSONObject)
+//            String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+
+//            User findser = userRepository.findByUsername(email).orElseThrow();
+
+//            if (ObjectUtils.isEmpty()) {
+            // createUser();
+            // jwtUtil.createAccessToken()
+//            }
+
+            // jwtUtil.createAccessToken()
+
+        } catch (Exception e)
+        {
+        }
+
+        return null;
+    }
+
 }

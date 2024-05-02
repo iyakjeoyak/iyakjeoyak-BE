@@ -49,7 +49,7 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             Object kakaoAccount = customOAuth2User.getAttribute("kakao_account");
             String email = customOAuth2User.getEmail();
 
-            User findUser = userRepository.findByUsername(email);
+            User findUser = userRepository.findByUsername(email).orElseThrow();
 
             jwtUtil.createAccessAndRefreshToken(new JwtTokenPayload(findUser.getUserId(), findUser.getUsername(), findUser.getNickname()));
 

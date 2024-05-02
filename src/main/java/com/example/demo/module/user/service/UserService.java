@@ -10,9 +10,11 @@ import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.entity.UserHashtag;
 import com.example.demo.security.jwt.JwtTokenResult;
+import org.json.simple.parser.ParseException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 public interface UserService {
     Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException;
@@ -33,4 +35,11 @@ public interface UserService {
 
     Boolean checkDuplicateNickname(String nickname);
 
+    String authorizationCodeToKakao(String code) throws IOException, ParseException;
+
+    String createTokenByKakaoToken(String token);
+
+    String authorizationCodeToGoogle(String code);
+
+    String createTokenByGoogleToken(String token);
 }
