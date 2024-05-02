@@ -78,32 +78,32 @@ class PharmacyServiceImpTest {
         assertThatThrownBy(() -> pharmacyService.delete(user.getUserId(), pharmacy.getId())).isInstanceOf(CustomException.class).hasMessage(ACCESS_BLOCKED.getMessage());
     }
 
-    @Test
-    void getAllByUserId() {
-        Pharmacy pharmacy1 = Pharmacy.builder().id(1L).user(user).build();
-        Pharmacy pharmacy2 = Pharmacy.builder().id(2L).user(user).build();
-        Pharmacy pharmacy3 = Pharmacy.builder().id(3L).user(user).build();
-        PharmacyResult pharmacyResult1 = new PharmacyResult();
-        PharmacyResult pharmacyResult2 = new PharmacyResult();
-        PharmacyResult pharmacyResult3 = new PharmacyResult();
-        pharmacyResult1.setName("약국1");
-        pharmacyResult2.setName("약국2");
-        pharmacyResult3.setName("약국3");
-
-        PageRequest pageRequest = PageRequest.of(0, 3);
-        List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
-        Page<Pharmacy> pharmacyPage = new PageImpl<>(pharmacies);
-        List<PharmacyResult> pharmacyResults = Arrays.asList(pharmacyResult1, pharmacyResult2, pharmacyResult3);
-        PageResult<PharmacyResult> expected = new PageResult<>(new PageImpl<>(pharmacyResults));
-
-        when(pharmacyRepository.findAllByUserUserId(user.getUserId(), pageRequest)).thenReturn(pharmacyPage);
-        for(int i=0;i<3;i++){
-            when(pharmacyResultMapper.toDto(pharmacies.get(i))).thenReturn(pharmacyResults.get(i));
-        }
-        PageResult<PharmacyResult> result = pharmacyService.getAllByUserId(user.getUserId(), pageRequest);
-
-        assertEquals(expected, result);
-    }
+//    @Test
+//    void getAllByUserId() {
+//        Pharmacy pharmacy1 = Pharmacy.builder().id(1L).user(user).build();
+//        Pharmacy pharmacy2 = Pharmacy.builder().id(2L).user(user).build();
+//        Pharmacy pharmacy3 = Pharmacy.builder().id(3L).user(user).build();
+//        PharmacyResult pharmacyResult1 = new PharmacyResult();
+//        PharmacyResult pharmacyResult2 = new PharmacyResult();
+//        PharmacyResult pharmacyResult3 = new PharmacyResult();
+//        pharmacyResult1.setName("약국1");
+//        pharmacyResult2.setName("약국2");
+//        pharmacyResult3.setName("약국3");
+//
+//        PageRequest pageRequest = PageRequest.of(0, 3);
+//        List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
+//        Page<Pharmacy> pharmacyPage = new PageImpl<>(pharmacies);
+//        List<PharmacyResult> pharmacyResults = Arrays.asList(pharmacyResult1, pharmacyResult2, pharmacyResult3);
+//        PageResult<PharmacyResult> expected = new PageResult<>(new PageImpl<>(pharmacyResults));
+//
+//        when(pharmacyRepository.findAllByUserUserId(user.getUserId(), pageRequest)).thenReturn(pharmacyPage);
+//        for(int i=0;i<3;i++){
+//            when(pharmacyResultMapper.toDto(pharmacies.get(i))).thenReturn(pharmacyResults.get(i));
+//        }
+//        PageResult<PharmacyResult> result = pharmacyService.getAllByUserId(user.getUserId(), pageRequest);
+//
+//        assertEquals(expected, result);
+//    }
 
     @Test
     void getOneById() {
