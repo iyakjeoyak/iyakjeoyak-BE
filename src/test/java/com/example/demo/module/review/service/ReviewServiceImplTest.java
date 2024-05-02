@@ -128,7 +128,7 @@ class ReviewServiceImplTest {
         when(pointHistoryService.savePointHistory(any(), any(), any(), any(), any())).thenReturn(PointHistoryResult.builder().id(1L).domain(REVIEW).changedValue(10).pointSum(20).build());
 
         //then
-        assertThat(reviewService.save(user.getUserId(), reviewPayload)).isEqualTo(review.getId());
+        assertThat(reviewService.save(user.getUserId(), reviewPayload, List.of())).isEqualTo(review.getId());
     }
 
     @Test
@@ -140,7 +140,7 @@ class ReviewServiceImplTest {
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.ofNullable(null));
 
         //then
-        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload)).isInstanceOf(CustomException.class).hasMessage(USER_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload, List.of())).isInstanceOf(CustomException.class).hasMessage(USER_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -155,7 +155,7 @@ class ReviewServiceImplTest {
         when(reviewRepository.existsByMedicineIdAndCreatedByUserId(medicine.getId(), user.getUserId())).thenReturn(true);
 
         //then
-        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload)).isInstanceOf(CustomException.class).hasMessage(REVIEW_DUPLICATION.getMessage());
+        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload, List.of())).isInstanceOf(CustomException.class).hasMessage(REVIEW_DUPLICATION.getMessage());
     }
 
     @Test
@@ -171,7 +171,7 @@ class ReviewServiceImplTest {
         when(medicineRepository.findById(medicine.getId())).thenReturn(Optional.ofNullable(null));
 
         //then
-        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload)).isInstanceOf(CustomException.class).hasMessage(MEDICINE_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload, List.of())).isInstanceOf(CustomException.class).hasMessage(MEDICINE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -192,7 +192,7 @@ class ReviewServiceImplTest {
         //5. 이미지 저장 로직이 정상적으로 작동해야함
         when(imageService.saveImageList(any())).thenThrow(new IOException());
 
-        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload)).isInstanceOf(IOException.class);
+        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload, List.of())).isInstanceOf(IOException.class);
     }
 
     @Test
@@ -218,13 +218,13 @@ class ReviewServiceImplTest {
         when(hashtagRepository.findById(any())).thenReturn(Optional.ofNullable(null));
 
         //then
-        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload)).isInstanceOf(CustomException.class).hasMessage(HASHTAG_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> reviewService.save(user.getUserId(), reviewPayload, List.of())).isInstanceOf(CustomException.class).hasMessage(HASHTAG_NOT_FOUND.getMessage());
     }
 
     private ReviewPayload setPayload() {
         ReviewPayload reviewPayload = new ReviewPayload();
         reviewPayload.setTagList(hashtagList.stream().map(Hashtag::getId).toList());
-        reviewPayload.setImgList(List.of());
+//        reviewPayload.setImgList(List.of());
         reviewPayload.setStar(star);
         reviewPayload.setMedicineId(medicine.getId());
         reviewPayload.setTitle("testTitle");

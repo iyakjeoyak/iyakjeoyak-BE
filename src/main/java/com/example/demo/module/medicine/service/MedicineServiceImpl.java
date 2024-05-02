@@ -1,26 +1,23 @@
 package com.example.demo.module.medicine.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
-import com.example.demo.module.medicine.entity.Medicine;
-import com.example.demo.module.medicine.repository.MedicineRepository;
+import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.medicine.dto.payload.MedicinePayload;
+import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import com.example.demo.module.medicine.dto.result.MedicineSimpleResult;
+import com.example.demo.module.medicine.entity.Medicine;
+import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.medicine.repository.QueryMedicineRepository;
 import com.example.demo.util.mapper.MedicineMapper;
 import com.example.demo.util.mapper.MedicineSimpleResultMapper;
-import com.example.demo.module.common.result.PageResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
-import static com.example.demo.global.exception.ErrorCode.*;
+import static com.example.demo.global.exception.ErrorCode.MEDICINE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -56,4 +53,11 @@ public class MedicineServiceImpl implements MedicineService {
         return medicineMapper.toDto(medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)));
     }
+
+    @Override
+    public PageResult<MedicineSimpleResult> findAllByIsAd(Pageable pageable) {
+        Page<MedicineSimpleResult> map = medicineRepository.findAllByIsAdTrue(pageable).map(simpleResultMapper::toDto);
+        return new PageResult<>(map);
+    }
+
 }

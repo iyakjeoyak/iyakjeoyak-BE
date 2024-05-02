@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -38,7 +39,7 @@ public class UserStorageServiceImpl implements UserStorageService {
 
     @Transactional
     @Override
-    public Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload) throws IOException {
+    public Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload, MultipartFile image) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저를 찾지 못했습니다."));
         Medicine medicine = null;
@@ -46,7 +47,7 @@ public class UserStorageServiceImpl implements UserStorageService {
             medicine = medicineRepository.findById(userStorageCreatePayload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
         }
 
-        Image image = imageService.saveImage(userStorageCreatePayload.getImage());
+        Image saveImage = imageService.saveImage(image);
 
         UserStorage save = userStorageRepository.save(
                 UserStorage.builder()
@@ -54,7 +55,7 @@ public class UserStorageServiceImpl implements UserStorageService {
                         .medicine(medicine)
                         .medicineName(userStorageCreatePayload.getMedicineName())
                         .expirationDate(userStorageCreatePayload.getExpirationDate())
-                        .image(image)
+                        .image(saveImage)
                         .memo(userStorageCreatePayload.getMemo())
                         .build());
 
@@ -86,7 +87,7 @@ public class UserStorageServiceImpl implements UserStorageService {
 
     @Transactional
     @Override
-    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload) throws IOException {
+    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload ,MultipartFile image) throws IOException {
 
 
         UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관 내역이 없습니다."));
@@ -100,13 +101,13 @@ public class UserStorageServiceImpl implements UserStorageService {
         }
 
         // 수정 Image 를 받으면 이미지도 수정
-        if (payload.getImage() != null && !payload.getImage().isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             //기존 이미지 삭제
             imageService.deleteImage(userId, userStorage.getImage().getId());
 
             //새로운 이미지 저장
-            Image image = imageService.saveImage(payload.getImage());
-            userStorage.changeImage(image);
+            Image save = imageService.saveImage(image);
+            userStorage.changeImage(save);
         }
 
         // 이미지 이외 정보 수정

@@ -28,4 +28,9 @@ public interface UserService {
     UserValidationResult validationUser(Long userId);
 
     String createAccessByRefresh(String refreshToken);
+
+    Boolean checkDuplicateUsername(String username);
+
+    Boolean checkDuplicateNickname(String nickname);
+
 }

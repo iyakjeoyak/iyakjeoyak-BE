@@ -35,7 +35,9 @@ public class UserController {
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
     @PostMapping
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
-    public ResponseEntity<Long> createUser(@RequestPart @Valid UserJoinPayload userJoinPayload, @RequestPart MultipartFile imgFile) throws IOException {
+    public ResponseEntity<Long> createUser(
+            @RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload,
+            @RequestPart(value = "imgFile" , required = false) MultipartFile imgFile) throws IOException {
         return new ResponseEntity<>(userService.createUser(userJoinPayload, imgFile), HttpStatus.CREATED);
     }
 
@@ -83,5 +85,14 @@ public class UserController {
         return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
     }
 
-
+    @GetMapping("/check/username/{username}")
+    @Operation(summary = "로그인 id 중복체크", description = "로그인 id 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateUsername(@PathVariable("username") String username) {
+        return new ResponseEntity<>(userService.checkDuplicateUsername(username), HttpStatus.OK);
+    }
+    @GetMapping("/check/nickname/{nickname}")
+    @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateNickname(@PathVariable("nickname") String nickname) {
+        return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
+    }
 }
