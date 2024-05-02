@@ -23,8 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,19 +54,19 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     @Operation(summary = "리뷰 단건 조회", description = "리뷰 단건 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ReviewResult.class))),
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ReviewDetailResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@PathVariable("reviewId") Long reviewId) {
         return new ResponseEntity<>(reviewService.findOneByReviewId(reviewId), HttpStatus.OK);
     }
 
     @PostMapping("")
-    @Operation(summary = "리뷰 생성", description = "리부 생성")
+    @Operation(summary = "리뷰 생성", description = "리뷰 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestBody ReviewPayload reviewPayload, @AuthenticationPrincipal Long userId) throws IOException {
-        return new ResponseEntity<>(reviewService.save(userId, reviewPayload), HttpStatus.CREATED);
+    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile" , required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+        return new ResponseEntity<>(reviewService.save(userId, reviewPayload, imgFile), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{reviewId}")
@@ -106,7 +108,10 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> addReviewImages(@RequestBody ReviewImageAddPayload payload, @AuthenticationPrincipal Long userId) throws IOException {
+    public ResponseEntity<Long> addReviewImages(@RequestParam("reviewId") Long reviewId, @RequestPart(name = "imgFile", required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+        ReviewImageAddPayload payload = new ReviewImageAddPayload();
+        payload.setReviewId(reviewId);
+        payload.setImages(imgFile);
         return new ResponseEntity<>(reviewService.addReviewImage(userId, payload.getReviewId(), payload.getImages()), HttpStatus.CREATED);
     }
 
@@ -117,5 +122,14 @@ public class ReviewController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> deleteReviewImage(@RequestParam("reviewId") Long reviewId, @RequestParam("imageId") Long imageId, @AuthenticationPrincipal Long userId) throws IOException {
         return new ResponseEntity<>(reviewService.deleteReviewImage(userId, reviewId, imageId), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/top")
+    @Operation(summary = "베스트 리뷰 조회", description = "리뷰 좋아요 개수 기준")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<List<ReviewDetailResult>> findTopReview(@RequestParam(name = "size", defaultValue = "5", required = false) int size) {
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.findTopReview(size));
     }
 }

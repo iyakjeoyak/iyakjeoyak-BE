@@ -22,8 +22,8 @@ public class UserStorageCreatePayload {
 
     @Schema(description = "간략 메모")
     private String memo;
-
-    @Schema(description = "대표 이미지")
-    private MultipartFile image;
+//
+//    @Schema(description = "대표 이미지")
+//    private MultipartFile image;
 
 }

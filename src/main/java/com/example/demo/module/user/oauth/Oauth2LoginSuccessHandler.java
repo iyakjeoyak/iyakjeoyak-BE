@@ -1,6 +1,8 @@
 package com.example.demo.module.user.oauth;
 
+import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
+import com.example.demo.security.jwt.JwtTokenPayload;
 import com.example.demo.security.jwt.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +48,11 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             Map<String, Object> attributes = customOAuth2User.getAttributes();
             Object kakaoAccount = customOAuth2User.getAttribute("kakao_account");
             String email = customOAuth2User.getEmail();
+
+            User findUser = userRepository.findByUsername(email).orElseThrow();
+
+            jwtUtil.createAccessAndRefreshToken(new JwtTokenPayload(findUser.getUserId(), findUser.getUsername(), findUser.getNickname()));
+
             log.info("kakaoAccount {}", kakaoAccount);
             for (String key : attributes.keySet()){
                 System.out.println("key : " + key + " / " + "value : " + attributes.get(key));

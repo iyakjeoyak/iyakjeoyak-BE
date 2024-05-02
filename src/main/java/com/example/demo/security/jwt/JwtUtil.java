@@ -103,14 +103,16 @@ public class JwtUtil {
 
             return tokenType.equals("access");
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw e;
+
         } catch (ExpiredJwtException e) {
-            throw e;
+//            throw e;
         } catch (UnsupportedJwtException e) {
-            throw e;
+//            throw e;
         } catch (IllegalArgumentException e) {
-            throw e;
+//            throw e;
         }
+
+        return false;
     }
 
     /*

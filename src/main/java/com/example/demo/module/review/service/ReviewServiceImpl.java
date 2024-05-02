@@ -27,6 +27,7 @@ import com.example.demo.util.mapper.ReviewMyPageResultMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Long save(Long userId, ReviewPayload reviewPayload) throws IOException {
+    public Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -77,7 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .medicine(medicine)
                         .build());
 
-        List<Image> images = imageService.saveImageList(reviewPayload.getImgList());
+        List<Image> images = imageService.saveImageList(imgFile);
 
         images.forEach(i ->
                 reviewImageRepository.save(
@@ -113,10 +114,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
         //없어진 해쉬태그 삭제
         reviewHashtagRepository.findAllByReviewId(reviewId).forEach(ht -> {
-                    if (!reviewEditPayload.getTagList().contains(ht)) {
-                        reviewHashtagRepository.delete(ht);
-                    }
-                });
+            if (!reviewEditPayload.getTagList().contains(ht)) {
+                reviewHashtagRepository.delete(ht);
+            }
+        });
 
         // 새로 추가된 hashtag 테이블 생성
         reviewEditPayload.getTagList().forEach(htId -> {
@@ -198,4 +199,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         return reviewId;
     }
+
+    @Override
+    public List<ReviewDetailResult> findTopReview(int size) {
+        List<Review> heartCount = reviewRepository.findAll(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "heartCount"))).getContent();
+        return reviewDetailResultMapper.toDtoList(heartCount);
+    }
+
 }

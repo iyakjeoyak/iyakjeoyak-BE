@@ -2,16 +2,22 @@ package com.example.demo.module.heart_review.service;
 
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.module.point.entity.PointDomain;
+import com.example.demo.module.point.entity.ReserveUse;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.heart_review.entity.HeartReview;
 import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.review.repository.ReviewRepository;
+import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
+import static com.example.demo.module.point.entity.PointDomain.*;
 
 @Service
 @RequiredArgsConstructor
@@ -67,13 +73,20 @@ public class HeartReviewServiceImpl implements HeartReviewService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        User user = review.getCreatedBy();
         if (checkReviewHeart(userId, reviewId)){
             review.decreaseHeartCount();
+            if(!Objects.equals(user.getUserId(), userId)){
+                user.minusPoint(HEART.getPoint());
+            }
             Long heartReviewId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
             heartReviewRepository.deleteById(heartReviewId);
             return false;
         }
         review.addHeartCount();
+        if(!Objects.equals(user.getUserId(), userId)){
+            user.reviewPoint(HEART.getPoint());
+        }
         heartReviewRepository.save(HeartReview
                 .builder()
                 .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND)))

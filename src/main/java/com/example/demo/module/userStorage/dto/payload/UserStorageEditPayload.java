@@ -23,6 +23,6 @@ public class UserStorageEditPayload {
     @Schema(description = "간략 메모")
     private String memo;
 
-    @Schema(description = "수정할 이미지 (수정 안하면 null OR 빈객체)")
-    private MultipartFile image;
+//    @Schema(description = "수정할 이미지 (수정 안하면 null OR 빈객체)")
+//    private MultipartFile image;
 }

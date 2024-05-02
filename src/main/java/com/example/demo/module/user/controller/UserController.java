@@ -12,12 +12,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,11 +33,25 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/getKakaoAuthCode")
+    @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
+    public String getKakaoAuthorizationCode(@RequestParam String code) throws IOException, ParseException {
+        return userService.authorizationCodeToKakao(code);
+    }
+
+    @GetMapping("/getGoogleAuthCode")
+    @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
+    public String getGoogleAuthorizationCode(@RequestParam String code) {
+        return userService.authorizationCodeToGoogle(code);
+    }
+
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
     @PostMapping
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
-    public ResponseEntity<Long> createUser(@RequestBody @Valid UserJoinPayload userJoinPayload) throws IOException {
-        return new ResponseEntity<>(userService.createUser(userJoinPayload), HttpStatus.CREATED);
+    public ResponseEntity<Long> createUser(
+            @RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload,
+            @RequestPart(value = "imgFile" , required = false) MultipartFile imgFile) throws IOException {
+        return new ResponseEntity<>(userService.createUser(userJoinPayload, imgFile), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -82,5 +98,14 @@ public class UserController {
         return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
     }
 
-
+    @GetMapping("/check/username/{username}")
+    @Operation(summary = "로그인 id 중복체크", description = "로그인 id 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateUsername(@PathVariable("username") String username) {
+        return new ResponseEntity<>(userService.checkDuplicateUsername(username), HttpStatus.OK);
+    }
+    @GetMapping("/check/nickname/{nickname}")
+    @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크(중복이면 ture)")
+    public ResponseEntity<Boolean> checkDuplicateNickname(@PathVariable("nickname") String nickname) {
+        return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
+    }
 }

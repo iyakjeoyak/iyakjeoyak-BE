@@ -22,9 +22,9 @@ public class ReviewPayload {
 
     @Schema(description = "hashtag PK 리스트")
     private List<Long> tagList = new ArrayList<>();
-
-    @Schema(description = "이미지 파일(MultipartFile) 리스트")
-    private List<MultipartFile> imgList = new ArrayList<>();
+//
+//    @Schema(description = "이미지 파일(MultipartFile) 리스트")
+//    private List<MultipartFile> imgList = new ArrayList<>();
 
     @Schema(description = "리뷰 내용")
     @NotEmpty(message = "내용을 입력해주세요")

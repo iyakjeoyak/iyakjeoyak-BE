@@ -1,6 +1,7 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
@@ -8,10 +9,10 @@ import com.example.demo.module.pharmacy.repository.PharmacyRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
@@ -25,11 +26,16 @@ public class PharmacyServiceImp implements PharmacyService{
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
+        System.out.println("pharmacyPayload = " + pharmacyPayload);
+        System.out.println("userId = " + userId);
         return pharmacyRepository.save(Pharmacy.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
-                .name(pharmacyPayload.getName())
-                .latitude(pharmacyPayload.getLatitude())
+                .dutyAddr(pharmacyPayload.getDutyAddr())
+                .dutyName(pharmacyPayload.getDutyName())
+                .dutyTel1(pharmacyPayload.getDutyTel1())
+                .hpid(pharmacyPayload.getHpid())
                 .longitude(pharmacyPayload.getLongitude())
+                .latitude(pharmacyPayload.getLatitude())
                 .build()).getId();
     }
 
@@ -44,9 +50,9 @@ public class PharmacyServiceImp implements PharmacyService{
     }
 
     @Override
-    public List<PharmacyResult> getAllByUserId(Long userId) {
-       List<Pharmacy> pharmacies = pharmacyRepository.findAllByUserUserId(userId);
-       return pharmacyResultMapper.toDtoList(pharmacies);
+    public PageResult<PharmacyResult> getAllByUserId(Long userId, PageRequest pageRequest) {
+        Page<PharmacyResult> pharmacyResults = pharmacyRepository.findAllByUserUserId(userId, pageRequest).map(pharmacyResultMapper::toDto);
+        return new PageResult<>(pharmacyResults);
     }
 
     @Override

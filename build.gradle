@@ -69,7 +69,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// json 파싱용
-	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+//	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	implementation group: 'org.json', name: 'json', version: '20200518'
 }
 
 tasks.named('test') {

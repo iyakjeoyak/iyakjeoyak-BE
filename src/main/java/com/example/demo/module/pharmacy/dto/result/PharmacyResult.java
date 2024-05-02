@@ -4,9 +4,17 @@ import lombok.Data;
 
 @Data
 public class PharmacyResult {
-    private String name;
+    private Long id;
+
+    private String dutyName;
+
+    private String dutyAddr;
 
     private String latitude;
 
     private String longitude;
+
+    private String dutyTel1;
+
+    private String hpid;
 }

@@ -1,6 +1,7 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -86,12 +90,17 @@ class PharmacyServiceImpTest {
         pharmacyResult2.setName("약국2");
         pharmacyResult3.setName("약국3");
 
+        PageRequest pageRequest = PageRequest.of(0, 3);
         List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
-        List<PharmacyResult> expected = Arrays.asList(pharmacyResult1, pharmacyResult2, pharmacyResult3);
-        when(pharmacyRepository.findAllByUserUserId(user.getUserId())).thenReturn(pharmacies);
-        when(pharmacyResultMapper.toDtoList(pharmacies)).thenReturn(expected);
+        Page<Pharmacy> pharmacyPage = new PageImpl<>(pharmacies);
+        List<PharmacyResult> pharmacyResults = Arrays.asList(pharmacyResult1, pharmacyResult2, pharmacyResult3);
+        PageResult<PharmacyResult> expected = new PageResult<>(new PageImpl<>(pharmacyResults));
 
-        List<PharmacyResult> result = pharmacyService.getAllByUserId(user.getUserId());
+        when(pharmacyRepository.findAllByUserUserId(user.getUserId(), pageRequest)).thenReturn(pharmacyPage);
+        for(int i=0;i<3;i++){
+            when(pharmacyResultMapper.toDto(pharmacies.get(i))).thenReturn(pharmacyResults.get(i));
+        }
+        PageResult<PharmacyResult> result = pharmacyService.getAllByUserId(user.getUserId(), pageRequest);
 
         assertEquals(expected, result);
     }
