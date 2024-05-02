@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
@@ -28,13 +26,16 @@ public class PharmacyServiceImp implements PharmacyService{
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
+        System.out.println("pharmacyPayload = " + pharmacyPayload);
+        System.out.println("userId = " + userId);
         return pharmacyRepository.save(Pharmacy.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
-                .name(pharmacyPayload.getName())
-                .latitude(pharmacyPayload.getLatitude())
-                .longitude(pharmacyPayload.getLongitude())
-                .telephone(pharmacyPayload.getTelephone())
+                .dutyAddr(pharmacyPayload.getDutyAddr())
+                .dutyName(pharmacyPayload.getDutyName())
+                .dutyTel1(pharmacyPayload.getDutyTel1())
                 .hpid(pharmacyPayload.getHpid())
+                .longitude(pharmacyPayload.getLongitude())
+                .latitude(pharmacyPayload.getLatitude())
                 .build()).getId();
     }
 
