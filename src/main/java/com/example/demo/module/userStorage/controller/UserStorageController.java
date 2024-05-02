@@ -62,7 +62,7 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveStorage(@AuthenticationPrincipal Long userId, @RequestPart("payload") UserStorageCreatePayload payload, @RequestPart(name = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<Long> saveStorage(@AuthenticationPrincipal Long userId, @RequestPart("userStorageCreatePayload") UserStorageCreatePayload payload, @RequestPart(name = "image", required = false) MultipartFile image) throws IOException {
         return new ResponseEntity<>(userStorageService.saveUserStorage(userId, payload, image), HttpStatus.CREATED);
     }
 
@@ -71,7 +71,7 @@ public class UserStorageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> saveStorage(@PathVariable("storageId") Long storageId, @AuthenticationPrincipal Long userId, @RequestPart("payload") UserStorageEditPayload payload, @RequestPart(name = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<Long> saveStorage(@PathVariable("storageId") Long storageId, @AuthenticationPrincipal Long userId, @RequestPart("userStorageEditPayload") UserStorageEditPayload payload, @RequestPart(name = "imgFile", required = false) MultipartFile image) throws IOException {
         return new ResponseEntity<>(userStorageService.editUserStorage(userId, storageId, payload, image), HttpStatus.CREATED);
     }
 
