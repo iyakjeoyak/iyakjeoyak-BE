@@ -17,12 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "지도(약국)", description = "약국 지도 관련")
-@RequestMapping("/map/pharmacy")
+@RequestMapping("/pharmacy")
 public class PharmacyController {
     private final PharmacyService pharmacyService;
     @GetMapping
