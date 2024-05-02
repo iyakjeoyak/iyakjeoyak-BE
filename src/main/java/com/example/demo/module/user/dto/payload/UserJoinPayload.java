@@ -57,7 +57,5 @@ public class UserJoinPayload {
     @NotEmpty(message = "관심 태그가 들어 가지 않았습니다.")
     private List<Long> userHashtagList = new ArrayList<>();
 
-    @Schema(description = "이미지")
-    private MultipartFile profileImage;
 
 }

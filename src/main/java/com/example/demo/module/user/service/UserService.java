@@ -10,11 +10,12 @@ import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.entity.UserHashtag;
 import com.example.demo.security.jwt.JwtTokenResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 public interface UserService {
-    Long createUser(UserJoinPayload userJoinPayload) throws IOException;
+    Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException;
 
     JwtTokenResult loginUser(UserLoginPayload userLoginPayload);
 
