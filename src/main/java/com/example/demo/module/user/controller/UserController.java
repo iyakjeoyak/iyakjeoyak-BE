@@ -10,6 +10,7 @@ import com.example.demo.security.jwt.JwtTokenResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,14 +37,22 @@ public class UserController {
 
     @GetMapping("/getKakaoAuthCode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
-    public JwtTokenResult getKakaoAuthorizationCode(@RequestParam String code) throws IOException, ParseException {
-        return userService.authorizationCodeToKakao(code);
+    public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
+        JwtTokenResult token = userService.authorizationCodeToKakao(code);
+
+        setRefreshCookie(response, token.getRefreshToken());
+        response.setHeader("Authorization", token.getAccessToken());
+
+        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
     }
 
     @GetMapping("/getGoogleAuthCode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
-    public String getGoogleAuthorizationCode(@RequestParam String code) {
-        return userService.authorizationCodeToGoogle(code);
+    public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
+        String token = userService.authorizationCodeToGoogle(code);
+//        setRefreshCookie(response, token.getRefreshToken());
+//        response.setHeader("Authorization", token.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
@@ -51,38 +60,36 @@ public class UserController {
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
     public ResponseEntity<Long> createUser(
             @RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload,
-            @RequestPart(value = "imgFile" , required = false) MultipartFile imgFile) throws IOException {
+            @RequestPart(value = "imgFile", required = false) MultipartFile imgFile) throws IOException {
         return new ResponseEntity<>(userService.createUser(userJoinPayload, imgFile), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     @Operation(summary = "유저 로그인", description = "유저 로그인 및 JWT 생성")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginPayload userLoginPayload) {
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginPayload userLoginPayload, HttpServletResponse response) {
         // 토큰 생성 시작
         // jwt username, nicknmame
         // 이미 유저 정보를 저장했으니깐 ? 여기서 검증을 하나?
         JwtTokenResult token = userService.loginUser(userLoginPayload);
 
-        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
-        // 1day
-        cookie.setMaxAge(24 * 60 * 60);
-
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        setRefreshCookie(response, token.getRefreshToken());
+        response.setHeader("Authorization", token.getAccessToken());
 
         return new ResponseEntity<>(token.getAccessToken(), HttpStatus.OK);
     }
 
+
     @PostMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
-    public ResponseEntity<String> createAccessByRefresh(@RequestHeader HttpHeaders httpHeaders) {
+    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie) {
 
-        String authorization = httpHeaders.get("Auhorization").get(0);
+        String refreshToken = "";
+        if (cookie != null) {
+            refreshToken= cookie.getValue();
+        }
 
-        return new ResponseEntity<>(userService.createAccessByRefresh(authorization), HttpStatus.OK);
+        return new ResponseEntity<>(userService.createAccessByRefresh(refreshToken), HttpStatus.OK);
     }
-
 
     @GetMapping("/checkToken")
     @Operation(summary = "토큰 검증", description = "토큰 검증")
@@ -113,9 +120,21 @@ public class UserController {
     public ResponseEntity<Boolean> checkDuplicateUsername(@PathVariable("username") String username) {
         return new ResponseEntity<>(userService.checkDuplicateUsername(username), HttpStatus.OK);
     }
+
     @GetMapping("/check/nickname/{nickname}")
     @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크(중복이면 ture)")
     public ResponseEntity<Boolean> checkDuplicateNickname(@PathVariable("nickname") String nickname) {
         return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
+    }
+
+    private void setRefreshCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie("refreshToken", token);
+        // 1day
+        cookie.setMaxAge(24 * 60 * 60);
+
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }
