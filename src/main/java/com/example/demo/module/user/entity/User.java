@@ -24,7 +24,7 @@ public class User extends BaseTimeEntity {
     private Long userId;
 
     // email
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String username;
 
     // TODO 얘도 빼야할 듯?
