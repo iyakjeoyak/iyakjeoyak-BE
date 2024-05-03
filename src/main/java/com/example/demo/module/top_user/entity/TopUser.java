@@ -1,6 +1,5 @@
 package com.example.demo.module.top_user.entity;
 
-import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TopUser extends BaseTimeEntity {
+public class TopUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,4 +20,6 @@ public class TopUser extends BaseTimeEntity {
     private Integer year;
 
     private Integer week;
+
+    private Integer ranking;
 }

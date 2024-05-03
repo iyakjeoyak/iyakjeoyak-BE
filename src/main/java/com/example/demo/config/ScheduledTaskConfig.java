@@ -1,14 +1,11 @@
 package com.example.demo.config;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.module.heart_medicine.entity.HeartMedicine;
 import com.example.demo.module.heart_medicine.repository.HeartMedicineRepository;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.medicine_of_week.entity.MedicineOfWeek;
 import com.example.demo.module.medicine_of_week.repository.MedicineOfWeekRepository;
 import com.example.demo.module.point.repository.PointHistoryRepository;
-import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.top_user.entity.TopUser;
 import com.example.demo.module.top_user.repository.TopUserRepository;
@@ -47,10 +44,14 @@ public class ScheduledTaskConfig {
         LocalDate localDate = LocalDate.now();
         int year = localDate.getYear();
         int week = localDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
+        int ranking = 1;
         for (User user : pointHistoryRepository.findTop3UserAndSumChangedValue(time)) {
-            TopUser topUser = topUserRepository.findByUserUserId(user.getUserId())
-                    .orElse(TopUser.builder().user(user).year(year).week(week).build());
-            topUserRepository.save(topUser);
+            topUserRepository.save(TopUser.builder()
+                    .user(user)
+                    .year(year)
+                    .week(week)
+                    .ranking(ranking++)
+                    .build());
         }
     }
 
