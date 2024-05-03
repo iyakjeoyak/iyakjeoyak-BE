@@ -27,21 +27,17 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    // TODO 얘도 빼야할 듯?
+//    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    //TODO 얘는 nullable = false 빼야할 듯?
+//    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    //oauth
-    @Enumerated(EnumType.STRING)
-    private SocialType socialType;
-
-    private String socialId;
 
 //    private String imageUrl;
 
