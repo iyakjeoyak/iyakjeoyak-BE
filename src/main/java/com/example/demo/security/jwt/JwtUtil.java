@@ -35,8 +35,8 @@ public class JwtUtil {
 
     // token 생성시 둘 다 만든다
     public JwtTokenResult createAccessAndRefreshToken(JwtTokenPayload tokenPayload) {
-        String access = "Bearer " + createToken(tokenPayload, "access", accessTokenExpTime);
-        String refresh = "Bearer " + createToken(tokenPayload, "refresh", accessTokenExpTime);
+        String access  = createToken(tokenPayload, "access", accessTokenExpTime);
+        String refresh = createToken(tokenPayload, "refresh", 86400);
 
         JwtTokenResult jwtTokenResult = new JwtTokenResult(access, refresh);
 
