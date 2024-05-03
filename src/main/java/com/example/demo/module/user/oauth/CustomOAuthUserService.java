@@ -49,11 +49,11 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
 
         OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
 
-        User createdUser = getUser(extractAttributes, socialType);
+//        User createdUser = getUser(extractAttributes, socialType);
 
-        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes, extractAttributes.getNameAttributeKey(), createdUser.getUsername());
+//        return new CustomOAuth2User(Collections.singleton(new SimpleGrantedAuthority("USER")), attributes, extractAttributes.getNameAttributeKey(), createdUser.getUsername());
 
-//        return super.loadUser(userRequest);
+        return super.loadUser(userRequest);
     }
 
     private SocialType getSocialType(String registrationId) {
@@ -63,15 +63,17 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
         return SocialType.KAKAO;
     }
 
-    private User getUser(OAuthAttributes attributes, SocialType socialType) {
+    private String getUser(OAuthAttributes attributes, SocialType socialType) {
         log.info("get User 호출");
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId()).orElse(null);
+//        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId()).orElse(null);
+//
+//        if (ObjectUtils.isEmpty(findUser)) {
+//            saveUser(attributes, socialType);
+//        }
 
-        if (ObjectUtils.isEmpty(findUser)) {
-            saveUser(attributes, socialType);
-        }
+//        return findUser;
 
-        return findUser;
+        return "123";
     }
 
     private Long saveUser(OAuthAttributes oAuthAttributes, SocialType socialType) {
@@ -83,8 +85,8 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
                 .username(oAuthAttributes.getOauth2UserInfo().getEmail())
                 .password("social" + UUID.randomUUID())
                 .nickname(oAuthAttributes.getOauth2UserInfo().getNickName())
-                .socialType(socialType)
-                .socialId(oAuthAttributes.getOauth2UserInfo().getId())
+//                .socialType(socialType)
+//                .socialId(oAuthAttributes.getOauth2UserInfo().getId())
                 .gender(Gender.MALE)
                 .build();
 
