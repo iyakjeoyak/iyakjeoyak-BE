@@ -10,13 +10,8 @@ import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
-import com.example.demo.module.user.entity.User;
-import com.example.demo.module.user.entity.UserHashtag;
-import com.example.demo.module.user.entity.UserRole;
-import com.example.demo.module.user.repository.RoleRepository;
-import com.example.demo.module.user.repository.UserHashTagRepository;
-import com.example.demo.module.user.repository.UserRepository;
-import com.example.demo.module.user.repository.UserRoleRepository;
+import com.example.demo.module.user.entity.*;
+import com.example.demo.module.user.repository.*;
 import com.example.demo.security.jwt.JwtTokenPayload;
 import com.example.demo.security.jwt.JwtTokenResult;
 import com.example.demo.security.jwt.JwtUtil;
@@ -38,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Optional;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
@@ -56,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final UserHashTagRepository userHashTagRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
+    private final SocialUserRepository socialUserRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -262,7 +259,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String authorizationCodeToKakao(String code) throws IOException, ParseException {
+    public JwtTokenResult authorizationCodeToKakao(String code) throws IOException, ParseException {
         // 인가코드는 한 번 사용되면 끝
         //kakao request + code
         String client_id = "de8b9223df12fdd44efb37c8c599e22f";
@@ -309,17 +306,25 @@ public class UserServiceImpl implements UserService {
 
         }
 
-        createTokenByKakaoToken(accessToken);
+        JwtTokenResult jwtTokenResult = createTokenByKakaoToken(accessToken);
 
-        return null;
+        return jwtTokenResult;
 
     }
 
     @Override
-    public String createTokenByKakaoToken(String token) {
+    public JwtTokenResult createTokenByKakaoToken(String token) {
+
+        JwtTokenResult jwtTokenResult = null;
+        String profileImage = "";
+        String gender = "";
+        String email = "";
+        String socialId = "";
 
         try {
             URL url = new URL("https://kapi.kakao.com/v2/user/me");
+
+            log.info("token {}", token);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -343,23 +348,37 @@ public class UserServiceImpl implements UserService {
             JSONObject jsonObject = (JSONObject) parser.parse(result);
             JSONObject properties = (JSONObject) jsonObject.get("properties");
             JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
-//            String gender = (JSONObject)
-//            String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+            profileImage = (String) properties.get("profile_image");
+            gender = (String) profiles.get("gender");
+            email = (String) profiles.get("email");
+//            JSONObject id = (JSONObject) jsonObject.get("id");
+//            socialId = (String) id.get("id");
 
-//            User findser = userRepository.findByUsername(email).orElseThrow();
-
-//            if (ObjectUtils.isEmpty()) {
-            // createUser();
-            // jwtUtil.createAccessToken()
-//            }
-
-            // jwtUtil.createAccessToken()
-
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
         }
 
-        return null;
+        User findUser = userRepository.findByUsername(email).orElse(null);
+
+        if (ObjectUtils.isEmpty(findUser)) {
+
+            // user table도 같이 저장
+            User saveUser = User.builder().username(email).gender(Gender.valueOf(gender.toUpperCase())).build();
+            userRepository.save(saveUser);
+
+            // social user 저장
+            SocialUser socialUser = SocialUser.builder().socialId(socialId).socialType(SocialType.KAKAO).user(saveUser).build();
+
+            socialUserRepository.save(socialUser);
+
+            JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder().userId(saveUser.getUserId()).username(email).build();
+
+            jwtTokenResult = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
+        } else {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다. 확인하시고 다시 시도해주세요.");
+        }
+
+
+        return jwtTokenResult;
     }
 
 }

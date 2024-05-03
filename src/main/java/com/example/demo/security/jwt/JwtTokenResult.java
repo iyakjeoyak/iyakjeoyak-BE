@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class JwtTokenResult {
 
-    JwtTokenResult(String accessToken, String refreshToken) {
+    public JwtTokenResult(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
