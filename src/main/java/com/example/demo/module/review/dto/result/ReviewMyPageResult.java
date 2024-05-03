@@ -1,9 +1,12 @@
 package com.example.demo.module.review.dto.result;
 
+import com.example.demo.module.image.dto.result.ImageResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class ReviewMyPageResult {
@@ -27,4 +30,7 @@ public class ReviewMyPageResult {
 
     @Schema(description = "리뷰 수정 일자")
     private LocalDateTime modifiedDate;
+
+    @Schema(description = "이미지 리스트")
+    private List<ImageResult> imageResult = new ArrayList<>();
 }
