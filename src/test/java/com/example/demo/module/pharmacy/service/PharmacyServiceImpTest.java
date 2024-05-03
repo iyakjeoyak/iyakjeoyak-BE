@@ -90,7 +90,6 @@ class PharmacyServiceImpTest {
         pharmacyResult1.setDutyName("약국2");
         pharmacyResult1.setDutyName("약국3");
 
-
         PageRequest pageRequest = PageRequest.of(0, 3);
         List<Pharmacy> pharmacies = Arrays.asList(pharmacy1, pharmacy2, pharmacy3);
         Page<Pharmacy> pharmacyPage = new PageImpl<>(pharmacies);

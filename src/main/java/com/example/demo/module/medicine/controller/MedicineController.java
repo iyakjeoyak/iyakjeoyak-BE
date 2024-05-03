@@ -53,7 +53,7 @@ public class MedicineController {
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @RequestParam(name = "hashtagId", required = false) Long hashtagId,
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "medicineOrderField", required = false) MedicineOrderField medicineOrderField,
+            @RequestParam(name = "orderBy", required = false) MedicineOrderField medicineOrderField,
             @RequestParam(name = "sort", required = false) Order sort,
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size) {

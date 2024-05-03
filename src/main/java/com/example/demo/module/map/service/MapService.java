@@ -2,7 +2,6 @@ package com.example.demo.module.map.service;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.map.dto.result.MapDetailResult;
-import com.example.demo.module.map.dto.result.MapResult;
 import com.example.demo.module.map.dto.result.MapSelectResult;
 import org.json.JSONException;
 
