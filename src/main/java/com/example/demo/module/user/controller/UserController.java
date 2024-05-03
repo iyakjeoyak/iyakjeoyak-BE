@@ -9,6 +9,7 @@ import com.example.demo.module.user.service.UserService;
 import com.example.demo.security.jwt.JwtTokenResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class UserController {
 
     @GetMapping("/getKakaoAuthCode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
-    public String getKakaoAuthorizationCode(@RequestParam String code) throws IOException, ParseException {
+    public JwtTokenResult getKakaoAuthorizationCode(@RequestParam String code) throws IOException, ParseException {
         return userService.authorizationCodeToKakao(code);
     }
 
@@ -56,12 +57,21 @@ public class UserController {
 
     @PostMapping("/login")
     @Operation(summary = "유저 로그인", description = "유저 로그인 및 JWT 생성")
-    public ResponseEntity<JwtTokenResult> loginUser(@RequestBody UserLoginPayload userLoginPayload) {
+    public ResponseEntity<String> loginUser(@RequestBody UserLoginPayload userLoginPayload) {
         // 토큰 생성 시작
         // jwt username, nicknmame
         // 이미 유저 정보를 저장했으니깐 ? 여기서 검증을 하나?
         JwtTokenResult token = userService.loginUser(userLoginPayload);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+
+        Cookie cookie = new Cookie("refreshToken", token.getRefreshToken());
+        // 1day
+        cookie.setMaxAge(24 * 60 * 60);
+
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        return new ResponseEntity<>(token.getAccessToken(), HttpStatus.OK);
     }
 
     @PostMapping("/createAccessByRefresh")
