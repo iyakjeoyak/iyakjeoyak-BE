@@ -1,6 +1,8 @@
 package com.example.demo.module.review.dto.result;
 
 import com.example.demo.module.hashtag.dto.result.HashtagResult;
+import com.example.demo.module.image.dto.result.ImageResult;
+import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserSimpleResult;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,4 +48,7 @@ public class ReviewResult {
 
     @Schema(description = "수정 일자")
     private LocalDateTime modifiedDate;
+
+    @Schema(description = "리뷰 이미지")
+    private List<ImageResult> imageResult;
 }

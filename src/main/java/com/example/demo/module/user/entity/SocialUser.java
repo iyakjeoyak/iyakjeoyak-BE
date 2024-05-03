@@ -23,6 +23,6 @@ public class SocialUser {
 
     private String imageUrl;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 }

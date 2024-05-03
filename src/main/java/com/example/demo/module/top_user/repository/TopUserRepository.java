@@ -5,11 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TopUserRepository extends JpaRepository<TopUser, Long> {
-    Optional<TopUser> findByUserUserId(Long userId);
 
-    List<TopUser> findByYearAndWeek(int year, int week);
+    List<TopUser> findByYearAndWeekOrderByRanking(int year, int week);
 }

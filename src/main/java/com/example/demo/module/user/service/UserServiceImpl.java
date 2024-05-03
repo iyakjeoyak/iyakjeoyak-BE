@@ -359,7 +359,9 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
         }
 
-        User findUser = userRepository.findByUsername(email).orElse(null);
+//        User findUser = userRepository.findByUsername(email).orElse(null);
+
+        SocialUser findUser = socialUserRepository.findSocialUserBySocialEmail(email).orElse(null);
 
         if (ObjectUtils.isEmpty(findUser)) {
 
@@ -368,7 +370,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().socialId(socialId).socialType(SocialType.KAKAO).socialEmail(email).build();
+            SocialUser socialUser = SocialUser.builder().imageUrl(profileImage).socialId(socialId).socialType(SocialType.KAKAO).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 

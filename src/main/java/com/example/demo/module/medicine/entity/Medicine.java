@@ -3,6 +3,8 @@ package com.example.demo.module.medicine.entity;
 import com.example.demo.module.category.entity.Category;
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
+import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.entity.MedicineImage;
 import com.example.demo.module.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
@@ -99,6 +101,9 @@ public class Medicine extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
+
+    @OneToOne
+    private Image image;
 
     // 추가 getter
     public List<Hashtag> getHashtags() {
