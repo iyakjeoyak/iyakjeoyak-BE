@@ -2,7 +2,7 @@ package com.example.demo.module.medicine.dto.result;
 
 import com.example.demo.module.category.dto.result.CategoryResult;
 import com.example.demo.module.hashtag.dto.result.HashtagResult;
-import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.dto.result.ImageResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -39,5 +39,5 @@ public class MedicineSimpleResult {
     private Integer reviewCount;
 
     @Schema(description = "이미지")
-    private Image image;
+    private ImageResult image;
 }

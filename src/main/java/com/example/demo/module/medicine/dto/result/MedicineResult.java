@@ -2,7 +2,7 @@ package com.example.demo.module.medicine.dto.result;
 
 import com.example.demo.module.category.dto.result.CategoryResult;
 import com.example.demo.module.hashtag.dto.result.HashtagResult;
-import com.example.demo.module.image.entity.Image;
+import com.example.demo.module.image.dto.result.ImageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -60,5 +60,5 @@ public class MedicineResult {
     private Boolean isBookMark;
 
     @Schema(description = "이미지")
-    private Image image;
+    private ImageResult image;
 }
