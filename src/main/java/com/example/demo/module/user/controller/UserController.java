@@ -145,7 +145,7 @@ public class UserController {
         // 1day
         cookie.setMaxAge(24 * 60 * 60);
 
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
