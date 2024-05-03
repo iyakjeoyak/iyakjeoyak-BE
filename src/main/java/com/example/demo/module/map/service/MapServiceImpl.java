@@ -85,9 +85,8 @@ public class MapServiceImpl implements MapService {
     // 내부 메서드
     private PageResult<MapSelectResult> getMapSelectResultPageResult(String result) throws IOException {
         JSONObject body = getBodyValue(result);
-
-        JSONObject items = (JSONObject) body.get("items");
-        if (items.toString().isEmpty()) {
+        System.out.println(body.toString());
+        if (body.get("items").toString().isEmpty()) {
             PageResult<MapSelectResult> pageResult = new PageResult<>();
             pageResult.setData(List.of());
             pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
@@ -95,6 +94,7 @@ public class MapServiceImpl implements MapService {
             pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
             return pageResult;
         }
+        JSONObject items = (JSONObject) body.get("items");
         JSONArray array = new JSONArray();
         try {
             array = (JSONArray) items.get("item");
@@ -125,8 +125,7 @@ public class MapServiceImpl implements MapService {
     private PageResult<MapDetailResult> getMapDetailResultPageResult(String result) throws IOException {
         JSONObject body = getBodyValue(result);
 
-        JSONObject items = (JSONObject) body.get("items");
-        if (items.toString().isEmpty()) {
+        if (body.get("items").toString().isEmpty()) {
             PageResult<MapDetailResult> pageResult = new PageResult<>();
             pageResult.setData(List.of());
             pageResult.setNumber(Integer.parseInt(body.get("pageNo").toString()));
@@ -134,6 +133,8 @@ public class MapServiceImpl implements MapService {
             pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
             return pageResult;
         }
+        JSONObject items = (JSONObject) body.get("items");
+
         JSONArray array = new JSONArray();
         try {
             array = (JSONArray) items.get("item");
