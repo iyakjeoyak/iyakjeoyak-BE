@@ -1,8 +1,11 @@
 package com.example.demo.module.user.controller;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
+import com.example.demo.module.user.dto.result.ChangePasswordPayLoad;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.service.UserService;
@@ -15,16 +18,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -125,6 +125,19 @@ public class UserController {
     @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크(중복이면 ture)")
     public ResponseEntity<Boolean> checkDuplicateNickname(@PathVariable("nickname") String nickname) {
         return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<Long> changePassword(@AuthenticationPrincipal Long userId, @RequestBody ChangePasswordPayLoad changePasswordPayLoad) {
+        if (!changePasswordPayLoad.getNewPassword().equals(changePasswordPayLoad.getNewPasswordConfirm())) {
+            throw new CustomException(ErrorCode.PW_CONFIRM_FAIL);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId, changePasswordPayLoad.getOldPassword(), changePasswordPayLoad.getNewPassword()));
+    }
+
+    @PostMapping("/findPassword")
+    public ResponseEntity<Long> findPassword(@RequestBody FindPwPayLoad findPwPayLoad) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findPassword(findPwPayLoad.getEmail(),findPwPayLoad.getNewPassword(), findPwPayLoad.getAuthCode()));
     }
 
     private void setRefreshCookie(HttpServletResponse response, String token) {

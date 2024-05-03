@@ -38,6 +38,10 @@ public interface UserService {
 
     String createTokenByGoogleToken(String token);
 
+    Long changePassword(Long userId, String oldPassword, String newPassword);
+
+    Long findPassword(String username, String newPassword, String verifyCode);
+
 
 
 }
