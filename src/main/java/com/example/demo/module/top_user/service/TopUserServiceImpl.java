@@ -28,7 +28,7 @@ public class TopUserServiceImpl implements TopUserService{
         int week = localDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
 
         List<UserResult> users = new ArrayList<>();
-        for (TopUser topUser : topUserRepository.findByYearAndWeek(year, week)) {
+        for (TopUser topUser : topUserRepository.findByYearAndWeekOrderByRanking(year, week)) {
             User user = topUser.getUser();
             users.add(userMapper.toDto(user));
         }
