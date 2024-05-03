@@ -259,6 +259,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public JwtTokenResult authorizationCodeToKakao(String code) throws IOException, ParseException {
         // 인가코드는 한 번 사용되면 끝
         //kakao request + code
@@ -313,6 +314,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public JwtTokenResult createTokenByKakaoToken(String token) {
 
         JwtTokenResult jwtTokenResult = null;
@@ -362,11 +364,11 @@ public class UserServiceImpl implements UserService {
         if (ObjectUtils.isEmpty(findUser)) {
 
             // user table도 같이 저장
-            User saveUser = User.builder().username(email).gender(Gender.valueOf(gender.toUpperCase())).build();
+            User saveUser = User.builder().gender(Gender.valueOf(gender.toUpperCase())).build();
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().socialId(socialId).socialType(SocialType.KAKAO).user(saveUser).build();
+            SocialUser socialUser = SocialUser.builder().socialId(socialId).socialType(SocialType.KAKAO).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 
