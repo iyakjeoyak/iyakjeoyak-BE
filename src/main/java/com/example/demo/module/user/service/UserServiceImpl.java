@@ -1,10 +1,12 @@
 package com.example.demo.module.user.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.repository.ImageRepository;
 import com.example.demo.module.image.service.ImageService;
+import com.example.demo.module.mail.service.MailService;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
     private final SocialUserRepository socialUserRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     /*
      * 회원 가입
@@ -256,6 +259,27 @@ public class UserServiceImpl implements UserService {
         //TODO 따로 파는 구글
 
         return "123";
+    }
+
+    @Override
+    public Long changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        if (!passwordEncoder.matches(user.getPassword(), oldPassword)) {
+            throw new CustomException(PW_NOT_MATCH);
+        }
+        user.changePassword(passwordEncoder.encode(newPassword));
+        return user.getUserId();
+    }
+
+    @Override
+    public Long findPassword(String username, String newPassword, String verifyCode) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        if (!mailService.verifyMail(user.getUsername(), verifyCode)) {
+            throw new CustomException(MAIL_NOT_VALIFY);
+        }
+        user.changePassword(passwordEncoder.encode(newPassword));
+
+        return user.getUserId();
     }
 
     @Override

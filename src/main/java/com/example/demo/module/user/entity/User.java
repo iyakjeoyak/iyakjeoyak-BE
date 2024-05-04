@@ -82,4 +82,8 @@ public class User extends BaseTimeEntity {
     public List<Hashtag> getHashtagList() {
        return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
     }
+
+    public void changePassword(String newPw) {
+        this.password = newPw;
+    }
 }
