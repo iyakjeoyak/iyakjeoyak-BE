@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.4'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "com.gorylenko.gradle-git-properties" version "2.4.1" //git info
 }
 
 group = 'com.example'
@@ -69,9 +70,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// json 파싱용
-//	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation group: 'org.json', name: 'json', version: '20200518'
+
+	//프로메테우스 그라파나
+	implementation 'org.springframework.boot:spring-boot-starter-actuator' //actuator 추가
+	implementation 'io.micrometer:micrometer-registry-prometheus' //추가 ```
+
 }
 
 tasks.named('test') {
