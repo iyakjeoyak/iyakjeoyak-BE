@@ -14,6 +14,7 @@ import com.example.demo.module.medicine_of_week.entity.MedicineOfWeek;
 import com.example.demo.module.medicine_of_week.repository.MedicineOfWeekRepository;
 import com.example.demo.util.mapper.MedicineMapper;
 import com.example.demo.util.mapper.MedicineSimpleResultMapper;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -51,6 +52,7 @@ public class MedicineServiceImpl implements MedicineService {
         return new PageResult<>(result);
     }
 
+    @Timed("my.medicine")
     @Override
     public PageResult<MedicineSimpleResult> findAllByQuery(MedicineSearchCond cond, Pageable pageable) {
         Page<MedicineSimpleResult> result = queryMedicineRepository.findAllBySearch(cond, pageable).map(simpleResultMapper::toDto);

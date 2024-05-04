@@ -8,6 +8,7 @@ import com.example.demo.module.pharmacy.entity.Pharmacy;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,8 @@ public class PharmacyServiceImp implements PharmacyService{
     private final PharmacyRepository pharmacyRepository;
     private final UserRepository userRepository;
     private final PharmacyResultMapper pharmacyResultMapper;
+
+    @Counted("my.pharmacy")
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {

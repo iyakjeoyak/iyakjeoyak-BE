@@ -19,6 +19,7 @@ import com.example.demo.security.jwt.JwtTokenResult;
 import com.example.demo.security.jwt.JwtUtil;
 import com.example.demo.util.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -62,6 +63,8 @@ public class UserServiceImpl implements UserService {
     /*
      * 회원 가입
      * */
+    @Counted("my.user")
+    @Override
     @Transactional
     public Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException {
         Boolean isUsernameExist = userRepository.existsByUsername(userJoinPayload.getUsername());
@@ -115,6 +118,7 @@ public class UserServiceImpl implements UserService {
     /*
      * 유저 로그인
      * */
+    @Counted("my.user")
     @Override
     public JwtTokenResult loginUser(UserLoginPayload userLoginPayload) {
         // body에서 페이로드로 페스워드 꺼내기

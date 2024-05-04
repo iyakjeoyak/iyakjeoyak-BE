@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
+import io.micrometer.core.annotation.Timed;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,6 @@ public class QueryMedicineRepository {
         this.em = em;
         this.query = new JPAQueryFactory(em);
     }
-
     public Page<Medicine> findAllBySearch(MedicineSearchCond medicineSearchCond, Pageable pageable) {
         OrderSortCond orderSortCond = medicineSearchCond.getOrderSortCond();
         List<Long> idList = query
