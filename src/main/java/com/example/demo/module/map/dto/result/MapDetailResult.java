@@ -15,7 +15,8 @@ public class MapDetailResult extends MapResult {
                 mapSelectResult.getDutyTel1(),
                 mapSelectResult.getHpid(),
                 mapSelectResult.getLatitude(),
-                mapSelectResult.getLongitude());
+                mapSelectResult.getLongitude(),
+                mapSelectResult.getLiked());
         this.businessHoursList = businessHoursList;
     }
 }

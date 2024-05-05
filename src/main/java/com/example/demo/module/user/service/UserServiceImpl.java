@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
     public Long findPassword(String username, String newPassword, String verifyCode) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         if (!mailService.verifyMail(user.getUsername(), verifyCode)) {
-            throw new CustomException(MAIL_NOT_VALIFY);
+            throw new CustomException(MAIL_NOT_VERIFY);
         }
         user.changePassword(passwordEncoder.encode(newPassword));
 

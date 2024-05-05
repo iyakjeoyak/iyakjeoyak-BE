@@ -5,6 +5,9 @@ import com.example.demo.module.map.dto.result.BusinessHours;
 import com.example.demo.module.map.dto.result.MapDetailResult;
 import com.example.demo.module.map.dto.result.MapResult;
 import com.example.demo.module.map.dto.result.MapSelectResult;
+import com.example.demo.module.pharmacy.entity.Pharmacy;
+import com.example.demo.module.pharmacy.repository.PharmacyRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
@@ -26,14 +29,15 @@ public class MapServiceImpl implements MapService {
 
     private final String serviceKey;
     private String serviceUrl = "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService";
+    private final PharmacyRepository pharmacyRepository;
 
-    public MapServiceImpl(String serviceKey) {
+    public MapServiceImpl(String serviceKey, PharmacyRepository pharmacyRepository) {
         this.serviceKey = serviceKey;
+        this.pharmacyRepository = pharmacyRepository;
     }
 
-
     @Override
-    public PageResult<MapSelectResult> findByLocation(String lon, String lat, int size) throws IOException, JSONException {
+    public PageResult<MapSelectResult> findByLocation(String lon, String lat, int size, Long userId) throws IOException, JSONException {
         StringBuilder sb = new StringBuilder(serviceUrl + "/getParmacyLcinfoInqire");
         sb.append("?").append("serviceKey").append("=").append(serviceKey);
         sb.append("&").append("WGS84_LON").append("=").append(lon);
@@ -41,12 +45,12 @@ public class MapServiceImpl implements MapService {
         sb.append("&").append("numOfRows").append("=").append(size);
         sb.append("&").append("_type").append("=").append("json");
 
-        return getMapSelectResultPageResult(sb.toString());
+        return getMapSelectResultPageResult(sb.toString(), userId);
     }
 
 
     @Override
-    public MapDetailResult getMapDetail(String mapId) throws IOException, JSONException {
+    public MapDetailResult getMapDetail(String mapId, Long userId) throws IOException, JSONException {
         StringBuilder sb = new StringBuilder(serviceUrl + "/getParmacyBassInfoInqire");
         sb.append("?").append("serviceKey").append("=").append(serviceKey);
         sb.append("&").append("HPID").append("=").append(mapId);
@@ -57,11 +61,11 @@ public class MapServiceImpl implements MapService {
         JSONObject item = (JSONObject) items.get("item");
 
 
-        return new MapDetailResult(getMapSelectResult(item), getBusinessHoursList(item));
+        return new MapDetailResult(getMapSelectResult(item ,userId), getBusinessHoursList(item));
     }
 
     @Override
-    public PageResult<MapDetailResult> findByNameSortByLocation(String name, String city, String district, Double lon, Double lat, int size) throws IOException, JSONException {
+    public PageResult<MapDetailResult> findByNameSortByLocation(String name, String city, String district, Double lon, Double lat, int size, Long userId) throws IOException, JSONException {
         StringBuilder sb = new StringBuilder(serviceUrl + "/getParmacyListInfoInqire");
         sb.append("?").append("serviceKey").append("=").append(serviceKey);
         if (StringUtils.hasText(name)) {
@@ -76,14 +80,15 @@ public class MapServiceImpl implements MapService {
         sb.append("&").append("numOfRows").append("=").append(size);
         sb.append("&").append("_type").append("=").append("json");
 
-        PageResult<MapDetailResult> mapMapDetailResultPageResult = getMapDetailResultPageResult(sb.toString());
+        PageResult<MapDetailResult> mapMapDetailResultPageResult = getMapDetailResultPageResult(sb.toString(),userId);
         mapMapDetailResultPageResult.getData().sort(Comparator.comparingDouble(i -> Math.abs(i.getLongitude() - lon) + Math.abs(i.getLatitude() - lat)));
 
         return mapMapDetailResultPageResult;
     }
 
     // 내부 메서드
-    private PageResult<MapSelectResult> getMapSelectResultPageResult(String result) throws IOException {
+    private PageResult<MapSelectResult> getMapSelectResultPageResult(String result, Long userId) throws IOException {
+
         JSONObject body = getBodyValue(result);
         System.out.println(body.toString());
         if (body.get("items").toString().isEmpty()) {
@@ -111,7 +116,7 @@ public class MapServiceImpl implements MapService {
             String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
             String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
 
-            list.add(new MapSelectResult(getMapSelectResult(i), startTime, endTime));
+            list.add(new MapSelectResult(getMapSelectResult(i, userId), startTime, endTime));
         }
 
         PageResult<MapSelectResult> pageResult = new PageResult<>();
@@ -122,7 +127,7 @@ public class MapServiceImpl implements MapService {
         return pageResult;
     }
 
-    private PageResult<MapDetailResult> getMapDetailResultPageResult(String result) throws IOException {
+    private PageResult<MapDetailResult> getMapDetailResultPageResult(String result, Long userId) throws IOException {
         JSONObject body = getBodyValue(result);
 
         if (body.get("items").toString().isEmpty()) {
@@ -151,7 +156,7 @@ public class MapServiceImpl implements MapService {
             String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
             String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
 
-            list.add(new MapDetailResult(new MapSelectResult(getMapSelectResult(i), startTime, endTime), getBusinessHoursList(i)));
+            list.add(new MapDetailResult(new MapSelectResult(getMapSelectResult(i,userId), startTime, endTime), getBusinessHoursList(i)));
         }
 
         PageResult<MapDetailResult> pageResult = new PageResult<>();
@@ -181,7 +186,12 @@ public class MapServiceImpl implements MapService {
         return (JSONObject) response.get("body");
     }
 
-    private MapResult getMapSelectResult(JSONObject i) {
+    private MapResult getMapSelectResult(JSONObject i, Long userId) {
+        List<String> hpidList = new ArrayList<>();
+        if (userId != null && userId != 0L) {
+            hpidList = pharmacyRepository.findAllByUserUserId(userId).stream().map(Pharmacy::getHpid).toList();
+        }
+
         String wgs84Lon = i.get("wgs84Lon") == null ? i.get("longitude").toString() : i.get("wgs84Lon").toString();
         String wgs84Lat = i.get("wgs84Lat") == null ? i.get("latitude").toString() : i.get("wgs84Lat").toString();
         return MapResult.builder()
@@ -191,6 +201,7 @@ public class MapServiceImpl implements MapService {
                 .longitude(Double.parseDouble(wgs84Lon))
                 .latitude(Double.parseDouble(wgs84Lat))
                 .hpid((String) i.get("hpid"))
+                .liked(hpidList.contains((String) i.get("hpid")))
                 .build();
     }
 

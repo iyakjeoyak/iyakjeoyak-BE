@@ -1,10 +1,13 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
+import com.example.demo.module.pharmacy.entity.PharmacyBusinessHours;
+import com.example.demo.module.pharmacy.repository.PharmacyBusinessHoursRepository;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
@@ -22,6 +25,7 @@ import static com.example.demo.global.exception.ErrorCode.*;
 @Transactional(readOnly = true)
 public class PharmacyServiceImp implements PharmacyService{
     private final PharmacyRepository pharmacyRepository;
+    private final PharmacyBusinessHoursRepository pharmacyBusinessHoursRepository;
     private final UserRepository userRepository;
     private final PharmacyResultMapper pharmacyResultMapper;
 
@@ -29,9 +33,10 @@ public class PharmacyServiceImp implements PharmacyService{
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
-        System.out.println("pharmacyPayload = " + pharmacyPayload);
-        System.out.println("userId = " + userId);
-        return pharmacyRepository.save(Pharmacy.builder()
+        if(pharmacyRepository.existsByUserUserIdAndHpid(userId,pharmacyPayload.getHpid())){
+            throw new CustomException(ErrorCode.PHARMACY_DUPLICATION);
+        }
+        Pharmacy save = pharmacyRepository.save(Pharmacy.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
                 .dutyAddr(pharmacyPayload.getDutyAddr())
                 .dutyName(pharmacyPayload.getDutyName())
@@ -39,7 +44,17 @@ public class PharmacyServiceImp implements PharmacyService{
                 .hpid(pharmacyPayload.getHpid())
                 .longitude(pharmacyPayload.getLongitude())
                 .latitude(pharmacyPayload.getLatitude())
-                .build()).getId();
+                .build());
+
+        pharmacyPayload.getBusinessHoursList().forEach(bh -> pharmacyBusinessHoursRepository.save(
+                PharmacyBusinessHours.builder()
+                        .dayOfWeek(bh.getDayOfWeek())
+                        .startHour(bh.getStartHour())
+                        .endHour(bh.getEndHour())
+                        .pharmacy(save)
+                        .build()));
+
+        return save.getId();
     }
 
     @Override
