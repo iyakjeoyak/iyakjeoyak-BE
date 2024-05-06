@@ -11,14 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
-    @EntityGraph(attributePaths = {"medicine"})
     Page<Bookmark> findAllByUserUserId(Long userId, PageRequest pageRequest);
 
     boolean existsByMedicineIdAndUserUserId(Long medicineId, Long userId);
 
     Optional<Bookmark> findByMedicineIdAndUserUserId(Long medicineId, Long userId);
-
-    boolean existsByIdAndUserUserId(Long bookmarkId, Long userId);
 
     Optional<Bookmark> findByIdAndUserUserId(Long bookmarkId, Long userId);
 }
