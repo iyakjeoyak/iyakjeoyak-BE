@@ -127,4 +127,12 @@ public class MedicineController {
         return new ResponseEntity<>(medicineService.getMedicineOfWeek(), HttpStatus.OK);
     }
 
+    @GetMapping("/recommend")
+    @Operation(summary = "유저 맞춤 추천", description = "유저 맞춤 추천")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
+    public ResponseEntity<List<MedicineResult>> getRecommend(@AuthenticationPrincipal Long userId, @RequestParam("size") Integer size) {
+        return new ResponseEntity<>(medicineService.getRecommend(userId,size), HttpStatus.OK);
+    }
 }

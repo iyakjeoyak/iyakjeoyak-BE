@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
@@ -20,4 +21,6 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
     boolean existsByUserUserIdAndId(Long userId, Long pharmacyId);
 
     boolean existsByUserUserIdAndHpid(Long userId, String hpid);
+
+    Optional<Pharmacy> findByUserUserIdAndHpid(Long userId, String hpid);
 }

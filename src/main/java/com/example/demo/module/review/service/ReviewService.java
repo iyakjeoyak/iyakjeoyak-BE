@@ -6,6 +6,7 @@ import com.example.demo.module.review.dto.result.ReviewDetailResult;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.common.result.PageResult;
+import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,8 @@ public interface ReviewService {
     PageResult<ReviewResult> findPageByMedicineId(Long medicineId, PageRequest pageRequest);
 
     PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest of);
+
+    List<ReviewSimpleMyPageResult> findSimpleResultPageByUserId(Long userId, PageRequest of);
 
     Long deleteReviewImage(Long userId, Long reviewId, Long imageId);
 
