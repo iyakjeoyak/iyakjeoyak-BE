@@ -35,7 +35,7 @@ public class User extends BaseTimeEntity {
 //    @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -81,5 +81,9 @@ public class User extends BaseTimeEntity {
 
     public List<Hashtag> getHashtagList() {
        return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
+    }
+
+    public void changePassword(String newPw) {
+        this.password = newPw;
     }
 }

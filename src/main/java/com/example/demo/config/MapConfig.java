@@ -2,6 +2,8 @@ package com.example.demo.config;
 
 import com.example.demo.module.map.service.MapService;
 import com.example.demo.module.map.service.MapServiceImpl;
+import com.example.demo.module.pharmacy.repository.PharmacyRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +19,7 @@ public class MapConfig {
 //    }
 
     @Bean
-    public MapServiceImpl mapServiceImpl() {
-        return new MapServiceImpl(serviceKey);
+    public MapServiceImpl mapServiceImpl(PharmacyRepository pharmacyRepository) {
+        return new MapServiceImpl(serviceKey, pharmacyRepository);
     }
-
 }

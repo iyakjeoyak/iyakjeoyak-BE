@@ -48,6 +48,10 @@ public class UserStorage extends BaseTimeEntity {
         this.image = image;
     }
 
+    public Double getGrade() {
+        return this.medicine.getGrade();
+    }
+
     public void deleteImage() {
         this.image = null;
     }

@@ -1,6 +1,10 @@
 package com.example.demo.module.pharmacy.dto.result;
 
+import com.example.demo.module.map.dto.result.BusinessHours;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class PharmacyResult {
@@ -17,4 +21,6 @@ public class PharmacyResult {
     private String dutyTel1;
 
     private String hpid;
+
+    private List<BusinessHours> businessHoursList = new ArrayList<>();
 }

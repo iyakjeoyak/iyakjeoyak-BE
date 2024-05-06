@@ -16,5 +16,6 @@ public class MapResult {
     private String hpid;
     private Double latitude;
     private Double longitude;
+    private Boolean liked;
 
 }

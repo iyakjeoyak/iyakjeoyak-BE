@@ -19,9 +19,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
-import static com.example.demo.global.exception.ErrorCode.*;
+import static com.example.demo.global.exception.ErrorCode.MEDICINE_NOT_FOUND;
 
 @Configuration
 @EnableScheduling

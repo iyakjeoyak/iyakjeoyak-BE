@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -35,8 +36,9 @@ public class MapController {
     public ResponseEntity<PageResult<MapSelectResult>> findPageByLocation(
             @RequestParam(name = "size", defaultValue = "20", required = false) int size,
             @RequestParam(name = "lon") String lon,
-            @RequestParam(name = "lat") String lat) throws IOException, JSONException {
-        return ResponseEntity.status(HttpStatus.OK).body(mapService.findByLocation(lon, lat, size));
+            @RequestParam(name = "lat") String lat,
+            @AuthenticationPrincipal Long userId) throws IOException, JSONException {
+        return ResponseEntity.status(HttpStatus.OK).body(mapService.findByLocation(lon, lat, size, userId));
     }
 
     @GetMapping("/{HPID}")
@@ -45,8 +47,9 @@ public class MapController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MapDetailResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<MapDetailResult> findOneByHPID(
-            @PathVariable(name = "HPID") String hpid) throws IOException, JSONException {
-        return ResponseEntity.status(HttpStatus.OK).body(mapService.getMapDetail(hpid));
+            @PathVariable(name = "HPID") String hpid,
+            @AuthenticationPrincipal Long userId) throws IOException, JSONException {
+        return ResponseEntity.status(HttpStatus.OK).body(mapService.getMapDetail(hpid, userId));
     }
 
     @GetMapping("/name")
@@ -60,7 +63,8 @@ public class MapController {
             @RequestParam(name = "district", required = false) String district,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "lon", defaultValue = "127.048878", required = false) Double lon,
-            @RequestParam(name = "lat", defaultValue = "37.503737", required = false) Double lat) throws IOException, JSONException {
-        return ResponseEntity.status(HttpStatus.OK).body(mapService.findByNameSortByLocation(name, city, district, lon, lat, size));
+            @RequestParam(name = "lat", defaultValue = "37.503737", required = false) Double lat,
+            @AuthenticationPrincipal Long userId) throws IOException, JSONException {
+        return ResponseEntity.status(HttpStatus.OK).body(mapService.findByNameSortByLocation(name, city, district, lon, lat, size, userId));
     }
 }
