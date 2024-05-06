@@ -34,9 +34,9 @@ public interface UserService {
 
     JwtTokenResult createTokenByKakaoToken(String token);
 
-    String authorizationCodeToGoogle(String code);
+    JwtTokenResult authorizationCodeToGoogle(String code);
 
-    String createTokenByGoogleToken(String token);
+    JwtTokenResult createTokenByGoogleToken(String token);
 
     Long changePassword(Long userId, String oldPassword, String newPassword);
 

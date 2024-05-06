@@ -26,9 +26,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -36,6 +39,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.example.demo.global.exception.ErrorCode.*;
@@ -59,7 +64,12 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MailService mailService;
-
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String GOOGLE_CLIENT_ID;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String GOOGLE_CLIENT_SECRET;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String GOOGLE_REDIRECT_URL;
     /*
      * 회원 가입
      * */
@@ -243,26 +253,111 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String  authorizationCodeToGoogle(String code) {
+    @Transactional
+    public JwtTokenResult authorizationCodeToGoogle(String code) {
 
         //TODO 따로 파는 구글
 
-        String client_id = "308885497470-d9ad3gn7me2elbvkl6suc068h96tm20p.apps.googleusercontent.com";
-        String redirect_uri = "http://localhost:5173/auth/google";
-//        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+client_id+"&redirect_uri="+redirect_uri+"&code=" + code;
-        String accessToken = "";
-        String refreshToken = "";
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, String> params = new HashMap<>();
 
+        String requestUrl = "https://oauth2.googleapis.com/token";
+        String token = "";
 
-        return "123";
+        params.put("code", code);
+        params.put("client_id", GOOGLE_CLIENT_ID);
+        params.put("client_secret", GOOGLE_CLIENT_SECRET);
+        params.put("redirect_uri", GOOGLE_REDIRECT_URL);
+        params.put("grant_type", "authorization_code");
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(requestUrl, params, String.class);
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            String jsonResponse = responseEntity.getBody();
+
+            try {
+
+                log.info("jsonResponse {}", jsonResponse);
+                JSONParser jsonParser = new JSONParser();
+                JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonResponse);
+                token = (String)  jsonObject.get("access_token");
+
+                log.info("accessToken {}", token);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        JwtTokenResult result = createTokenByGoogleToken(token);
+        return result;
     }
 
     @Override
-    public String createTokenByGoogleToken(String token) {
+    @Transactional
+    public JwtTokenResult createTokenByGoogleToken(String token) {
 
-        //TODO 따로 파는 구글
+        String id = "";
+        String email = "";
+        String nickname = "";
+        String imgUrl = "";
+        JwtTokenResult newUserTokenResult = null;
 
-        return "123";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", "Bearer " + token);
+
+        HttpEntity request = new HttpEntity(httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // header를 바꿀 때
+        ResponseEntity<String> exchange = restTemplate.exchange("https://www.googleapis.com/oauth2/v2/userinfo", HttpMethod.GET, request, String.class);
+
+        if(exchange.getStatusCode() == HttpStatus.OK) {
+            String body = exchange.getBody();
+
+            try {
+                JSONParser jsonParser = new JSONParser();
+                JSONObject jsonObject =  (JSONObject) jsonParser.parse(body);
+                id = (String) jsonObject.get("id");
+                email = (String) jsonObject.get("email");
+                nickname = (String) jsonObject.get("nickname");
+                imgUrl = (String) jsonObject.get("picture");
+
+            } catch (Exception e) {
+                e.getStackTrace();
+            }
+
+        }
+
+        SocialUser user = socialUserRepository.findSocialUserBySocialEmail(email).orElse(null);
+
+        if (ObjectUtils.isEmpty(user)) {
+
+            User saveUser = User.builder().build();
+            userRepository.save(saveUser);
+
+            // social user 저장
+            SocialUser socialUser = SocialUser.builder().imageUrl(imgUrl).socialId(id).socialType(SocialType.GOOGLE).socialEmail(email).build();
+
+            socialUserRepository.save(socialUser);
+
+            JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder().userId(saveUser.getUserId()).username(email).build();
+
+            newUserTokenResult = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
+
+            return newUserTokenResult;
+        }
+
+        // TODO nickname 고민중
+
+        JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder()
+                .userId(user.getId())
+                .username(email)
+                .build();
+
+        JwtTokenResult existUserTokenResult = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
+
+        return existUserTokenResult;
     }
 
     @Override
@@ -345,11 +440,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public JwtTokenResult createTokenByKakaoToken(String token) {
 
-        JwtTokenResult jwtTokenResult = null;
+        JwtTokenResult newUserTokenResult = null;
         String profileImage = "";
         String gender = "";
         String email = "";
         String socialId = "";
+        String nickname = "";
 
         try {
             URL url = new URL("https://kapi.kakao.com/v2/user/me");
@@ -373,7 +469,6 @@ public class UserServiceImpl implements UserService {
                 result += line;
             }
 
-
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(result);
             JSONObject properties = (JSONObject) jsonObject.get("properties");
@@ -381,6 +476,7 @@ public class UserServiceImpl implements UserService {
             profileImage = (String) properties.get("profile_image");
             gender = (String) profiles.get("gender");
             email = (String) profiles.get("email");
+            nickname = (String) properties.get("nickname");
 //            JSONObject id = (JSONObject) jsonObject.get("id");
 //            socialId = (String) id.get("id");
 
@@ -404,13 +500,17 @@ public class UserServiceImpl implements UserService {
 
             JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder().userId(saveUser.getUserId()).username(email).build();
 
-            jwtTokenResult = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
-        } else {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다. 확인하시고 다시 시도해주세요.");
+            newUserTokenResult = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
+
+            return newUserTokenResult;
         }
+        //TODO nickname 고민중
 
+        JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder().username(email).userId(findUser.getId()).build();
 
-        return jwtTokenResult;
+        JwtTokenResult existUserToken = jwtUtil.createAccessAndRefreshToken(jwtTokenPayload);
+
+        return existUserToken;
     }
 
 }
