@@ -20,6 +20,8 @@ public class UserResult {
 
     private Integer point;
 
+    private String introduce;
+
     private List<HashtagResult> hashtagList = new ArrayList<>();
 
     private ImageResult image;
