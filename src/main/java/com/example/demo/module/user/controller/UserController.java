@@ -66,11 +66,13 @@ public class UserController {
 
     @GetMapping("/getGoogleAuthCode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
-    public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code, HttpServletResponse response) {
-        String token = userService.authorizationCodeToGoogle(code);
-//        setRefreshCookie(response, token.getRefreshToken());
-//        response.setHeader("Authorization", token.getAccessToken());
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+    public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
+        JwtTokenResult token = userService.authorizationCodeToGoogle(code);
+
+        setRefreshCookie(response, token.getRefreshToken());
+        response.setHeader("Authorization", token.getAccessToken());
+
+        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
     }
 
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
