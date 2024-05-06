@@ -1,11 +1,10 @@
 package com.example.demo.module.medicine.repository;
 
 import com.example.demo.module.auto_complete.dto.AutoCompleteResult;
-import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.MedicineOrderField;
+import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
 import com.example.demo.module.medicine.entity.Medicine;
-import com.example.demo.module.medicine.entity.QMedicine;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -13,7 +12,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
-import io.micrometer.core.annotation.Timed;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +20,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.example.demo.module.medicine.entity.QMedicine.medicine;
 import static com.example.demo.module.medicine.entity.QMedicineCategory.medicineCategory;
