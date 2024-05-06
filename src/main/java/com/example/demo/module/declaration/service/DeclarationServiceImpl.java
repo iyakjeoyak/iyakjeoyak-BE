@@ -9,6 +9,7 @@ import com.example.demo.module.declaration.repository.DeclarationRepository;
 import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,7 @@ public class DeclarationServiceImpl implements DeclarationService{
                     .orElseThrow(() -> new CustomException(DECLARATION_NOT_FOUND)).toDto(reviewMapper);
     }
 
+    @Counted("my.declaration")
     @Override
     @Transactional
     public Long save(DeclarationPayload declarationPayload, Long userId) {

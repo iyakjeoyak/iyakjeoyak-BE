@@ -8,6 +8,7 @@ import com.example.demo.module.heart_medicine.dto.result.HeartMedicineResult;
 import com.example.demo.module.medicine.repository.MedicineRepository;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.common.result.PageResult;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
 
+    @Counted("my.heart.medicine")
     @Override
     @Transactional
     public Long like(Long medicineId, Long userId) {
@@ -73,6 +75,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         return heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
 
+    @Counted("my.heart.medicine")
     @Override
     @Transactional
     public boolean click(Long medicineId, Long userId) {

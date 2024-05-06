@@ -8,9 +8,9 @@ import org.json.JSONException;
 import java.io.IOException;
 
 public interface MapService {
-    PageResult<MapSelectResult> findByLocation(String lon, String lat, int size) throws IOException, JSONException;
+    PageResult<MapSelectResult> findByLocation(String lon, String lat, int size, Long userId) throws IOException, JSONException;
 
-    MapDetailResult getMapDetail(String mapId) throws IOException, JSONException;
+    MapDetailResult getMapDetail(String mapId,Long userId) throws IOException, JSONException;
 
-    PageResult<MapDetailResult> findByNameSortByLocation(String name, String city, String district, Double lon, Double lat, int size) throws IOException, JSONException;
+    PageResult<MapDetailResult> findByNameSortByLocation(String name, String city, String district, Double lon, Double lat, int size, Long userId) throws IOException, JSONException;
 }

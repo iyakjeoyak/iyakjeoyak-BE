@@ -10,6 +10,7 @@ import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.review.repository.ReviewRepository;
 import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
 
+    @Counted("my.heart.review")
     @Transactional
     @Override
     public Long save(Long userId, Long reviewId) {
@@ -66,6 +68,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         return heartReviewRepository.findAllByReviewId(reviewId).size();
     }
 
+    @Counted("my.heart.review")
     @Override
     @Transactional
     public boolean click(Long reviewId, Long userId) {

@@ -22,7 +22,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image saveImage(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
+        if (file==null || file.isEmpty()) {
             return null;
         }
         return imageRepository.save(saveFileAndGetEntity(file));
@@ -32,7 +32,7 @@ public class ImageServiceImpl implements ImageService {
     @Transactional
     public List<Image> saveImageList(List<MultipartFile> files) throws IOException {
         List<Image> ids = new ArrayList<>();
-        if (!files.isEmpty()) {
+        if (files!= null && !files.isEmpty()) {
             for (MultipartFile file : files) {
                 Image image = saveFileAndGetEntity(file);
                 if (image != null) {

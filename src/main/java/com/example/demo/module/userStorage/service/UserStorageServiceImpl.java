@@ -15,6 +15,7 @@ import com.example.demo.module.userStorage.entity.UserStorage;
 import com.example.demo.module.userStorage.repository.UserStorageRepository;
 import com.example.demo.util.mapper.UserStorageDetailResultMapper;
 import com.example.demo.util.mapper.UserStorageSimpleResultMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ public class UserStorageServiceImpl implements UserStorageService {
     private final UserStorageDetailResultMapper detailResultMapper;
     private final ImageService imageService;
 
+    @Counted("my.user.storage")
     @Transactional
     @Override
     public Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload, MultipartFile image) throws IOException {

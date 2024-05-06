@@ -12,5 +12,9 @@ import java.util.List;
 public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
     Page<Pharmacy> findAllByUserUserId(Long userId, PageRequest pageRequest);
 
+    List<Pharmacy> findAllByUserUserId(Long userId);
+
     boolean existsByUserUserIdAndId(Long userId, Long pharmacyId);
+
+    boolean existsByUserUserIdAndHpid(Long userId, String hpid);
 }

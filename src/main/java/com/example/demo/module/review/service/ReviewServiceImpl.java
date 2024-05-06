@@ -24,6 +24,7 @@ import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewDetailResultMapper;
 import com.example.demo.util.mapper.ReviewMapper;
 import com.example.demo.util.mapper.ReviewMyPageResultMapper;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final PointHistoryService pointHistoryService;
     private final ReviewDetailResultMapper reviewDetailResultMapper;
 
-
+    @Timed("my.review")
     @Override
     @Transactional
     public Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException {
@@ -133,6 +134,7 @@ public class ReviewServiceImpl implements ReviewService {
         return review.getId();
     }
 
+    @Timed("my.review")
     @Transactional
     @Override
     public Long deleteByReviewId(Long userId, Long reviewId) {

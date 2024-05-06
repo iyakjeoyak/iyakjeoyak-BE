@@ -9,6 +9,7 @@ import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.bookmark.dto.result.BookmarkResult;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.util.mapper.MedicineMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .orElseThrow(() -> new CustomException(BOOKMARK_NOT_FOUND)).toDto(medicineMapper);
     }
 
+    @Counted("my.bookmark")
     @Override
     @Transactional
     public Long save(Long medicineId, Long userId) {
@@ -73,6 +75,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return bookmarkRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
 
+    @Counted("my.bookmark")
     @Override
     @Transactional
     public Boolean click(Long medicineId, Long userId) {
