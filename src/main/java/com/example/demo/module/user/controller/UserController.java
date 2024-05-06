@@ -2,13 +2,21 @@ package com.example.demo.module.user.controller;
 
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.module.review.dto.payload.ReviewOrderField;
+import com.example.demo.module.review.dto.result.ReviewMyPageResult;
+import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
+import com.example.demo.module.review.service.ReviewService;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
 import com.example.demo.module.user.dto.result.ChangePasswordPayLoad;
+import com.example.demo.module.user.dto.result.UserDetailResult;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.service.UserService;
+import com.example.demo.module.userStorage.dto.payload.StorageOrderField;
+import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
+import com.example.demo.module.userStorage.service.UserStorageService;
 import com.example.demo.security.jwt.JwtTokenResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +28,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +38,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+
+import static com.example.demo.module.review.dto.payload.ReviewOrderField.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +50,8 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+    private final ReviewService reviewService;
+    private final UserStorageService userStorageService;
 
     @GetMapping("/getKakaoAuthCode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
@@ -102,9 +117,14 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "유저 단건 조회", description = "유저 단건 조회")
-    public ResponseEntity<UserResult> findOneByUserId(@AuthenticationPrincipal Long userId) {
-        return new ResponseEntity<>(userService.findOneByUserId(userId), HttpStatus.OK);
+    public ResponseEntity<UserDetailResult> findOneByUserId(@AuthenticationPrincipal Long userId) {
+        UserResult userResult = userService.findOneByUserId(userId);
+        List<ReviewSimpleMyPageResult> simpleResults = reviewService.findSimpleResultPageByUserId(userId, PageRequest.of(0, 3, Sort.Direction.DESC, CREATED_DATE.getValue()));
+        List<UserStorageSimpleResult> userStorageList = userStorageService.getAllByUserId(userId, PageRequest.of(0, 4, Sort.Direction.DESC, StorageOrderField.CREATED_DATE.getValue())).getData();
+        UserDetailResult userDetailResult = getUserDetailResult(userResult, simpleResults, userStorageList);
+        return new ResponseEntity<>(userDetailResult, HttpStatus.OK);
     }
+
 
     @DeleteMapping
     @Operation(summary = "유저 삭제", description = "유저 삭제")
@@ -152,5 +172,13 @@ public class UserController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    private UserDetailResult getUserDetailResult(UserResult userResult, List<ReviewSimpleMyPageResult> reviewList, List<UserStorageSimpleResult> userStorageList) {
+        UserDetailResult userDetailResult = new UserDetailResult();
+        userDetailResult.setUserResult(userResult);
+        userDetailResult.setLatestReviews(reviewList);
+        userDetailResult.setFavoriteSupplements(userStorageList);
+        return userDetailResult;
     }
 }
