@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,7 @@ public class UserStorageController {
         return new ResponseEntity<>(userStorageService.getOneById(storageId), HttpStatus.OK);
     }
 
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 보관함 생성", description = "유저 보관함 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
@@ -66,7 +67,7 @@ public class UserStorageController {
         return new ResponseEntity<>(userStorageService.saveUserStorage(userId, payload, image), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{storageId}")
+    @PatchMapping(value = "/{storageId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 보관함 수정", description = "유저 보관함 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),

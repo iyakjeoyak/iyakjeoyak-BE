@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -60,12 +61,12 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.findOneByReviewId(reviewId), HttpStatus.OK);
     }
 
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "리뷰 생성", description = "리뷰 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile" , required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
+    public ResponseEntity<Long> insertReview(@RequestPart(name = "reviewPayload") ReviewPayload reviewPayload, @RequestPart(name = "imgFile", required = false) List<MultipartFile> imgFile, @AuthenticationPrincipal Long userId) throws IOException {
         return new ResponseEntity<>(reviewService.save(userId, reviewPayload, imgFile), HttpStatus.CREATED);
     }
 
@@ -103,7 +104,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.findPageByUserId(userId, PageRequest.of(page, size, orderBy)), HttpStatus.OK);
     }
 
-    @PostMapping("/image")
+    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "리뷰 이미지 추가(복수)", description = "반환값 : 리뷰 PK")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),

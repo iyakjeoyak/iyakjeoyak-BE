@@ -1,13 +1,11 @@
 package com.example.demo.module.auto_complete.controller;
 
+import com.example.demo.module.auto_complete.dto.AutoCompleteResult;
 import com.example.demo.module.auto_complete.service.AutoCompleteService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +21,10 @@ public class AutoCompleteController {
     private final AutoCompleteService autoCompleteService;
 
     @GetMapping
-    public ResponseEntity<List<String>> autoComplete(
+    public ResponseEntity<List<AutoCompleteResult>> autoComplete(
             @RequestParam("keyword") String keyword,
             @RequestParam(name = "size", defaultValue = "5", required = false) int size) {
-        List<String> result = autoCompleteService.getMedicineKeyword(keyword, size);
+        List<AutoCompleteResult> result = autoCompleteService.getMedicineKeyword(keyword, size);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

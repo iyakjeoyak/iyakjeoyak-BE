@@ -22,4 +22,7 @@ public interface MedicineService {
     PageResult<MedicineSimpleResult> findAllByIsAd(Pageable pageable);
 
     List<MedicineOfWeekResult> getMedicineOfWeek();
+
+    List<MedicineResult> getRecommend(Long userId, Integer size);
+
 }
