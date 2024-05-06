@@ -2,10 +2,9 @@ package com.example.demo.module.user.controller;
 
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.module.review.dto.payload.ReviewOrderField;
-import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
 import com.example.demo.module.review.service.ReviewService;
+import com.example.demo.module.user.dto.payload.FindPwPayLoad;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
@@ -19,8 +18,6 @@ import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
 import com.example.demo.module.userStorage.service.UserStorageService;
 import com.example.demo.security.jwt.JwtTokenResult;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static com.example.demo.module.review.dto.payload.ReviewOrderField.*;
+import static com.example.demo.module.review.dto.payload.ReviewOrderField.CREATED_DATE;
 
 @RestController
 @RequiredArgsConstructor
