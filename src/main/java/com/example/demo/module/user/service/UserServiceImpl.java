@@ -84,10 +84,6 @@ public class UserServiceImpl implements UserService {
 
         Image image = imageService.saveImage(imgFile);
 
-        if (ObjectUtils.isEmpty(image)) {
-            throw new IllegalArgumentException("이미지가 생성되지 않았습니다.");
-        }
-
         User saveUser = userRepository.save(User.builder()
                 .username(userJoinPayload.getUsername())
                 .password(passwordEncoder.encode(userJoinPayload.getPassword()))
@@ -101,7 +97,7 @@ public class UserServiceImpl implements UserService {
         userJoinPayload.getUserHashtagList().forEach(
                 uht -> userHashTagRepository.save(
                         UserHashtag.builder()
-                                .hashtag(hashtagRepository.findById(uht).orElseThrow())
+                                .hashtag(hashtagRepository.findById(uht).orElseThrow(()-> new CustomException(HASHTAG_NOT_FOUND)))
                                 .user(saveUser)
                                 .build()));
         // userRole 저장
@@ -109,7 +105,7 @@ public class UserServiceImpl implements UserService {
                 ur -> userRoleRepository.save(
                         UserRole.builder()
                                 .user(saveUser)
-                                .role(roleRepository.findById(ur).orElseThrow())
+                                .role(roleRepository.findById(ur).orElseThrow(()-> new CustomException(ErrorCode.ROLE_NOT_FOUND)))
                                 .build()));
 
         return saveUser.getUserId();
