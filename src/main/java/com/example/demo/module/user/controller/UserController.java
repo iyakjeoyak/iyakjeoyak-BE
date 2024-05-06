@@ -11,6 +11,8 @@ import com.example.demo.module.user.dto.result.UserValidationResult;
 import com.example.demo.module.user.service.UserService;
 import com.example.demo.security.jwt.JwtTokenResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +51,7 @@ public class UserController {
 
     @GetMapping("/getGoogleAuthCode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
-    public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
+    public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code, HttpServletResponse response) {
         String token = userService.authorizationCodeToGoogle(code);
 //        setRefreshCookie(response, token.getRefreshToken());
 //        response.setHeader("Authorization", token.getAccessToken());
@@ -56,7 +59,7 @@ public class UserController {
     }
 
     // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
     public ResponseEntity<Long> createUser(
             @RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload,
@@ -85,7 +88,7 @@ public class UserController {
 
         String refreshToken = "";
         if (cookie != null) {
-            refreshToken= cookie.getValue();
+            refreshToken = cookie.getValue();
         }
 
         return new ResponseEntity<>(userService.createAccessByRefresh(refreshToken), HttpStatus.OK);
@@ -137,7 +140,7 @@ public class UserController {
 
     @PostMapping("/findPassword")
     public ResponseEntity<Long> findPassword(@RequestBody FindPwPayLoad findPwPayLoad) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findPassword(findPwPayLoad.getEmail(),findPwPayLoad.getNewPassword(), findPwPayLoad.getAuthCode()));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findPassword(findPwPayLoad.getEmail(), findPwPayLoad.getNewPassword(), findPwPayLoad.getAuthCode()));
     }
 
     private void setRefreshCookie(HttpServletResponse response, String token) {
