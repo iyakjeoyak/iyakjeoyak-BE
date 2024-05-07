@@ -482,6 +482,7 @@ public class UserServiceImpl implements UserService {
 //            socialId = (String) id.get("id");
 
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
 //        User findUser = userRepository.findByUsername(email).orElse(null);

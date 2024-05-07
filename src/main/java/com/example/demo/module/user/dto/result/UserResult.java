@@ -14,6 +14,8 @@ public class UserResult {
 
     private String username;
 
+    private String nickname;
+
     private String gender;
 
     private Integer age;
