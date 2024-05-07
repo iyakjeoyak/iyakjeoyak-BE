@@ -17,14 +17,17 @@ public class JwtUtil {
     // lombok @Value 쓰지 말고 spring꺼 쓰기
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
 
     public JwtUtil (
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.expiration_time.access}") long accessTokenExpTime,
+            @Value("${jwt.expiration_time.refresh}") long refreshTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
     // access 토큰 단독
@@ -36,7 +39,7 @@ public class JwtUtil {
     // token 생성시 둘 다 만든다
     public JwtTokenResult createAccessAndRefreshToken(JwtTokenPayload tokenPayload) {
         String access  = createToken(tokenPayload, "access", accessTokenExpTime);
-        String refresh = createToken(tokenPayload, "refresh", 86400);
+        String refresh = createToken(tokenPayload, "refresh", refreshTokenExpTime);
 
         JwtTokenResult jwtTokenResult = new JwtTokenResult(access, refresh);
 

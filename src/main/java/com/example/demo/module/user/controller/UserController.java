@@ -83,14 +83,21 @@ public class UserController {
 
     @PostMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
-    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie) {
+    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
 
         String refreshToken = "";
         if (cookie != null) {
             refreshToken= cookie.getValue();
         }
+        String accessByRefresh = userService.createAccessByRefresh(refreshToken);
 
-        return new ResponseEntity<>(userService.createAccessByRefresh(refreshToken), HttpStatus.OK);
+
+
+        response.setHeader("Authorization", accessByRefresh);
+        log.info("cookie {}", cookie);
+        log.info("accessToken {}", accessByRefresh);
+
+        return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
     }
 
     @GetMapping("/checkToken")
@@ -113,8 +120,8 @@ public class UserController {
 
     @PatchMapping
     @Operation(summary = "유저 변경", description = "유저 변경")
-    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestBody UserEditPayload userEditPayload) {
-        return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
+    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestPart @Valid UserEditPayload userEditPayload, @RequestPart(value = "imgFile", required = false) MultipartFile imgFile) throws IOException {
+        return new ResponseEntity<>(userService.editUser(userId, userEditPayload, imgFile), HttpStatus.OK);
     }
 
     @GetMapping("/check/username/{username}")
@@ -146,7 +153,7 @@ public class UserController {
         Cookie cookie = new Cookie("refreshToken", token);
         // 1day
         cookie.setMaxAge(24 * 60 * 60);
-
+        cookie.setAttribute("SameSite", "None");
         cookie.setSecure(false);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

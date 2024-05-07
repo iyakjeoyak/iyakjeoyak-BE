@@ -30,7 +30,9 @@ public class UserEditPayload {
     @Max(value = 100, message = "나이는 100세 이하여야 합니다.")
     private Integer age;
 
+    // Integer 숫자만?
     @Schema(description = "관심 태그 리스트")
     @NotEmpty
-    private List<HashtagResult> hashtagResultList = new ArrayList<>();
+    private List<Integer> hashtagResultList = new ArrayList<>();
+
 }

@@ -20,7 +20,7 @@ public interface UserService {
 
     Long deleteByUserId(Long userId);
 
-    Long editUser(Long userId, UserEditPayload userEditPayload);
+    Long editUser(Long userId, UserEditPayload userEditPayload, MultipartFile imgFile) throws IOException;
 
     UserValidationResult validationUser(Long userId);
 
