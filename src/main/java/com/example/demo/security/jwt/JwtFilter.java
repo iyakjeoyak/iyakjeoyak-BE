@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(customUserDetails);
                     }
                 } else {
-                    SecurityContextHolder.clearContext();
+//                    SecurityContextHolder.clearContext();
                     response.sendError(401);
                     return;
                 }
