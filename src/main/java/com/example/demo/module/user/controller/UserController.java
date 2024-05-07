@@ -55,10 +55,10 @@ public class UserController {
     public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
         JwtTokenResult token = userService.authorizationCodeToKakao(code);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
     @GetMapping("/getGoogleAuthCode")
@@ -66,13 +66,12 @@ public class UserController {
     public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
         JwtTokenResult token = userService.authorizationCodeToGoogle(code);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
-    // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
     public ResponseEntity<Long> createUser(
@@ -89,28 +88,24 @@ public class UserController {
         // 이미 유저 정보를 저장했으니깐 ? 여기서 검증을 하나?
         JwtTokenResult token = userService.loginUser(userLoginPayload);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return new ResponseEntity<>(token.getAccessToken(), HttpStatus.OK);
+        return new ResponseEntity<>(token.getRefreshToken(), HttpStatus.OK);
     }
 
 
     @GetMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
-    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
-
-        String refreshToken = "";
+//    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
+    public ResponseEntity<String> createAccessByRefresh(@RequestBody String refreshToken, HttpServletResponse response) {
+/*        String refreshToken = "";
         if (cookie != null || cookie.getValue().isEmpty()) {
             refreshToken = cookie.getValue();
-        }
+        }*/
         String accessByRefresh = userService.createAccessByRefresh(refreshToken);
 
-
-
         response.setHeader("Authorization", accessByRefresh);
-        log.info("cookie {}", cookie);
-        log.info("accessToken {}", accessByRefresh);
 
         return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
     }
