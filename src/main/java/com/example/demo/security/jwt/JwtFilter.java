@@ -30,7 +30,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())); // true면 fileter 안 탐
+
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) && Arrays.stream(jwtUtil.onlyGetAllow).anyMatch(item -> request.getMethod().equals("GET") && item.equalsIgnoreCase(request.getServletPath())); // true면 fileter 안 탐
     }
 
     @Override
@@ -41,10 +42,10 @@ public class JwtFilter extends OncePerRequestFilter {
         // "null"
 
         // JWT가 헤더에 ㅣㅇㅆ는 경우 Bearer가 붙여있는 녀석 가져오기
-        if (authorizationHeader != null&& authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             // Bearer 자르기
             String token = authorizationHeader.substring(7);
-            if(!token.equals("null") && !StringUtils.isEmpty(token)) {
+            if (!token.equals("null") && !StringUtils.isEmpty(token)) {
                 if (jwtUtil.validateToken(token)) {
 
                     JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);

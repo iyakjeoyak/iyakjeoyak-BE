@@ -46,10 +46,13 @@ public class ReviewController {
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "orderBy", defaultValue = "ID", required = false) ReviewOrderField reviewOrderField,
-            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort) {
+            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort,
+            @AuthenticationPrincipal Long userId) {
         Sort orderBy = sort.equals("ASC") ?
                 Sort.by(Sort.Direction.ASC, reviewOrderField.getValue()) : Sort.by(Sort.Direction.DESC, reviewOrderField.getValue());
-        return new ResponseEntity<>(reviewService.findPageByMedicineId(medicineId, PageRequest.of(page, size, orderBy)), HttpStatus.OK);
+        PageResult<ReviewResult> pageResult = reviewService.findPageByMedicineId(medicineId, PageRequest.of(page, size, orderBy));
+        pageResult.getData().forEach(r -> r.setIsOwner(r.getCreatedBy().getUserId().equals(userId)));
+        return ResponseEntity.status(HttpStatus.OK).body(pageResult);
     }
 
     @GetMapping("/{reviewId}")
@@ -87,7 +90,6 @@ public class ReviewController {
     public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(reviewService.deleteByReviewId(userId, reviewId), HttpStatus.OK);
     }
-
 
 
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

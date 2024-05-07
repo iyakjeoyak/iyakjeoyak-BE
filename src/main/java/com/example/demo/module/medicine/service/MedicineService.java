@@ -17,7 +17,7 @@ public interface MedicineService {
 
     PageResult<MedicineSimpleResult> findAllByQuery(MedicineSearchCond cond, Pageable pageable);
 
-    MedicineResult findOneById(Long medicineId);
+    MedicineSimpleResult findOneById(Long medicineId);
 
     PageResult<MedicineSimpleResult> findAllByIsAd(Pageable pageable);
 

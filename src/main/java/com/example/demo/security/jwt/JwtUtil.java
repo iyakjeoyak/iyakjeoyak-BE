@@ -40,10 +40,6 @@ public class JwtUtil {
             "/user/check/username/**",
             "/user/check/nickname/**",
             "/heart/medicine/**",
-            "/review",
-            "/review/top",
-            "/review/**",
-            "/review/my",
             "/map/**",
             "/map",
             "/category",
@@ -59,8 +55,13 @@ public class JwtUtil {
             "/mail/send/verify",
             "/image/**"
     };
+    public final String[] onlyGetAllow = {
+            "/review",
+            "/review/top",
+            "/review/**",
+    };
 
-    public JwtUtil (
+    public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.expiration_time.access}") long accessTokenExpTime,
             @Value("${jwt.expiration_time.refresh}") long refreshTokenExpTime
@@ -73,13 +74,13 @@ public class JwtUtil {
 
     // access 토큰 단독
     public String createAccessToken(JwtTokenPayload user) {
-        return createToken(user,"access" , accessTokenExpTime);
+        return createToken(user, "access", accessTokenExpTime);
     }
 
 
     // token 생성시 둘 다 만든다
     public JwtTokenResult createAccessAndRefreshToken(JwtTokenPayload tokenPayload) {
-        String access  = createToken(tokenPayload, "access", accessTokenExpTime);
+        String access = createToken(tokenPayload, "access", accessTokenExpTime);
         String refresh = createToken(tokenPayload, "refresh", refreshTokenExpTime);
 
         JwtTokenResult jwtTokenResult = new JwtTokenResult(access, refresh);
@@ -88,15 +89,15 @@ public class JwtUtil {
     }
 
 
-    private String createToken(JwtTokenPayload user,String type, long expireTime) {
+    private String createToken(JwtTokenPayload user, String type, long expireTime) {
         // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
         /*
-        *  JwtTokenPayload : userId, username, nickname
-        *
-        * */
+         *  JwtTokenPayload : userId, username, nickname
+         *
+         * */
         Claims claims = Jwts.claims();
-        claims.put("userId" ,user.getUserId());
-        claims.put("username" ,user.getUsername());
+        claims.put("userId", user.getUserId());
+        claims.put("username", user.getUsername());
         claims.put("nickname", user.getNickname());
         claims.put("tokenType", type);
 //        claims.put("", user.)
