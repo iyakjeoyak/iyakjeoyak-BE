@@ -1,7 +1,6 @@
 package com.example.demo.module.pharmacy.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.pharmacy.dto.payload.PharmacyPayload;
 import com.example.demo.module.pharmacy.dto.result.PharmacyResult;
@@ -9,6 +8,7 @@ import com.example.demo.module.pharmacy.entity.Pharmacy;
 import com.example.demo.module.pharmacy.entity.PharmacyBusinessHours;
 import com.example.demo.module.pharmacy.repository.PharmacyBusinessHoursRepository;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
+import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.PharmacyResultMapper;
 import io.micrometer.core.annotation.Counted;
@@ -33,16 +33,14 @@ public class PharmacyServiceImp implements PharmacyService{
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
-        if (userId == null) {
-            throw new CustomException(USER_NOT_FOUND);
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         if (pharmacyRepository.existsByUserUserIdAndHpid(userId, pharmacyPayload.getHpid())) {
             Long pharmacyId = pharmacyRepository.findByUserUserIdAndHpid(userId, pharmacyPayload.getHpid()).orElseThrow().getId();
             pharmacyRepository.deleteById(pharmacyId);
             return pharmacyId;
         }
         Pharmacy save = pharmacyRepository.save(Pharmacy.builder()
-                .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
+                .user(user)
                 .dutyAddr(pharmacyPayload.getDutyAddr())
                 .dutyName(pharmacyPayload.getDutyName())
                 .dutyTel1(pharmacyPayload.getDutyTel1())
