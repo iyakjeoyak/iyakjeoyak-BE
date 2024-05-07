@@ -102,7 +102,7 @@ public class Medicine extends BaseTimeEntity {
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Image image;
 
     // 추가 getter

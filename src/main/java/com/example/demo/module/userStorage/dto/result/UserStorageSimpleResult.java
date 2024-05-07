@@ -18,6 +18,9 @@ public class UserStorageSimpleResult {
     @Schema(description = "유저 설정 이름")
     private String medicineName;
 
+    @Schema(description = "영양제 평점")
+    private String grade;
+
     @Schema(description = "유통기한")
     private LocalDateTime expirationDate;
 

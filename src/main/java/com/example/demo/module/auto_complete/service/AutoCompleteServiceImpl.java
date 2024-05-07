@@ -2,6 +2,7 @@ package com.example.demo.module.auto_complete.service;
 
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.module.auto_complete.dto.AutoCompleteResult;
 import com.example.demo.module.medicine.repository.QueryMedicineRepository;
 import io.micrometer.common.util.StringUtils;
 import io.micrometer.core.annotation.Timed;
@@ -20,7 +21,7 @@ public class AutoCompleteServiceImpl implements AutoCompleteService{
 
     @Timed("my.complete")
     @Override
-    public List<String> getMedicineKeyword(String keyword, int size) {
+    public List<AutoCompleteResult> getMedicineKeyword(String keyword, int size) {
         if (StringUtils.isEmpty(keyword) || 2 > keyword.length() || keyword.length() > 20) {
             throw new CustomException(ErrorCode.OUT_OF_LENGTH);
         }

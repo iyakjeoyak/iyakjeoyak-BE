@@ -33,8 +33,13 @@ public class PharmacyServiceImp implements PharmacyService{
     @Override
     @Transactional
     public Long save(Long userId, PharmacyPayload pharmacyPayload) {
-        if(pharmacyRepository.existsByUserUserIdAndHpid(userId,pharmacyPayload.getHpid())){
-            throw new CustomException(ErrorCode.PHARMACY_DUPLICATION);
+        if (userId == null) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
+        if (pharmacyRepository.existsByUserUserIdAndHpid(userId, pharmacyPayload.getHpid())) {
+            Long pharmacyId = pharmacyRepository.findByUserUserIdAndHpid(userId, pharmacyPayload.getHpid()).orElseThrow().getId();
+            pharmacyRepository.deleteById(pharmacyId);
+            return pharmacyId;
         }
         Pharmacy save = pharmacyRepository.save(Pharmacy.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))

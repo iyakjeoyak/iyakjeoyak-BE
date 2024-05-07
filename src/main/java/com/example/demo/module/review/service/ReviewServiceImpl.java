@@ -15,6 +15,7 @@ import com.example.demo.module.review.dto.payload.ReviewPayload;
 import com.example.demo.module.review.dto.result.ReviewDetailResult;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
+import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.review.entity.ReviewHashtag;
 import com.example.demo.module.review.repository.ReviewHashtagRepository;
@@ -163,6 +164,11 @@ public class ReviewServiceImpl implements ReviewService {
     public PageResult<ReviewMyPageResult> findPageByUserId(Long userId, PageRequest pageRequest) {
         Page<ReviewMyPageResult> result = reviewRepository.findAllByCreatedByUserId(userId, pageRequest).map(reviewMyPageResultMapper::toDto);
         return new PageResult<>(result);
+    }
+
+    @Override
+    public List<ReviewSimpleMyPageResult> findSimpleResultPageByUserId(Long userId, PageRequest pageRequest) {
+        return reviewRepository.findAllByCreatedByUserId(userId, pageRequest).map(ReviewSimpleMyPageResult::toDto).getContent();
     }
 
     @Transactional
