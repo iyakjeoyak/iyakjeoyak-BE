@@ -8,6 +8,7 @@ import com.example.demo.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,9 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 /*
-* spring security의 인가 및 설정을 담당하는 클래스
-* + spring security context로 봐도 무방할까요?
-* */
+ * spring security의 인가 및 설정을 담당하는 클래스
+ * + spring security context로 봐도 무방할까요?
+ * */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,8 +31,9 @@ public class SecurityConfig {
     private final CustomOAuthUserService customOAuthUserService;
     private final Oauth2LoginSuccessHandler successHandler;
     private final Oauth2LoginFailureHandler failureHandler;
+
     @Bean
-    public AuthenticationManager  authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
     }
@@ -49,11 +51,10 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("**").permitAll()
+                                .requestMatchers(jwtUtil.allowedUrls).permitAll()
+                                .requestMatchers(HttpMethod.GET, jwtUtil.onlyGetAllow).permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .anyRequest()
-                                .authenticated()
-
+                                .anyRequest().authenticated()
                 )
                 //세션 관리 상태 없음으로 구성한다, Spring Security가 세션 생성과 사용을 하지 않겠다. 무상태
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
