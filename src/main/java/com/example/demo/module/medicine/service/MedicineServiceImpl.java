@@ -66,8 +66,8 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public MedicineSimpleResult findOneById(Long medicineId) {
-        return simpleResultMapper.toDto(medicineRepository.findById(medicineId)
+    public MedicineResult findOneById(Long medicineId) {
+        return medicineMapper.toDto(medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)));
     }
 

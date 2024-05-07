@@ -53,7 +53,8 @@ public class JwtUtil {
             "/medicine/**",
             "/mail/verify",
             "/mail/send/verify",
-            "/image/**"
+            "/image/**",
+            "/actuator/**"
     };
     public final String[] onlyGetAllow = {
             "/review",

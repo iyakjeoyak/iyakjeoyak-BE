@@ -34,7 +34,7 @@ public class UserEditPayload {
     // Integer 숫자만?
     @Schema(description = "관심 태그 리스트")
     @NotEmpty
-    private List<Integer> hashtagResultList = new ArrayList<>();
+    private List<Long> hashtagResultList = new ArrayList<>();
 
 
 }

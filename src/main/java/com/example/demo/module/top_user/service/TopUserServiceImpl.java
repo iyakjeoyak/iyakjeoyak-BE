@@ -35,7 +35,9 @@ public class TopUserServiceImpl implements TopUserService{
         for (TopUser topUser : topUserRepository.findByYearAndWeekOrderByRanking(year, week)) {
             User user = topUser.getUser();
 //            users.add(userMapper.toDto(user));
-            users.add(userSimpleResultMapper.toDto(user));
+            UserSimpleResult dto = userSimpleResultMapper.toDto(user);
+            dto.setTopCount(topUserRepository.countAllByUserUserId(user.getUserId()));
+            users.add(dto);
         }
         return users;
     }

@@ -32,6 +32,9 @@ public class MedicineResult {
     @Schema(description = "좋아요 수")
     private Integer heartCount;
 
+    @Schema(description = "댓글 수")
+    private Integer reviewCount;
+
     @Schema(description = "평점")
     private Double grade;
 
@@ -49,9 +52,6 @@ public class MedicineResult {
 
     @Schema(description = "해쉬태그 정보")
     private List<HashtagResult> hashtags = new ArrayList<>();
-
-    @Schema(description = "해쉬태그 정보")
-    private List<ReviewResult> reviewList = new ArrayList<>();
 
     @Schema(description = "좋아요 여부")
     private Boolean isHeart;

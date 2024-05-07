@@ -45,4 +45,7 @@ public class ReviewDetailResult {
 
     @Schema(description = "이미지 리스트")
     private List<ImageResult> imageResult = new ArrayList<>();
+
+    @Schema(description = "작성자 여부")
+    private Boolean isOwner;
 }

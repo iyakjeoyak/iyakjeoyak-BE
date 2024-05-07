@@ -105,6 +105,8 @@ public class UserController {
         }*/
         String accessByRefresh = userService.createAccessByRefresh(refreshToken);
 
+
+
         response.setHeader("Authorization", accessByRefresh);
 
         return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
@@ -126,7 +128,10 @@ public class UserController {
 
     @PatchMapping
     @Operation(summary = "유저 변경", description = "유저 변경")
-    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestPart @Valid UserEditPayload userEditPayload, @RequestPart(value = "imgFile", required = false) MultipartFile imgFile) throws IOException {
+    public ResponseEntity<Long> editUser(
+            @AuthenticationPrincipal Long userId
+            , @RequestPart(value = "userEditPayload") @Valid UserEditPayload userEditPayload
+            , @RequestPart(value = "imgFile", required = false) MultipartFile imgFile) throws IOException {
         return new ResponseEntity<>(userService.editUser(userId, userEditPayload, imgFile), HttpStatus.OK);
     }
 

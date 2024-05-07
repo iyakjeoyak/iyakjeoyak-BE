@@ -194,15 +194,13 @@ public class UserServiceImpl implements UserService {
 
         List<UserHashtag> allById = userHashTagRepository.findAllByUser(user);
 
-        for (UserHashtag userHashtag : allById) {
-            userHashTagRepository.delete(userHashtag);
-        }
+        userHashTagRepository.deleteAll(allById);
 
         userEditPayload.getHashtagResultList().forEach(
                 ht -> userHashTagRepository.save(UserHashtag
                         .builder()
                         .user(user)
-                        .hashtag(hashtagRepository.findById(ht.longValue()).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
+                        .hashtag(hashtagRepository.findById(ht).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                         .build()));
         Image image = imageService.saveImage(imgFile);
 
