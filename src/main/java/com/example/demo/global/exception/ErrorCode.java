@@ -21,6 +21,7 @@ public enum ErrorCode {
     BOOKMARK_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "북마크 정보를 찾을 수 없습니다."),
     DECLARATION_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "신고 정보를 찾을 수 없습니다."),
     PHARMACY_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "약국 정보를 찾을 수 없습니다."),
+    STORAGE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "영양제 저장 내역이 없습니다."),
 
     ROLE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "유저 권한을 찾을 수 없습니다."),
 
