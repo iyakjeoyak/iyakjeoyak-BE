@@ -192,7 +192,6 @@ public class UserServiceImpl implements UserService {
         // UserHashtag에 있는 애들 일단 가져오기
         // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
 
-
         List<UserHashtag> allById = userHashTagRepository.findAllByUser(user);
 
         for (UserHashtag userHashtag : allById) {
@@ -205,9 +204,13 @@ public class UserServiceImpl implements UserService {
                         .user(user)
                         .hashtag(hashtagRepository.findById(ht.longValue()).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                         .build()));
-        user.editUser(userEditPayload);
+        Image image = imageService.saveImage(imgFile);
 
-        imageService.saveImage(imgFile);
+        if(ObjectUtils.isNotEmpty(image)) {
+            user.changeImage(image);
+        }
+
+        user.editUser(userEditPayload);
 
         return userId;
     }
