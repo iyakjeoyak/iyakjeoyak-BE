@@ -30,6 +30,7 @@ public class JwtUtil {
             "/swagger-ui/**",
             "/",
             "/error",
+            "/user",
             "/user/login",
             "/user/createAccessByRefresh",
             "/user/findPassword",
