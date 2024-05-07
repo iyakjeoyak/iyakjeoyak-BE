@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
         // body에서 페이로드로 페스워드 꺼내기
         String password = userLoginPayload.getPassword();
         // username으로 user 테이블 조회
-        User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         //TODO 더 추가할 수도 있음
 
@@ -193,10 +193,10 @@ public class UserServiceImpl implements UserService {
         // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
 
 
-        List<UserHashtag> allById = userHashTagRepository.findAllById(Collections.singleton(user.getUserId()));
+        List<UserHashtag> allById = userHashTagRepository.findAllByUser(user);
 
         for (UserHashtag userHashtag : allById) {
-            System.out.println(userHashtag.getId());
+            userHashTagRepository.delete(userHashtag);
         }
 
         userEditPayload.getHashtagResultList().forEach(
