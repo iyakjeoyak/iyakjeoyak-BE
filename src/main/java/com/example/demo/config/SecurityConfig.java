@@ -49,10 +49,9 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("**").permitAll()
+                                .requestMatchers(jwtUtil.allowedUrls).permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .anyRequest()
-                                .authenticated()
+                                .anyRequest().authenticated()
 
                 )
                 //세션 관리 상태 없음으로 구성한다, Spring Security가 세션 생성과 사용을 하지 않겠다. 무상태

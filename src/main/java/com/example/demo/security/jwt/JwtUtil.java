@@ -18,6 +18,43 @@ public class JwtUtil {
     private final Key key;
     private final long accessTokenExpTime;
     private final long refreshTokenExpTime;
+    public final String[] allowedUrls = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/",
+            "/error",
+            "/user/login",
+            "/user/createAccessByRefresh",
+            "/user/findPassword",
+            "/user/getKakaoAuthCode",
+            "/user/getGoogleAuthCode",
+            "/user/getGoogleAuthCode",
+            "/user/check/username/**",
+            "/user/check/nickname/**",
+            "/heart/medicine/**",
+            "/review",
+            "/review/my",
+            "/map/**",
+            "/map",
+            "/category",
+            "/hashtag",
+            "/bookmark/medicine/**",
+            "/heart/review/count/**",
+            "/heart/review/**",
+            "/topUser",
+            "/auto-complete",
+            "/medicine**",
+            "/mail/verify",
+            "/mail/send/verify",
+            "/image/**"
+    };
 
     public JwtUtil (
             @Value("${jwt.secret}") String secretKey,
@@ -92,30 +129,14 @@ public class JwtUtil {
      * JWT 유효성 검증
      * */
     public boolean validateToken(String token) {
+        Jws<Claims> claimsJws = null;
         try {
+            claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 
-            // jWt token parsing
-            Claims claims = parseClaims(token);
-            String tokenType = claims.get("tokenType").toString();
-
-            /*
-            * claim에 들어오는 정보
-            * userid, username, nickname, tokentype, <iat, exp -> 얘넨 뭘까 시간인가 ..?>
-            * */
-            log.info("claims", claims);
-
-            return tokenType.equals("access");
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-
-        } catch (ExpiredJwtException e) {
-//            throw e;
-        } catch (UnsupportedJwtException e) {
-//            throw e;
-        } catch (IllegalArgumentException e) {
-//            throw e;
+        } catch (Exception e) {
+            return false;
         }
-
-        return false;
+        return claimsJws != null && claimsJws.getBody().get("tokenType").toString().equals("access");
     }
 
     /*

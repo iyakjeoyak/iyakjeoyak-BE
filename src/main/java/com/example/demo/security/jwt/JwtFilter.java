@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
      * JWT &#xD1A0;&#xD070; &#xAC80;&#xC99D; &#xD544;&#xD130; &#xC218;&#xD589;
      *
      * */
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())); // true면 fileter 안 탐
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -54,7 +60,9 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(customUserDetails);
                     }
                 } else {
-                    response.setStatus(401);
+                    SecurityContextHolder.clearContext();
+                    response.sendError(401);
+                    return;
                 }
             }
         }
