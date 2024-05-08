@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
     private String GOOGLE_CLIENT_SECRET;
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String GOOGLE_REDIRECT_URL;
+
     /*
      * 회원 가입
      * */
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
         userJoinPayload.getUserHashtagList().forEach(
                 uht -> userHashTagRepository.save(
                         UserHashtag.builder()
-                                .hashtag(hashtagRepository.findById(uht).orElseThrow(()-> new CustomException(HASHTAG_NOT_FOUND)))
+                                .hashtag(hashtagRepository.findById(uht).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                                 .user(saveUser)
                                 .build()));
         // userRole 저장
@@ -113,7 +114,7 @@ public class UserServiceImpl implements UserService {
                 ur -> userRoleRepository.save(
                         UserRole.builder()
                                 .user(saveUser)
-                                .role(roleRepository.findById(ur).orElseThrow(()-> new CustomException(ErrorCode.ROLE_NOT_FOUND)))
+                                .role(roleRepository.findById(ur).orElseThrow(() -> new CustomException(ErrorCode.ROLE_NOT_FOUND)))
                                 .build()));
 
         return saveUser.getUserId();
@@ -204,7 +205,7 @@ public class UserServiceImpl implements UserService {
                         .build()));
         Image image = imageService.saveImage(imgFile);
 
-        if(ObjectUtils.isNotEmpty(image)) {
+        if (ObjectUtils.isNotEmpty(image)) {
             user.changeImage(image);
         }
 
@@ -281,7 +282,7 @@ public class UserServiceImpl implements UserService {
                 log.info("jsonResponse {}", jsonResponse);
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonResponse);
-                token = (String)  jsonObject.get("access_token");
+                token = (String) jsonObject.get("access_token");
 
                 log.info("accessToken {}", token);
             } catch (Exception e) {
@@ -313,12 +314,12 @@ public class UserServiceImpl implements UserService {
         // header를 바꿀 때
         ResponseEntity<String> exchange = restTemplate.exchange("https://www.googleapis.com/oauth2/v2/userinfo", HttpMethod.GET, request, String.class);
 
-        if(exchange.getStatusCode() == HttpStatus.OK) {
+        if (exchange.getStatusCode() == HttpStatus.OK) {
             String body = exchange.getBody();
 
             try {
                 JSONParser jsonParser = new JSONParser();
-                JSONObject jsonObject =  (JSONObject) jsonParser.parse(body);
+                JSONObject jsonObject = (JSONObject) jsonParser.parse(body);
                 id = (String) jsonObject.get("id");
                 email = (String) jsonObject.get("email");
                 nickname = (String) jsonObject.get("nickname");
@@ -390,7 +391,7 @@ public class UserServiceImpl implements UserService {
         String client_id = "de8b9223df12fdd44efb37c8c599e22f";
         String grant_type = "authorization_code";
         String redirect_uri = "http://localhost:5173/auth/kakao";
-        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+client_id+"&redirect_uri="+redirect_uri+"&code=" + code;
+        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&code=" + code;
         String accessToken = "";
         String refreshToken = "";
 
@@ -427,7 +428,7 @@ public class UserServiceImpl implements UserService {
             bw.close();
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
