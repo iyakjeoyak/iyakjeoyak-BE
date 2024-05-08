@@ -1,6 +1,7 @@
 package com.example.demo.module.user.dto.payload;
 
 import com.example.demo.module.hashtag.dto.result.HashtagResult;
+import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.user.entity.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -33,6 +34,7 @@ public class UserEditPayload {
     // Integer 숫자만?
     @Schema(description = "관심 태그 리스트")
     @NotEmpty
-    private List<Integer> hashtagResultList = new ArrayList<>();
+    private List<Long> hashtagResultList = new ArrayList<>();
+
 
 }

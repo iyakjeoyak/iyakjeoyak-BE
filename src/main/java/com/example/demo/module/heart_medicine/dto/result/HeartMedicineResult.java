@@ -1,5 +1,6 @@
 package com.example.demo.module.heart_medicine.dto.result;
 
+import com.example.demo.module.medicine.dto.result.MedicineNameImgResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +15,5 @@ public class HeartMedicineResult {
     private Long id;
 
     @Schema(description = "영양제 PK")
-    private Long medicineId;
+    private MedicineNameImgResult medicineId;
 }
