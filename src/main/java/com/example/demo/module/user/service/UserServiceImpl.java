@@ -38,6 +38,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.*;
 
@@ -341,7 +343,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().imageUrl(imgUrl).socialId(id).socialType(SocialType.GOOGLE).socialEmail(email).build();
+            SocialUser socialUser = SocialUser.builder().user(saveUser).imageUrl(imgUrl).socialId(id).socialType(SocialType.GOOGLE).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 
@@ -354,8 +356,10 @@ public class UserServiceImpl implements UserService {
 
         // TODO nickname 고민중
 
+
+
         JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder()
-                .userId(user.getId())
+                .userId(user.getUser().getUserId())
                 .username(email)
                 .build();
 
@@ -445,11 +449,12 @@ public class UserServiceImpl implements UserService {
     public JwtTokenResult createTokenByKakaoToken(String token) {
 
         JwtTokenResult newUserTokenResult = null;
-        String profileImage = "";
-        String gender = "";
-        String email = "";
-        String socialId = "";
+        JSONObject jsonObject = null;
+        // 선택 동의 항목
+        // 핈수 동의 항목
         String nickname = "";
+        // json parser
+        JSONParser parser = new JSONParser();
 
         try {
             URL url = new URL("https://kapi.kakao.com/v2/user/me");
@@ -473,20 +478,30 @@ public class UserServiceImpl implements UserService {
                 result += line;
             }
 
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(result);
-            JSONObject properties = (JSONObject) jsonObject.get("properties");
-            JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
-            profileImage = (String) properties.get("profile_image");
-            gender = (String) profiles.get("gender");
-            email = (String) profiles.get("email");
-            nickname = (String) properties.get("nickname");
+            jsonObject = (JSONObject) parser.parse(result);
 //            JSONObject id = (JSONObject) jsonObject.get("id");
 //            socialId = (String) id.get("id");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        }  catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
+
+        JSONObject properties = (JSONObject) jsonObject.get("properties");
+        JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
+//        profileImage = (String) properties.get("profile_image");
+//        gender = (String) profiles.get("gender");
+        // 섲택 동의 항목
+        String gender = (String) profiles.get("gender") == null ? "SECRET" : profiles.get("gender").toString();
+        String profileImage = (String) profiles.get("profile_image") == null ? "" : profiles.get("profile_image").toString();
+        String email = (String) profiles.get("email") == null ? "" : profiles.get("email").toString();
+        // 필수 동의 항목
+        nickname = (String) properties.get("nickname");
 
 //        User findUser = userRepository.findByUsername(email).orElse(null);
 
@@ -499,7 +514,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().imageUrl(profileImage).socialId(socialId).socialType(SocialType.KAKAO).socialEmail(email).build();
+            SocialUser socialUser = SocialUser.builder().user(saveUser).imageUrl(profileImage).socialType(SocialType.KAKAO).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 

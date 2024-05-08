@@ -4,7 +4,6 @@ import com.example.demo.module.category.entity.Category;
 import com.example.demo.module.common.entity.BaseTimeEntity;
 import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.image.entity.Image;
-import com.example.demo.module.image.entity.MedicineImage;
 import com.example.demo.module.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;

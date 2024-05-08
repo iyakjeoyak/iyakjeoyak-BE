@@ -5,9 +5,8 @@ import com.example.demo.module.common.result.PageResult;
 import org.springframework.data.domain.Pageable;
 
 public interface HeartMedicineService {
-//    Long like(Long medicineId, Long userId);
     Long like(Long medicineId, Long userId);
-//    Long cancel(Long medicineId, Long userId);
+
     Long cancel(Long medicineId, Long userId);
 
     PageResult<HeartMedicineResult> findAll(Long userId, Pageable pageable);

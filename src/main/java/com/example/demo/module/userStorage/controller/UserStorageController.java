@@ -70,7 +70,7 @@ public class UserStorageController {
     @PatchMapping(value = "/{storageId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 보관함 수정", description = "유저 보관함 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
+            @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = UserStorageSimpleResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> saveStorage(@PathVariable("storageId") Long storageId, @AuthenticationPrincipal Long userId, @RequestPart("userStorageEditPayload") UserStorageEditPayload payload, @RequestPart(name = "imgFile", required = false) MultipartFile image) throws IOException {
         return new ResponseEntity<>(userStorageService.editUserStorage(userId, storageId, payload, image), HttpStatus.CREATED);
