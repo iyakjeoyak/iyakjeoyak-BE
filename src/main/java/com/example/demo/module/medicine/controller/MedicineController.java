@@ -56,14 +56,23 @@ public class MedicineController {
             @RequestParam(name = "orderBy", required = false) MedicineOrderField medicineOrderField,
             @RequestParam(name = "sort", required = false) Order sort,
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @AuthenticationPrincipal Long userId) {
         MedicineSearchCond medicineSearchCond = MedicineSearchCond.builder()
                 .categoryId(categoryId)
                 .hashtagId(hashtagId)
                 .keyword(keyword)
                 .orderSortCond(OrderSortCond.builder().medicineOrderField(medicineOrderField).sort(sort).build())
                 .build();
-        return new ResponseEntity<>(medicineService.findAllByQuery(medicineSearchCond, PageRequest.of(page, size)), HttpStatus.OK);
+
+        PageResult<MedicineSimpleResult> pageResult = medicineService.findAllByQuery(medicineSearchCond, PageRequest.of(page, size));
+        if (userId != null && userId != 0L) {
+            pageResult.getData().forEach(d -> {
+                d.setIsBookMark(bookmarkService.isChecked(d.getId(), userId));
+                d.setIsHeart(heartMedicineService.isChecked(d.getId(), userId));
+            });
+        }
+        return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
 
     @GetMapping
@@ -84,7 +93,8 @@ public class MedicineController {
     public ResponseEntity<MedicineResult> findOneById(@PathVariable(name = "medicineId") Long medicineId, @AuthenticationPrincipal Long userId) {
         Boolean isHeart = false;
         Boolean isBookmark = false;
-        if (userId != null && userId != 0) {
+        System.out.println("userId = " + userId);
+        if (userId != null && userId != 0L) {
             isBookmark = bookmarkService.isChecked(medicineId, userId);
             isHeart = heartMedicineService.isChecked(medicineId, userId);
         }

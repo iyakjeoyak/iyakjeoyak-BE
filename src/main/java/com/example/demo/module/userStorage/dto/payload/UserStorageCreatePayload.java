@@ -18,7 +18,7 @@ public class UserStorageCreatePayload {
     private String medicineName;
 
     @Schema(description = "유통기한")
-    private LocalDateTime expirationDate;
+    private String expirationDate;
 
     @Schema(description = "간략 메모")
     private String memo;
