@@ -60,8 +60,10 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ReviewDetailResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@PathVariable("reviewId") Long reviewId) {
-        return new ResponseEntity<>(reviewService.findOneByReviewId(reviewId), HttpStatus.OK);
+    public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@AuthenticationPrincipal Long userId , @PathVariable("reviewId") Long reviewId) {
+        ReviewDetailResult oneByReviewId = reviewService.findOneByReviewId(reviewId);
+        oneByReviewId.setIsOwner(oneByReviewId.getCreatedBy().getUserId().equals(userId));
+        return new ResponseEntity<>(oneByReviewId, HttpStatus.OK);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

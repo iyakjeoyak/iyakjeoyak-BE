@@ -53,7 +53,8 @@ public class JwtUtil {
             "/medicine/**",
             "/mail/verify",
             "/mail/send/verify",
-            "/image/**"
+            "/image/**",
+            "/actuator/**"
     };
     public final String[] onlyGetAllow = {
             "/review",
@@ -151,6 +152,7 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
+            //TODO 에러 메세지
             return e.getClaims();
         }
     }

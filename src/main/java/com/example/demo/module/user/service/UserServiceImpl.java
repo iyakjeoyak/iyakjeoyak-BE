@@ -38,6 +38,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.*;
 
@@ -68,6 +70,7 @@ public class UserServiceImpl implements UserService {
     private String GOOGLE_CLIENT_SECRET;
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String GOOGLE_REDIRECT_URL;
+
     /*
      * 회원 가입
      * */
@@ -105,7 +108,7 @@ public class UserServiceImpl implements UserService {
         userJoinPayload.getUserHashtagList().forEach(
                 uht -> userHashTagRepository.save(
                         UserHashtag.builder()
-                                .hashtag(hashtagRepository.findById(uht).orElseThrow(()-> new CustomException(HASHTAG_NOT_FOUND)))
+                                .hashtag(hashtagRepository.findById(uht).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                                 .user(saveUser)
                                 .build()));
         // userRole 저장
@@ -113,7 +116,7 @@ public class UserServiceImpl implements UserService {
                 ur -> userRoleRepository.save(
                         UserRole.builder()
                                 .user(saveUser)
-                                .role(roleRepository.findById(ur).orElseThrow(()-> new CustomException(ErrorCode.ROLE_NOT_FOUND)))
+                                .role(roleRepository.findById(ur).orElseThrow(() -> new CustomException(ErrorCode.ROLE_NOT_FOUND)))
                                 .build()));
 
         return saveUser.getUserId();
@@ -128,7 +131,7 @@ public class UserServiceImpl implements UserService {
         // body에서 페이로드로 페스워드 꺼내기
         String password = userLoginPayload.getPassword();
         // username으로 user 테이블 조회
-        User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         //TODO 더 추가할 수도 있음
 
@@ -192,22 +195,23 @@ public class UserServiceImpl implements UserService {
         // UserHashtag에 있는 애들 일단 가져오기
         // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
 
+        List<UserHashtag> allById = userHashTagRepository.findAllByUser(user);
 
-        List<UserHashtag> allById = userHashTagRepository.findAllById(Collections.singleton(user.getUserId()));
-
-        for (UserHashtag userHashtag : allById) {
-            System.out.println(userHashtag.getId());
-        }
+        userHashTagRepository.deleteAll(allById);
 
         userEditPayload.getHashtagResultList().forEach(
                 ht -> userHashTagRepository.save(UserHashtag
                         .builder()
                         .user(user)
-                        .hashtag(hashtagRepository.findById(ht.longValue()).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
+                        .hashtag(hashtagRepository.findById(ht).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                         .build()));
-        user.editUser(userEditPayload);
+        Image image = imageService.saveImage(imgFile);
 
-        imageService.saveImage(imgFile);
+        if (ObjectUtils.isNotEmpty(image)) {
+            user.changeImage(image);
+        }
+
+        user.editUser(userEditPayload);
 
         return userId;
     }
@@ -280,7 +284,7 @@ public class UserServiceImpl implements UserService {
                 log.info("jsonResponse {}", jsonResponse);
                 JSONParser jsonParser = new JSONParser();
                 JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonResponse);
-                token = (String)  jsonObject.get("access_token");
+                token = (String) jsonObject.get("access_token");
 
                 log.info("accessToken {}", token);
             } catch (Exception e) {
@@ -312,12 +316,12 @@ public class UserServiceImpl implements UserService {
         // header를 바꿀 때
         ResponseEntity<String> exchange = restTemplate.exchange("https://www.googleapis.com/oauth2/v2/userinfo", HttpMethod.GET, request, String.class);
 
-        if(exchange.getStatusCode() == HttpStatus.OK) {
+        if (exchange.getStatusCode() == HttpStatus.OK) {
             String body = exchange.getBody();
 
             try {
                 JSONParser jsonParser = new JSONParser();
-                JSONObject jsonObject =  (JSONObject) jsonParser.parse(body);
+                JSONObject jsonObject = (JSONObject) jsonParser.parse(body);
                 id = (String) jsonObject.get("id");
                 email = (String) jsonObject.get("email");
                 nickname = (String) jsonObject.get("nickname");
@@ -337,7 +341,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().imageUrl(imgUrl).socialId(id).socialType(SocialType.GOOGLE).socialEmail(email).build();
+            SocialUser socialUser = SocialUser.builder().user(saveUser).imageUrl(imgUrl).socialId(id).socialType(SocialType.GOOGLE).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 
@@ -350,8 +354,10 @@ public class UserServiceImpl implements UserService {
 
         // TODO nickname 고민중
 
+
+
         JwtTokenPayload jwtTokenPayload = JwtTokenPayload.builder()
-                .userId(user.getId())
+                .userId(user.getUser().getUserId())
                 .username(email)
                 .build();
 
@@ -389,7 +395,7 @@ public class UserServiceImpl implements UserService {
         String client_id = "de8b9223df12fdd44efb37c8c599e22f";
         String grant_type = "authorization_code";
         String redirect_uri = "http://localhost:5173/auth/kakao";
-        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="+client_id+"&redirect_uri="+redirect_uri+"&code=" + code;
+        String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&code=" + code;
         String accessToken = "";
         String refreshToken = "";
 
@@ -426,7 +432,7 @@ public class UserServiceImpl implements UserService {
             bw.close();
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -441,11 +447,12 @@ public class UserServiceImpl implements UserService {
     public JwtTokenResult createTokenByKakaoToken(String token) {
 
         JwtTokenResult newUserTokenResult = null;
-        String profileImage = "";
-        String gender = "";
-        String email = "";
-        String socialId = "";
+        JSONObject jsonObject = null;
+        // 선택 동의 항목
+        // 핈수 동의 항목
         String nickname = "";
+        // json parser
+        JSONParser parser = new JSONParser();
 
         try {
             URL url = new URL("https://kapi.kakao.com/v2/user/me");
@@ -469,19 +476,30 @@ public class UserServiceImpl implements UserService {
                 result += line;
             }
 
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(result);
-            JSONObject properties = (JSONObject) jsonObject.get("properties");
-            JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
-            profileImage = (String) properties.get("profile_image");
-            gender = (String) profiles.get("gender");
-            email = (String) profiles.get("email");
-            nickname = (String) properties.get("nickname");
+            jsonObject = (JSONObject) parser.parse(result);
 //            JSONObject id = (JSONObject) jsonObject.get("id");
 //            socialId = (String) id.get("id");
 
-        } catch (Exception e) {
+        }  catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
+
+        JSONObject properties = (JSONObject) jsonObject.get("properties");
+        JSONObject profiles = (JSONObject) jsonObject.get("kakao_account");
+//        profileImage = (String) properties.get("profile_image");
+//        gender = (String) profiles.get("gender");
+        // 섲택 동의 항목
+        String gender = (String) profiles.get("gender") == null ? "SECRET" : profiles.get("gender").toString();
+        String profileImage = (String) profiles.get("profile_image") == null ? "" : profiles.get("profile_image").toString();
+        String email = (String) profiles.get("email") == null ? "" : profiles.get("email").toString();
+        // 필수 동의 항목
+        nickname = (String) properties.get("nickname");
 
 //        User findUser = userRepository.findByUsername(email).orElse(null);
 
@@ -494,7 +512,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(saveUser);
 
             // social user 저장
-            SocialUser socialUser = SocialUser.builder().imageUrl(profileImage).socialId(socialId).socialType(SocialType.KAKAO).socialEmail(email).build();
+            SocialUser socialUser = SocialUser.builder().user(saveUser).imageUrl(profileImage).socialType(SocialType.KAKAO).socialEmail(email).build();
 
             socialUserRepository.save(socialUser);
 

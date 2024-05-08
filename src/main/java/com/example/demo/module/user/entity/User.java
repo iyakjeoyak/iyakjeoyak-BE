@@ -62,6 +62,10 @@ public class User extends BaseTimeEntity {
         this.point = 0;
     }
 
+    public void changeImage(Image image) {
+        this.image = image;
+    }
+
     public void editUser(UserEditPayload userEditPayload) {
         this.nickname = userEditPayload.getNickname();
         this.introduce = userEditPayload.getIntroduce();

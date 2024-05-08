@@ -81,14 +81,14 @@ public class MedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = MedicineResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<MedicineSimpleResult> findOneById(@PathVariable(name = "medicineId") Long medicineId, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<MedicineResult> findOneById(@PathVariable(name = "medicineId") Long medicineId, @AuthenticationPrincipal Long userId) {
         Boolean isHeart = false;
         Boolean isBookmark = false;
         if (userId != null && userId != 0) {
             isBookmark = bookmarkService.isChecked(medicineId, userId);
             isHeart = heartMedicineService.isChecked(medicineId, userId);
         }
-        MedicineSimpleResult oneById = medicineService.findOneById(medicineId);
+        MedicineResult oneById = medicineService.findOneById(medicineId);
         oneById.setIsBookMark(isBookmark);
         oneById.setIsHeart(isHeart);
         return new ResponseEntity<>(oneById, HttpStatus.OK);
@@ -99,10 +99,10 @@ public class MedicineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = MedicineResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<MedicineSimpleResult> createMedicine(@RequestBody MedicinePayload medicinePayload) {
+    public ResponseEntity<MedicineResult> createMedicine(@RequestBody MedicinePayload medicinePayload) {
         long id = medicineService.save(medicinePayload);
-        MedicineSimpleResult medicineSimpleResult = medicineService.findOneById(id);
-        return new ResponseEntity<>(medicineSimpleResult, HttpStatus.CREATED);
+        MedicineResult result = medicineService.findOneById(id);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @GetMapping("/md")

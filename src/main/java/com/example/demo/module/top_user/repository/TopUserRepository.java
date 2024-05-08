@@ -10,4 +10,6 @@ import java.util.List;
 public interface TopUserRepository extends JpaRepository<TopUser, Long> {
 
     List<TopUser> findByYearAndWeekOrderByRanking(int year, int week);
+
+    Integer countAllByUserUserId(Long userId);
 }

@@ -15,4 +15,6 @@ public class UserSimpleResult {
 
     @Schema(description = "이미지 정보")
     private ImageResult image;
+
+    private Integer topCount;
 }
