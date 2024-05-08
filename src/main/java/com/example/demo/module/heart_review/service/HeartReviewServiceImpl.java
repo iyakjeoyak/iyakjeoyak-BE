@@ -1,9 +1,6 @@
 package com.example.demo.module.heart_review.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
-import com.example.demo.module.point.entity.PointDomain;
-import com.example.demo.module.point.entity.ReserveUse;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.heart_review.entity.HeartReview;
 import com.example.demo.module.heart_review.repository.HeartReviewRepository;
@@ -18,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import static com.example.demo.global.exception.ErrorCode.*;
 import static com.example.demo.module.point.entity.PointDomain.*;
 
 @Service
@@ -35,12 +33,12 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         if (checkReviewHeart(userId, reviewId)) {
             throw new IllegalArgumentException("이미 좋아요 클릭한 후기입니다.");
         }
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
         review.addHeartCount();
 
         return heartReviewRepository.save(
                 HeartReview.builder()
-                        .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND)))
+                        .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(USER_NOT_FOUND)))
                         .review(review)
                         .build()).getId();
     }
@@ -51,7 +49,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         if (!checkReviewHeart(userId, reviewId)) {
             throw new IllegalArgumentException("좋아요 클릭 되지 않은 후기입니다.");
         }
-        reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)).decreaseHeartCount();
+        reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)).decreaseHeartCount();
 
         Long hrId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
         heartReviewRepository.deleteById(hrId);
@@ -72,10 +70,8 @@ public class HeartReviewServiceImpl implements HeartReviewService {
     @Override
     @Transactional
     public boolean click(Long reviewId, Long userId) {
-        if(!userRepository.existsById(userId)){
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
-        }
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        User foundUser = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
         User user = review.getCreatedBy();
         if (checkReviewHeart(userId, reviewId)){
             review.decreaseHeartCount();
@@ -92,7 +88,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
         }
         heartReviewRepository.save(HeartReview
                 .builder()
-                .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND)))
+                .user(foundUser)
                 .review(review)
                 .build());
         return true;
