@@ -31,11 +31,11 @@ public class UserStorage extends BaseTimeEntity {
 
     private String medicineName;
 
-    private LocalDateTime expirationDate;
+    private String expirationDate;
 
     private String memo;
 
-    public Long edit(Medicine medicine, String medicineName, LocalDateTime expirationDate, String memo) {
+    public Long edit(Medicine medicine, String medicineName, String expirationDate, String memo) {
         this.medicine = medicine;
         this.medicineName = medicineName;
         this.expirationDate = expirationDate;

@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) || Arrays.stream(jwtUtil.onlyGetAllow).anyMatch(item -> request.getMethod().equals("GET") && request.getServletPath().startsWith(item)); // true면 fileter 안 탐
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) || Arrays.stream(jwtUtil.onlyGetNotFilter).anyMatch(item -> request.getMethod().equals("GET") && request.getServletPath().startsWith(item)); // true면 fileter 안 탐
     }
 
     @Override
@@ -67,6 +67,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     return;
                 }
             }
+//            else {
+//                response.sendError(403);
+//                return;
+//            }
         }
 
         // 다음 필터로 진행 시키자

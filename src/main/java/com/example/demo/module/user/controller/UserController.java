@@ -4,10 +4,7 @@ import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
 import com.example.demo.module.review.service.ReviewService;
-import com.example.demo.module.user.dto.payload.FindPwPayLoad;
-import com.example.demo.module.user.dto.payload.UserEditPayload;
-import com.example.demo.module.user.dto.payload.UserJoinPayload;
-import com.example.demo.module.user.dto.payload.UserLoginPayload;
+import com.example.demo.module.user.dto.payload.*;
 import com.example.demo.module.user.dto.result.ChangePasswordPayLoad;
 import com.example.demo.module.user.dto.result.UserDetailResult;
 import com.example.demo.module.user.dto.result.UserResult;
@@ -98,12 +95,12 @@ public class UserController {
     @PostMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
 //    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
-    public ResponseEntity<String> createAccessByRefresh(@RequestBody String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<String> createAccessByRefresh(@RequestBody RefreshTokenPayload refreshTokenPayload, HttpServletResponse response) {
 /*        String refreshToken = "";
         if (cookie != null || cookie.getValue().isEmpty()) {
             refreshToken = cookie.getValue();
         }*/
-        String accessByRefresh = userService.createAccessByRefresh(refreshToken);
+        String accessByRefresh = userService.createAccessByRefresh(refreshTokenPayload.getRefreshToken());
 
 
 

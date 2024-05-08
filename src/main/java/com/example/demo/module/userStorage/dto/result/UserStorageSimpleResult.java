@@ -22,6 +22,6 @@ public class UserStorageSimpleResult {
     private String grade;
 
     @Schema(description = "유통기한")
-    private LocalDateTime expirationDate;
+    private String expirationDate;
 
 }

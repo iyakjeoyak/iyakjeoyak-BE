@@ -40,7 +40,7 @@ public class JwtUtil {
             "/user/check/username/**",
             "/user/check/nickname/**",
             "/map/**",
-            "/map",
+            "/map**",
             "/category",
             "/hashtag",
             "/bookmark/medicine/**",
@@ -53,23 +53,26 @@ public class JwtUtil {
             "/image/**",
             "/actuator/**"
     };
-    public final String[] onlyGetAllow = {
-            "/review",
-            "/review/**",
-            "/heart",
-            "/heart/**",
+    public final String[] onlyGetNotFilter = {
+//            "/review",
+            "/heart/medicine/",
+            "/heart/review/",
             "/hashtag",
             "/category",
-            "/map",
             "/bookmark/medicine/",
-            "/medicine",
+//            "/medicine",
             "/mail",
             "/image",
-            "/map/",
             "/user/check/username",
             "/user/check/nickname"
 //            "/review/top",
 //            "/review/**"
+    };
+    public final String[] onlyGetAllowUrl = {
+            "/heart/review/**",
+            "/heart/medicine/**",
+            "/review/**",
+            "/review",
     };
 
     public JwtUtil(
