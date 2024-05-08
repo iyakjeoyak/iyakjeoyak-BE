@@ -49,7 +49,7 @@ public class UserStorageServiceImpl implements UserStorageService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Medicine medicine = null;
-        if (userStorageCreatePayload.getMedicineId() != null) {
+        if (userStorageCreatePayload.getMedicineId() != null && userStorageCreatePayload.getMedicineId() != 0L) {
             medicine = medicineRepository.findById(userStorageCreatePayload.getMedicineId()).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
         }
 
