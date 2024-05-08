@@ -46,10 +46,13 @@ public class ReviewController {
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "orderBy", defaultValue = "ID", required = false) ReviewOrderField reviewOrderField,
-            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort) {
+            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort,
+            @AuthenticationPrincipal Long userId) {
         Sort orderBy = sort.equals("ASC") ?
                 Sort.by(Sort.Direction.ASC, reviewOrderField.getValue()) : Sort.by(Sort.Direction.DESC, reviewOrderField.getValue());
-        return new ResponseEntity<>(reviewService.findPageByMedicineId(medicineId, PageRequest.of(page, size, orderBy)), HttpStatus.OK);
+        PageResult<ReviewResult> pageResult = reviewService.findPageByMedicineId(medicineId, PageRequest.of(page, size, orderBy));
+        pageResult.getData().forEach(r -> r.setIsOwner(r.getCreatedBy().getUserId().equals(userId)));
+        return ResponseEntity.status(HttpStatus.OK).body(pageResult);
     }
 
     @GetMapping("/{reviewId}")
@@ -57,8 +60,10 @@ public class ReviewController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ReviewDetailResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@PathVariable("reviewId") Long reviewId) {
-        return new ResponseEntity<>(reviewService.findOneByReviewId(reviewId), HttpStatus.OK);
+    public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@AuthenticationPrincipal Long userId , @PathVariable("reviewId") Long reviewId) {
+        ReviewDetailResult oneByReviewId = reviewService.findOneByReviewId(reviewId);
+        oneByReviewId.setIsOwner(oneByReviewId.getCreatedBy().getUserId().equals(userId));
+        return new ResponseEntity<>(oneByReviewId, HttpStatus.OK);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -85,24 +90,10 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
+        System.out.println("ReviewController.deleteReview");
         return new ResponseEntity<>(reviewService.deleteByReviewId(userId, reviewId), HttpStatus.OK);
     }
 
-    @GetMapping("/my")
-    @Operation(summary = "마이페이지 리뷰 전체 조회", description = "page : 현재 페이지 , size : 페이지당 데이터 수")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
-            @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<ReviewMyPageResult>> findPageByUserId(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "5", required = false) int size,
-            @RequestParam(name = "orderBy", defaultValue = "ID", required = false) ReviewOrderField reviewOrderField,
-            @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort) {
-        Sort orderBy = sort.equals("ASC") ?
-                Sort.by(Sort.Direction.ASC, reviewOrderField.getValue()) : Sort.by(Sort.Direction.DESC, reviewOrderField.getValue());
-        return new ResponseEntity<>(reviewService.findPageByUserId(userId, PageRequest.of(page, size, orderBy)), HttpStatus.OK);
-    }
 
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "리뷰 이미지 추가(복수)", description = "반환값 : 리뷰 PK")

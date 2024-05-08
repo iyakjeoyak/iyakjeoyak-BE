@@ -2,6 +2,7 @@ package com.example.demo.module.top_user.controller;
 
 import com.example.demo.module.top_user.service.TopUserService;
 import com.example.demo.module.user.dto.result.UserResult;
+import com.example.demo.module.user.dto.result.UserSimpleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +30,7 @@ public class TopUserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = List.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<List<UserResult>> getTopUsers() {
+    public ResponseEntity<List<UserSimpleResult>> getTopUsers() {
         return new ResponseEntity<>(topUserService.getTopUsers(), HttpStatus.OK);
     }
 }

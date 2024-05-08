@@ -40,4 +40,11 @@ public class MedicineSimpleResult {
 
     @Schema(description = "이미지")
     private ImageResult image;
+
+    @Schema(description = "좋아요 여부")
+    private Boolean isHeart;
+
+    @Schema(description = "북마크 여부")
+    private Boolean isBookMark;
+
 }

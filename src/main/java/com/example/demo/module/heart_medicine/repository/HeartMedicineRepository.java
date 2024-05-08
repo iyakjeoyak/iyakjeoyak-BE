@@ -12,8 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface HeartMedicineRepository extends JpaRepository<HeartMedicine, Long> {
-    Optional<HeartMedicine> findByMedicineId(Long medicineId);
-
     void deleteByMedicineIdAndUserUserId(Long medicineId, Long userId);
 
     Page<HeartMedicine> findAllByUserUserId(Long userId, Pageable pageable);

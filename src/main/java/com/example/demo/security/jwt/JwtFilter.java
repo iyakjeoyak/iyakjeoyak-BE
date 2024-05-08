@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,17 +29,24 @@ public class JwtFilter extends OncePerRequestFilter {
      * */
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) || Arrays.stream(jwtUtil.onlyGetAllow).anyMatch(item -> request.getMethod().equals("GET") && request.getServletPath().startsWith(item)); // true면 fileter 안 탐
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request 헤더에서 Authorization 정보 가져오기
+        System.out.println("request || method = {}" + request.getMethod().toString() + " , path = {}" + request.getServletPath().toString());
         String authorizationHeader = request.getHeader("Authorization");
         // access, ref
         // "null"
 
         // JWT가 헤더에 ㅣㅇㅆ는 경우 Bearer가 붙여있는 녀석 가져오기
-        if (authorizationHeader != null&& authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             // Bearer 자르기
             String token = authorizationHeader.substring(7);
-            if(!token.equals("null") && !StringUtils.isEmpty(token)) {
+            if (!token.equals("null") && !StringUtils.isEmpty(token)) {
                 if (jwtUtil.validateToken(token)) {
 
                     JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
@@ -54,7 +62,9 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(customUserDetails);
                     }
                 } else {
-                    response.setStatus(401);
+//                    SecurityContextHolder.clearContext();
+                    response.sendError(401);
+                    return;
                 }
             }
         }

@@ -55,10 +55,10 @@ public class UserController {
     public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
         JwtTokenResult token = userService.authorizationCodeToKakao(code);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
     @GetMapping("/getGoogleAuthCode")
@@ -66,14 +66,13 @@ public class UserController {
     public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
         JwtTokenResult token = userService.authorizationCodeToGoogle(code);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return ResponseEntity.status(HttpStatus.OK).body(token.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
-    // TODO 고민중이다 비밀번호 확인을 만들 것인가? 내가 봤을 때는 만드는 것이 좋을 것 같다
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "유저 생성", description = "gender : enum 타입 ('FEMALE','MALE','SECRET')")
     public ResponseEntity<Long> createUser(
             @RequestPart("userJoinPayload") @Valid UserJoinPayload userJoinPayload,
@@ -89,23 +88,28 @@ public class UserController {
         // 이미 유저 정보를 저장했으니깐 ? 여기서 검증을 하나?
         JwtTokenResult token = userService.loginUser(userLoginPayload);
 
-        setRefreshCookie(response, token.getRefreshToken());
+//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
-        return new ResponseEntity<>(token.getAccessToken(), HttpStatus.OK);
+        return new ResponseEntity<>(token.getRefreshToken(), HttpStatus.OK);
     }
 
 
     @PostMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
-    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie) {
-
-        String refreshToken = "";
-        if (cookie != null) {
+//    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
+    public ResponseEntity<String> createAccessByRefresh(@RequestBody String refreshToken, HttpServletResponse response) {
+/*        String refreshToken = "";
+        if (cookie != null || cookie.getValue().isEmpty()) {
             refreshToken = cookie.getValue();
-        }
+        }*/
+        String accessByRefresh = userService.createAccessByRefresh(refreshToken);
 
-        return new ResponseEntity<>(userService.createAccessByRefresh(refreshToken), HttpStatus.OK);
+
+
+        response.setHeader("Authorization", accessByRefresh);
+
+        return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
     }
 
     @GetMapping("/checkToken")
@@ -114,15 +118,6 @@ public class UserController {
         return new ResponseEntity<>(userService.validationUser(userId), HttpStatus.OK);
     }
 
-    @GetMapping
-    @Operation(summary = "유저 단건 조회", description = "유저 단건 조회")
-    public ResponseEntity<UserDetailResult> findOneByUserId(@AuthenticationPrincipal Long userId) {
-        UserResult userResult = userService.findOneByUserId(userId);
-        List<ReviewSimpleMyPageResult> simpleResults = reviewService.findSimpleResultPageByUserId(userId, PageRequest.of(0, 3, Sort.Direction.DESC, CREATED_DATE.getValue()));
-        List<UserStorageSimpleResult> userStorageList = userStorageService.getAllByUserId(userId, PageRequest.of(0, 4, Sort.Direction.DESC, StorageOrderField.CREATED_DATE.getValue())).getData();
-        UserDetailResult userDetailResult = getUserDetailResult(userResult, simpleResults, userStorageList);
-        return new ResponseEntity<>(userDetailResult, HttpStatus.OK);
-    }
 
 
     @DeleteMapping
@@ -133,8 +128,11 @@ public class UserController {
 
     @PatchMapping
     @Operation(summary = "유저 변경", description = "유저 변경")
-    public ResponseEntity<Long> editUser(@AuthenticationPrincipal Long userId, @RequestBody UserEditPayload userEditPayload) {
-        return new ResponseEntity<>(userService.editUser(userId, userEditPayload), HttpStatus.OK);
+    public ResponseEntity<Long> editUser(
+            @AuthenticationPrincipal Long userId
+            , @RequestPart(value = "userEditPayload") @Valid UserEditPayload userEditPayload
+            , @RequestPart(value = "imgFile", required = false) MultipartFile imgFile) throws IOException {
+        return new ResponseEntity<>(userService.editUser(userId, userEditPayload, imgFile), HttpStatus.OK);
     }
 
     @GetMapping("/check/username/{username}")
@@ -166,18 +164,12 @@ public class UserController {
         Cookie cookie = new Cookie("refreshToken", token);
         // 1day
         cookie.setMaxAge(24 * 60 * 60);
-
-        cookie.setSecure(false);
+        cookie.setAttribute("SameSite", "None");
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+//        cookie.setDomain("ec2-54-180-121-206.ap-northeast-2.compute.amazonaws.com");
+//        cookie.setPath("ec2-54-180-121-206.ap-northeast-2.compute.amazonaws.com/");
         response.addCookie(cookie);
     }
 
-    private UserDetailResult getUserDetailResult(UserResult userResult, List<ReviewSimpleMyPageResult> reviewList, List<UserStorageSimpleResult> userStorageList) {
-        UserDetailResult userDetailResult = new UserDetailResult();
-        userDetailResult.setUserResult(userResult);
-        userDetailResult.setLatestReviews(reviewList);
-        userDetailResult.setFavoriteSupplements(userStorageList);
-        return userDetailResult;
-    }
 }
