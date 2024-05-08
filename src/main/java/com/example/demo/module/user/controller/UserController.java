@@ -95,7 +95,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/createAccessByRefresh")
+    @PostMapping("/createAccessByRefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
 //    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
     public ResponseEntity<String> createAccessByRefresh(@RequestBody String refreshToken, HttpServletResponse response) {
