@@ -31,12 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) && Arrays.stream(jwtUtil.onlyGetAllow).anyMatch(item -> request.getMethod().equals("GET") && item.equalsIgnoreCase(request.getServletPath())); // true면 fileter 안 탐
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) || Arrays.stream(jwtUtil.onlyGetAllow).anyMatch(item -> request.getMethod().equals("GET") && request.getServletPath().startsWith(item)); // true면 fileter 안 탐
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request 헤더에서 Authorization 정보 가져오기
+        System.out.println("request || method = {}" + request.getMethod().toString() + " , path = {}" + request.getServletPath().toString());
         String authorizationHeader = request.getHeader("Authorization");
         // access, ref
         // "null"

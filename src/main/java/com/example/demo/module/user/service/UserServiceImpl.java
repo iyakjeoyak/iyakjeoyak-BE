@@ -221,7 +221,9 @@ public class UserServiceImpl implements UserService {
      * */
     @Override
     public UserValidationResult validationUser(Long userId) {
-
+        if (userId == null) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
 
         return UserValidationResult.builder()
