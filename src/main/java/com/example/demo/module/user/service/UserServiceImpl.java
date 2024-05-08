@@ -39,9 +39,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.example.demo.global.exception.ErrorCode.*;
 
@@ -187,23 +185,29 @@ public class UserServiceImpl implements UserService {
     //TODO edit 개발
     @Transactional
     @Override
-    public Long editUser(Long userId, UserEditPayload userEditPayload) {
+    public Long editUser(Long userId, UserEditPayload userEditPayload, MultipartFile imgFile) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
 
         // UserHashtag에 있는 애들 일단 가져오기
         // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
-        userHashTagRepository.deleteAll();
+
+
+        List<UserHashtag> allById = userHashTagRepository.findAllById(Collections.singleton(user.getUserId()));
+
+        for (UserHashtag userHashtag : allById) {
+            System.out.println(userHashtag.getId());
+        }
 
         userEditPayload.getHashtagResultList().forEach(
                 ht -> userHashTagRepository.save(UserHashtag
                         .builder()
                         .user(user)
-                        .hashtag(hashtagRepository.findById(ht.getId()).orElseThrow())
+                        .hashtag(hashtagRepository.findById(ht.longValue()).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                         .build()));
-
-
         user.editUser(userEditPayload);
+
+        imageService.saveImage(imgFile);
 
         return userId;
     }

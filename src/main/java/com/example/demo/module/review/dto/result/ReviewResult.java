@@ -51,4 +51,6 @@ public class ReviewResult {
 
     @Schema(description = "리뷰 이미지")
     private List<ImageResult> imageResult;
+
+    private Boolean isOwner;
 }

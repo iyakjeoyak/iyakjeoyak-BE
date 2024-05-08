@@ -39,8 +39,8 @@ public class UserStorageController {
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<PageResult<UserStorageSimpleResult>> getAllByUserId(
             @AuthenticationPrincipal Long userId,
-            @RequestParam(name = "page", required = false) Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
             @RequestParam(name = "orderBy", defaultValue = "ID", required = false) StorageOrderField storageOrderField,
             @RequestParam(name = "sort", defaultValue = "DESC", required = false) String sort
     ) {

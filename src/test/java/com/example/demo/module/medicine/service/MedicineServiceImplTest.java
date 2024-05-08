@@ -85,11 +85,11 @@ class MedicineServiceImplTest {
     @Test
     void findOneById(){
         Medicine medicine = Medicine.builder().build();
-        MedicineResult medicineResult = MedicineResult.builder().id(1L).build();
+        MedicineSimpleResult medicineResult = MedicineSimpleResult.builder().id(1L).build();
         when(medicineRepository.findById(1L)).thenReturn(Optional.ofNullable(medicine));
-        when(medicineMapper.toDto(any(Medicine.class))).thenReturn(medicineResult);
+        when(medicineSimpleResultMapper.toDto(any(Medicine.class))).thenReturn(medicineResult);
 
-        MedicineResult actualMedicine = medicineService.findOneById(1L);
+        MedicineSimpleResult actualMedicine = medicineService.findOneById(1L);
 
         assertEquals(medicineResult, actualMedicine);
     }
