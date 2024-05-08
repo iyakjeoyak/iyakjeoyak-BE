@@ -49,6 +49,9 @@ public class UserStorage extends BaseTimeEntity {
     }
 
     public Double getGrade() {
+        if (this.medicine == null) {
+            return 0.0;
+        }
         return this.medicine.getGrade();
     }
 
