@@ -39,14 +39,11 @@ public class JwtUtil {
             "/user/getGoogleAuthCode",
             "/user/check/username/**",
             "/user/check/nickname/**",
-            "/heart/medicine/**",
             "/map/**",
             "/map",
             "/category",
             "/hashtag",
             "/bookmark/medicine/**",
-            "/heart/review/count/**",
-            "/heart/review/**",
             "/topUser",
             "/auto-complete",
             "/medicine",
@@ -58,8 +55,21 @@ public class JwtUtil {
     };
     public final String[] onlyGetAllow = {
             "/review",
-            "/review/top",
             "/review/**",
+            "/heart",
+            "/heart/**",
+            "/hashtag",
+            "/category",
+            "/map",
+            "/bookmark/medicine/",
+            "/medicine",
+            "/mail",
+            "/image",
+            "/map/",
+            "/user/check/username",
+            "/user/check/nickname"
+//            "/review/top",
+//            "/review/**"
     };
 
     public JwtUtil(

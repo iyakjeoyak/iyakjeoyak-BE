@@ -90,6 +90,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> deleteReview(@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal Long userId) {
+        System.out.println("ReviewController.deleteReview");
         return new ResponseEntity<>(reviewService.deleteByReviewId(userId, reviewId), HttpStatus.OK);
     }
 
