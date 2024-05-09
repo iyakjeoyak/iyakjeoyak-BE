@@ -56,8 +56,7 @@ public class MedicineController {
             @RequestParam(name = "orderBy", required = false) MedicineOrderField medicineOrderField,
             @RequestParam(name = "sort", required = false) Order sort,
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
-            @AuthenticationPrincipal Long userId) {
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size) {
         MedicineSearchCond medicineSearchCond = MedicineSearchCond.builder()
                 .categoryId(categoryId)
                 .hashtagId(hashtagId)
@@ -66,12 +65,12 @@ public class MedicineController {
                 .build();
 
         PageResult<MedicineSimpleResult> pageResult = medicineService.findAllByQuery(medicineSearchCond, PageRequest.of(page, size));
-        if (userId != null && userId != 0L) {
-            pageResult.getData().forEach(d -> {
-                d.setIsBookMark(bookmarkService.isChecked(d.getId(), userId));
-                d.setIsHeart(heartMedicineService.isChecked(d.getId(), userId));
-            });
-        }
+//        if (userId != null && userId != 0L) {
+//            pageResult.getData().forEach(d -> {
+//                d.setIsBookMark(bookmarkService.isChecked(d.getId(), userId));
+//                d.setIsHeart(heartMedicineService.isChecked(d.getId(), userId));
+//            });
+//        }
         return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
 
