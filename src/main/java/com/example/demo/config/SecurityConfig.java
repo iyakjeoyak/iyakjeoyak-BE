@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(jwtUtil.allowedUrls).permitAll()
-                                .requestMatchers(HttpMethod.GET, jwtUtil.onlyGetAllow).permitAll()
+                                .requestMatchers(HttpMethod.GET, jwtUtil.onlyGetAllowUrl).permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
