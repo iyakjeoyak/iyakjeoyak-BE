@@ -72,7 +72,10 @@ public class UserServiceImpl implements UserService {
     private String GOOGLE_REDIRECT_URL;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String KAKAO_REDIRECT_URL;
 
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String KAKAO_CLIENT_ID;
     /*
      * 회원 가입
      * */
@@ -396,9 +399,9 @@ public class UserServiceImpl implements UserService {
     public JwtTokenResult authorizationCodeToKakao(String code) throws IOException, ParseException {
         // 인가코드는 한 번 사용되면 끝
         //kakao request + code
-        String client_id = "de8b9223df12fdd44efb37c8c599e22f";
+        String client_id = KAKAO_CLIENT_ID;
         String grant_type = "authorization_code";
-        String redirect_uri = "http://localhost:5173/auth/kakao";
+        String redirect_uri = KAKAO_REDIRECT_URL;
         String requestUrl = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&code=" + code;
         String accessToken = "";
         String refreshToken = "";
