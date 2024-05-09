@@ -1,6 +1,7 @@
 package com.example.demo.module.medicine.repository;
 
 import com.example.demo.module.auto_complete.dto.AutoCompleteResult;
+import com.example.demo.module.image.entity.QImage;
 import com.example.demo.module.medicine.dto.payload.MedicineOrderField;
 import com.example.demo.module.medicine.dto.payload.MedicineSearchCond;
 import com.example.demo.module.medicine.dto.payload.OrderSortCond;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.example.demo.module.image.entity.QImage.image;
 import static com.example.demo.module.medicine.entity.QMedicine.medicine;
 import static com.example.demo.module.medicine.entity.QMedicineCategory.medicineCategory;
 import static com.example.demo.module.medicine.entity.QMedicineHashtag.medicineHashtag;
@@ -55,6 +57,8 @@ public class QueryMedicineRepository {
         List<Medicine> medicines = query
                 .select(medicine)
                 .from(medicine)
+                .join(medicine.image, image)
+                .fetchJoin()
                 .where(medicine.id.in(idList))
                 .orderBy(setOrderBy(orderSortCond))
                 .fetch();
