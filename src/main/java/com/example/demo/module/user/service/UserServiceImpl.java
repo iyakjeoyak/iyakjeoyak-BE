@@ -71,6 +71,8 @@ public class UserServiceImpl implements UserService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String GOOGLE_REDIRECT_URL;
 
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+
     /*
      * 회원 가입
      * */

@@ -42,8 +42,8 @@ public class QueryMedicineRepository {
         List<Long> idList = query
                 .select(medicine.id)
                 .from(medicine)
-                .join(medicine.categoryList, medicineCategory)
-                .join(medicine.hashtagList, medicineHashtag)
+                .leftJoin(medicine.categoryList, medicineCategory)
+                .leftJoin(medicine.hashtagList, medicineHashtag)
                 .where(
                         categoryEq(medicineSearchCond.getCategoryId())
                         , hashtagEq(medicineSearchCond.getHashtagId())
@@ -57,8 +57,8 @@ public class QueryMedicineRepository {
         List<Medicine> medicines = query
                 .select(medicine)
                 .from(medicine)
-                .join(medicine.image, image)
-                .fetchJoin()
+                .leftJoin(medicine.image, image)
+//                .fetchJoin()
                 .where(medicine.id.in(idList))
                 .orderBy(setOrderBy(orderSortCond))
                 .fetch();
@@ -66,8 +66,8 @@ public class QueryMedicineRepository {
         // 이하 카운트용 쿼리
         JPAQuery<Long> totalIdList = query.select(medicine.id)
                 .from(medicine)
-                .join(medicine.categoryList, medicineCategory)
-                .join(medicine.hashtagList, medicineHashtag)
+                .leftJoin(medicine.categoryList, medicineCategory)
+                .leftJoin(medicine.hashtagList, medicineHashtag)
                 .where(categoryEq(medicineSearchCond.getCategoryId()), hashtagEq(medicineSearchCond.getHashtagId()))
                 .groupBy(medicine.id)
                 .from();
