@@ -104,6 +104,9 @@ public class Medicine extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Image image;
 
+    public Double getGrade() {
+        return grade == null ? 0.0 : grade;
+    }
     // 추가 getter
     public List<Hashtag> getHashtags() {
         return hashtagList.stream().map(MedicineHashtag::getHashtag).toList();
