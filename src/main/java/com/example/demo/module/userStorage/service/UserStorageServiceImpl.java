@@ -55,6 +55,10 @@ public class UserStorageServiceImpl implements UserStorageService {
 
         Image saveImage = imageService.saveImage(image);
 
+        if (saveImage == null && medicine != null) {
+            saveImage = medicine.getImage();
+        }
+
         UserStorage save = userStorageRepository.save(
                 UserStorage.builder()
                         .user(user)

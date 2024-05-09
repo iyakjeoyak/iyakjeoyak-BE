@@ -20,4 +20,5 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     @Override
     @EntityGraph(attributePaths = {"image"})
     Optional<Medicine> findById(Long id);
+
 }

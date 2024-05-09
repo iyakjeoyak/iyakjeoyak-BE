@@ -1,5 +1,6 @@
 package com.example.demo.module.userStorage.dto.result;
 
+import com.example.demo.module.image.dto.result.ImageResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,8 @@ public class UserStorageSimpleResult {
 
     @Schema(description = "유통기한")
     private String expirationDate;
+
+    @Schema(description = "이미지")
+    private ImageResult image;
 
 }
