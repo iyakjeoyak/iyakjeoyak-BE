@@ -48,7 +48,7 @@ public class ScheduledTaskConfig {
         int year = localDate.getYear();
         int week = localDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
         int ranking = 1;
-        for (User user : pointHistoryRepository.findTop3UserAndSumChangedValue(time)) {
+        for (User user : pointHistoryRepository.findTop5UserAndSumChangedValue(time)) {
             topUserRepository.save(TopUser.builder()
                     .user(user)
                     .year(year)

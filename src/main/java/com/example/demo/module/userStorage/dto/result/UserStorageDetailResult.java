@@ -1,5 +1,6 @@
 package com.example.demo.module.userStorage.dto.result;
 
+import com.example.demo.module.image.dto.result.ImageResult;
 import com.example.demo.module.medicine.dto.result.MedicineResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -27,4 +28,7 @@ public class UserStorageDetailResult {
 
     @Schema(description = "간략 메모")
     private String memo;
+
+    @Schema(description = "이미지")
+    private ImageResult image;
 }
