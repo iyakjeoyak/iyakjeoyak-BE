@@ -186,12 +186,13 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         /* 이하 이미지 삭제 로직 */
+        /* 중간 테이블 삭제 */
+        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
+        reviewImageRepository.delete(reviewImage);
+
         //S3에서 파일 삭제하는 로직 실행
         imageService.deleteImage(userId, imageId);
 
-        /* 중간 테이블만 삭제 */
-        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
-        reviewImageRepository.delete(reviewImage);
 
         return reviewId;
     }

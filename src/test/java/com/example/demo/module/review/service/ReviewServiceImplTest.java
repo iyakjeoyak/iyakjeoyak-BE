@@ -3,6 +3,8 @@ package com.example.demo.module.review.service;
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.heart_review.entity.HeartReview;
+import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.image.repository.ReviewImageRepository;
@@ -68,6 +70,8 @@ class ReviewServiceImplTest {
     private ReviewMapper reviewMapper;
     @Mock
     private ReviewDetailResultMapper reviewDetailResultMapper;
+    @Mock
+    private HeartReviewRepository heartReviewRepository;
 
     @InjectMocks
     private ReviewMapperImpl reviewMapperImpl;
@@ -84,7 +88,7 @@ class ReviewServiceImplTest {
     private Review review;
     private List<Hashtag> hashtagList = new ArrayList<>();
     private Double star;
-
+    private HeartReview heartReview;
     @BeforeEach
     void setUp() {
         star = 3.5;
@@ -98,6 +102,8 @@ class ReviewServiceImplTest {
         for (int i = 1; i <= 3; i++) {
             imageList.add(Image.builder().id(i * 100L).originName(String.valueOf(i)).build());
         }
+        heartReview = HeartReview.builder().user(review.getCreatedBy()).review(review).build();
+
     }
 
     //저장 관련 테스트 코드
@@ -240,6 +246,8 @@ class ReviewServiceImplTest {
         //when
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
         when(reviewDetailResultMapper.toDto(review)).thenReturn(given);
+//        given(heartReviewRepository.findByUserUserIdAndReviewId(review.getId(), review.getCreatedBy().getUserId())).will(Optional.of(heartReview));
+        when(heartReviewRepository.findByUserUserIdAndReviewId(user.getUserId() , review.getId())).thenReturn(Optional.of(heartReview));
         //then
         ReviewDetailResult result = reviewService.findOneByReviewId(review.getId(), review.getCreatedBy().getUserId());
         assertThat(result.getId()).isEqualTo(review.getId());
