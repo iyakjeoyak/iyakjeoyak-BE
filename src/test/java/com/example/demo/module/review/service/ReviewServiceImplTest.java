@@ -241,7 +241,7 @@ class ReviewServiceImplTest {
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
         when(reviewDetailResultMapper.toDto(review)).thenReturn(given);
         //then
-        ReviewDetailResult result = reviewService.findOneByReviewId(review.getId());
+        ReviewDetailResult result = reviewService.findOneByReviewId(review.getId(), review.getCreatedBy().getUserId());
         assertThat(result.getId()).isEqualTo(review.getId());
         assertThat(result.getTitle()).isEqualTo(review.getTitle());
         assertThat(result.getContent()).isEqualTo(review.getContent());
@@ -256,7 +256,7 @@ class ReviewServiceImplTest {
         //when
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.ofNullable(null));
         //then
-        assertThatThrownBy(() -> reviewService.findOneByReviewId(review.getId())).isInstanceOf(CustomException.class).hasMessage(REVIEW_NOT_FOUND.getMessage());
+        assertThatThrownBy(() -> reviewService.findOneByReviewId(review.getId(),review.getCreatedBy().getUserId())).isInstanceOf(CustomException.class).hasMessage(REVIEW_NOT_FOUND.getMessage());
     }
 
     @Test

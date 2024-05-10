@@ -3,6 +3,7 @@ package com.example.demo.module.review.service;
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.image.repository.ReviewImageRepository;
@@ -58,6 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final PointHistoryService pointHistoryService;
     private final ReviewDetailResultMapper reviewDetailResultMapper;
+    private final HeartReviewRepository heartReviewRepository;
 
     @Timed("my.review")
     @Override
@@ -101,9 +103,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDetailResult findOneByReviewId(Long reviewId) {
-        return reviewDetailResultMapper.toDto(
+    public ReviewDetailResult findOneByReviewId(Long reviewId , Long userId) {
+        ReviewDetailResult result = reviewDetailResultMapper.toDto(
                 reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)));
+        result.setIsOwner(result.getCreatedBy().getUserId().equals(userId));
+        result.setIsHeart(heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).isPresent());
+
+        return result;
     }
 
     //이미지 수정은 따로 뺼 예정
@@ -174,7 +180,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     @Override
     public Long deleteReviewImage(Long userId, Long reviewId, Long imageId) {
-        if (reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND))
+        if (!reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND))
                 .getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("리뷰 작성자만 이미지 삭제 가능합니다.");
         }
