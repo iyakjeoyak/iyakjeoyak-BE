@@ -97,7 +97,7 @@ public class UserStorageServiceImpl implements UserStorageService {
 
     @Transactional
     @Override
-    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload ,MultipartFile image) throws IOException {
+    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload, MultipartFile image) throws IOException {
 
 
         UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND));
@@ -110,15 +110,16 @@ public class UserStorageServiceImpl implements UserStorageService {
             medicine = medicineRepository.findById(payload.getMedicineId()).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
         }
 
+        Image change = medicine == null ? null : medicine.getImage();
+
         // 수정 Image 를 받으면 이미지도 수정
         if (image != null && !image.isEmpty()) {
             //기존 이미지 삭제
             imageService.deleteImage(userId, userStorage.getImage().getId());
-
             //새로운 이미지 저장
-            Image save = imageService.saveImage(image);
-            userStorage.changeImage(save);
+            change = imageService.saveImage(image);
         }
+        userStorage.changeImage(change);
 
         // 이미지 이외 정보 수정
         return userStorage.edit(medicine, payload.getMedicineName(), payload.getExpirationDate(), payload.getMemo());

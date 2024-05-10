@@ -1,5 +1,7 @@
 package com.example.demo.module.mail.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.memoryDb.RedisRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -61,12 +63,12 @@ public class MailService {
     }
 
     public Boolean verifyMail(String email, String authCode) {
-        boolean result = repository.getData(email).equals(authCode);
-        if (result) {
+        String data = repository.getData(email);
+        if (data==null)throw new CustomException(ErrorCode.AUTH_CORD_NOT_FOUND);
+        if (data.equals(authCode)) {
             repository.deleteData(email);
             return true;
         }
         return false;
     }
-
 }
