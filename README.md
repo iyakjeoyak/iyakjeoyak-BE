@@ -1,3 +1,7 @@
+# 이약저약 - BE
+영양제를 구매해야할 때 예전에 그 영양제가 좋았는데 기억을 더듬다가 이름이 생각나지 않는 상황을 한번이라도 겪어보신적 있으신가요? 또는 유통기한이 한참 지난 영양제를 모르고 섭취하고 있지는 않으신가요?
+
+100세 시대를 넘어 150세 시대를 바라보는 요즘 너무나도 중요시되는 현대인의 건강관리 필수품 영양제를 관리하기 위한 ‘이약저약’ 웹 서비스
 
 🔗 서비스 링크 : http://ec2-54-180-121-206.ap-northeast-2.compute.amazonaws.com/
 
@@ -25,21 +29,6 @@
     - Redis 3.2.4
     - Actuator 3.6.4
     - Prometheus 1.12.4
-
----
-
-## 프론트엔드
-
-- React
-- Typescript
-- Tanstack Query
-- Axios
-- React Hook Form
-- Sass
-- Storybook
-- Jest
-- vite
-- swiper
 
 ---
 
