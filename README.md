@@ -1,3 +1,6 @@
+
+🔗 서비스 링크 : http://ec2-54-180-121-206.ap-northeast-2.compute.amazonaws.com/
+
 # 🛠️Stack
 
 ## 백앤드
@@ -69,26 +72,26 @@
 
 ---
 
-## 문서화
+# 📜문서화
 
-📑 [API 명세서](https://www.notion.so/a997c3772a684e8b8492cd0fedcea8ee?pvs=21) 
+🔗 📑 [API 명세서](https://www.notion.so/a997c3772a684e8b8492cd0fedcea8ee?pvs=21) 
 
-❗ [에러 핸들링 관리](https://docs.google.com/spreadsheets/d/1bOE8VvCX-JZ9WszwAiouLmLXOpBopLrPnr5EqCFAElc/edit?hl=ko#gid=0)
+🔗 ❗ [에러 핸들링 관리](https://docs.google.com/spreadsheets/d/1bOE8VvCX-JZ9WszwAiouLmLXOpBopLrPnr5EqCFAElc/edit?hl=ko#gid=0)
 
-🍃 [스웨거 링크](http://54.180.121.206:8080/swagger-ui/index.html)
+🔗 🍃 [스웨거 링크](http://54.180.121.206:8080/swagger-ui/index.html)
 
 ---
-## 📑ERD 다이어그램
+# 📑ERD 다이어그램
 
 ![다이어그램](https://github.com/iyakjeoyak/iyakjeoyak-BE/assets/106804716/b4660a48-2519-4001-920e-02b079cfda58)
 
-## ♦️Flow
+# ♦️Flow
 
 ![Untitled (4)](https://github.com/iyakjeoyak/iyakjeoyak-BE/assets/106804716/625fc082-93ee-4eef-b544-65853e96c889)
 
 ---
 
-## 🏠인프라
+# 🏠인프라
 
 <img width="1958" alt="인프라" src="https://github.com/iyakjeoyak/iyakjeoyak-BE/assets/106804716/99ade63c-6c3e-4f63-9800-6de4985c727a">
 
