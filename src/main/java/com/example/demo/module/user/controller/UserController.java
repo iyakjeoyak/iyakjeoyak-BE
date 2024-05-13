@@ -47,7 +47,7 @@ public class UserController {
     private final ReviewService reviewService;
     private final UserStorageService userStorageService;
 
-    @GetMapping("/getKakaoAuthCode")
+    @GetMapping("/kakaoauthcode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
         JwtTokenResult token = userService.authorizationCodeToKakao(code);
@@ -58,7 +58,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
-    @GetMapping("/getGoogleAuthCode")
+    @GetMapping("/googleauthcode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
         JwtTokenResult token = userService.authorizationCodeToGoogle(code);
@@ -92,7 +92,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/createAccessByRefresh")
+    @PostMapping("/createaccessbyrefresh")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
 //    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
     public ResponseEntity<String> createAccessByRefresh(@RequestBody RefreshTokenPayload refreshTokenPayload, HttpServletResponse response) {
@@ -109,7 +109,7 @@ public class UserController {
         return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
     }
 
-    @GetMapping("/checkToken")
+    @GetMapping("/checktoken")
     @Operation(summary = "토큰 검증", description = "토큰 검증")
     public ResponseEntity<UserValidationResult> validationUser(@AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(userService.validationUser(userId), HttpStatus.OK);
@@ -144,7 +144,7 @@ public class UserController {
         return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
     }
 
-    @PostMapping("/changePassword")
+    @PostMapping("/changepassword")
     public ResponseEntity<Long> changePassword(@AuthenticationPrincipal Long userId, @RequestBody ChangePasswordPayLoad changePasswordPayLoad) {
         if (!changePasswordPayLoad.getNewPassword().equals(changePasswordPayLoad.getNewPasswordConfirm())) {
             throw new CustomException(ErrorCode.PW_CONFIRM_FAIL);
@@ -152,7 +152,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId, changePasswordPayLoad.getOldPassword(), changePasswordPayLoad.getNewPassword()));
     }
 
-    @PostMapping("/findPassword")
+    @PostMapping("/findpassword")
     public ResponseEntity<Long> findPassword(@RequestBody FindPwPayLoad findPwPayLoad) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findPassword(findPwPayLoad.getEmail(), findPwPayLoad.getNewPassword(), findPwPayLoad.getAuthCode()));
     }
