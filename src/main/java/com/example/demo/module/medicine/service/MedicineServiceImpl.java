@@ -1,5 +1,6 @@
 package com.example.demo.module.medicine.service;
 
+import com.example.demo.global.advice.aop.annotation.MyLog;
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
@@ -51,13 +52,14 @@ public class MedicineServiceImpl implements MedicineService {
                 .PRDLST_NM(medicinePayload.getPRDLST_NM())
                 .build()).getId();
     }
-
+    @MyLog
     @Override
     public PageResult<MedicineSimpleResult> findAll(Pageable pageable) {
         Page<MedicineSimpleResult> result = medicineRepository.findAll(pageable).map(simpleResultMapper::toDto);
         return new PageResult<>(result);
     }
 
+    @MyLog
     @Timed("my.medicine")
     @Override
     public PageResult<MedicineSimpleResult> findAllByQuery(MedicineSearchCond cond, Pageable pageable) {
@@ -65,6 +67,7 @@ public class MedicineServiceImpl implements MedicineService {
         return new PageResult<>(result);
     }
 
+    @MyLog
     @Override
     public MedicineResult findOneById(Long medicineId) {
         return medicineMapper.toDto(medicineRepository.findById(medicineId)

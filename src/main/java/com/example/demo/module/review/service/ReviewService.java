@@ -16,7 +16,7 @@ import java.util.List;
 public interface ReviewService {
     Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException;
 
-    ReviewDetailResult findOneByReviewId(Long reviewId);
+    ReviewDetailResult findOneByReviewId(Long reviewId, Long userId);
 
     Long editReview(Long userId, Long reviewId, ReviewEditPayload reviewEditPayload);
 

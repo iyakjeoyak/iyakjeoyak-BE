@@ -36,7 +36,7 @@ public class JwtUtil {
             "/user/findPassword",
             "/user/getKakaoAuthCode",
             "/user/getGoogleAuthCode",
-            "/user/getGoogleAuthCode",
+//            "/user/getGoogleAuthCode",
             "/user/check/username/**",
             "/user/check/nickname/**",
             "/map/**",
@@ -60,11 +60,11 @@ public class JwtUtil {
             "/hashtag",
             "/category",
             "/bookmark/medicine/",
-//            "/medicine",
+            "/medicine/query",
             "/mail",
             "/image",
             "/user/check/username",
-            "/user/check/nickname"
+            "/user/check/nickname",
 //            "/review/top",
 //            "/review/**"
     };

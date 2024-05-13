@@ -21,7 +21,7 @@ public enum ErrorCode {
     DECLARATION_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "신고 정보를 찾을 수 없습니다."),
     PHARMACY_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "약국 정보를 찾을 수 없습니다."),
     STORAGE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "영양제 저장 내역이 없습니다."),
-
+    AUTH_CORD_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "인증코드가 발송되지 않은 이메일입니다."),
     ROLE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "유저 권한을 찾을 수 없습니다."),
 
 
@@ -33,7 +33,7 @@ public enum ErrorCode {
     PW_NOT_MATCH(BAD_REQUEST, ILLEGAL_ARGUMENT, "비밀번호가 일치하지 않습니다."),
     MAIL_NOT_VERIFY(BAD_REQUEST, ILLEGAL_ARGUMENT, "메일 인증번호가 일치하지 않습니다."),
     PW_CONFIRM_FAIL(BAD_REQUEST, ILLEGAL_ARGUMENT, "비밀번호 확인이 일치하지 않습니다."),
-    PHARMACY_DUPLICATION(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 등록된 약국 정보입니다."),;
+    PHARMACY_DUPLICATION(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 등록된 약국 정보입니다."), ;
 
 
 

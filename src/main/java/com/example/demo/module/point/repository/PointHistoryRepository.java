@@ -21,5 +21,5 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 //    Optional<PointHistory> findByCreatedByUserIdAndReviewIdAndCreatedDateBefore(Long userId, Long reviewId, LocalDateTime localDateTime);
 
     @Query("SELECT ph.createdBy FROM PointHistory ph WHERE ph.createdDate > :time GROUP BY ph.createdBy ORDER BY SUM(ph.changedValue) DESC, ph.pointSum DESC")
-    List<User> findTop3UserAndSumChangedValue(@Param("time") LocalDateTime time);
+    List<User> findTop5UserAndSumChangedValue(@Param("time") LocalDateTime time);
 }
