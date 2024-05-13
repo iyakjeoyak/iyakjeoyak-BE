@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(신고)", description = "신고하기 관련")
-@RequestMapping("/declaration")
+@RequestMapping("/declarations")
 public class DeclarationController {
     private final DeclarationService declarationService;
 

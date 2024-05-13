@@ -45,7 +45,7 @@ public class MyPageController {
     private final ReviewService reviewService;
     private final UserStorageService userStorageService;
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     @Operation(summary = "유저 단건 조회", description = "유저 단건 조회")
     public ResponseEntity<UserDetailResult> findOneByUserId(@AuthenticationPrincipal Long userId) {
         UserResult userResult = userService.findOneByUserId(userId);
@@ -55,7 +55,7 @@ public class MyPageController {
         return new ResponseEntity<>(userDetailResult, HttpStatus.OK);
     }
 
-    @GetMapping("/review")
+    @GetMapping("/reviews")
     @Operation(summary = "마이페이지 리뷰 전체 조회", description = "page : 현재 페이지 , size : 페이지당 데이터 수")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
