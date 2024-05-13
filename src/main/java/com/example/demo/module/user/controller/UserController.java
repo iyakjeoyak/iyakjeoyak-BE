@@ -40,30 +40,28 @@ import static com.example.demo.module.review.dto.payload.ReviewOrderField.CREATE
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "(유저)", description = "유저 API")
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
     private final ReviewService reviewService;
     private final UserStorageService userStorageService;
 
-    @GetMapping("/getKakaoAuthCode")
+    @GetMapping("/kakao-authcode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
         JwtTokenResult token = userService.authorizationCodeToKakao(code);
 
-//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
     }
 
-    @GetMapping("/getGoogleAuthCode")
+    @GetMapping("/google-authcode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
         JwtTokenResult token = userService.authorizationCodeToGoogle(code);
 
-//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(token.getRefreshToken());
@@ -85,31 +83,23 @@ public class UserController {
         // 이미 유저 정보를 저장했으니깐 ? 여기서 검증을 하나?
         JwtTokenResult token = userService.loginUser(userLoginPayload);
 
-//        setRefreshCookie(response, token.getRefreshToken());
         response.setHeader("Authorization", token.getAccessToken());
 
         return new ResponseEntity<>(token.getRefreshToken(), HttpStatus.OK);
     }
 
 
-    @PostMapping("/createAccessByRefresh")
+    @PostMapping("/access-token")
     @Operation(summary = "리프레쉬 토큰으로 엑세스 토큰 발급", description = "리프레쉬 토큰으로 엑세스 토큰 발급")
-//    public ResponseEntity<String> createAccessByRefresh(@CookieValue(value = "refreshToken", required = false) Cookie cookie, HttpServletResponse response) {
     public ResponseEntity<String> createAccessByRefresh(@RequestBody RefreshTokenPayload refreshTokenPayload, HttpServletResponse response) {
-/*        String refreshToken = "";
-        if (cookie != null || cookie.getValue().isEmpty()) {
-            refreshToken = cookie.getValue();
-        }*/
         String accessByRefresh = userService.createAccessByRefresh(refreshTokenPayload.getRefreshToken());
-
-
 
         response.setHeader("Authorization", accessByRefresh);
 
         return new ResponseEntity<>(accessByRefresh , HttpStatus.OK);
     }
 
-    @GetMapping("/checkToken")
+    @GetMapping("/token-info")
     @Operation(summary = "토큰 검증", description = "토큰 검증")
     public ResponseEntity<UserValidationResult> validationUser(@AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(userService.validationUser(userId), HttpStatus.OK);
@@ -144,7 +134,7 @@ public class UserController {
         return new ResponseEntity<>(userService.checkDuplicateNickname(nickname), HttpStatus.OK);
     }
 
-    @PostMapping("/changePassword")
+    @PatchMapping("/password")
     public ResponseEntity<Long> changePassword(@AuthenticationPrincipal Long userId, @RequestBody ChangePasswordPayLoad changePasswordPayLoad) {
         if (!changePasswordPayLoad.getNewPassword().equals(changePasswordPayLoad.getNewPasswordConfirm())) {
             throw new CustomException(ErrorCode.PW_CONFIRM_FAIL);
@@ -152,7 +142,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId, changePasswordPayLoad.getOldPassword(), changePasswordPayLoad.getNewPassword()));
     }
 
-    @PostMapping("/findPassword")
+    @PostMapping("/password")
     public ResponseEntity<Long> findPassword(@RequestBody FindPwPayLoad findPwPayLoad) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findPassword(findPwPayLoad.getEmail(), findPwPayLoad.getNewPassword(), findPwPayLoad.getAuthCode()));
     }
