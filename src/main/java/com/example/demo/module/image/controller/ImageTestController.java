@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "ImageService 테스트 용")
-@RequestMapping("/image")
+@RequestMapping("/images")
 public class ImageTestController {
     private final ImageService imageService;
 

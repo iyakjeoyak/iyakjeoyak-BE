@@ -28,7 +28,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(영양제 보관함)", description = "보관함 관련")
-@RequestMapping("/storage")
+@RequestMapping("/storages")
 public class UserStorageController {
     private final UserStorageService userStorageService;
 
