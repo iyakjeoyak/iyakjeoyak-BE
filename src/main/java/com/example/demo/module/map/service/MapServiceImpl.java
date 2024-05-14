@@ -7,7 +7,6 @@ import com.example.demo.module.map.dto.result.MapResult;
 import com.example.demo.module.map.dto.result.MapSelectResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
@@ -90,7 +89,6 @@ public class MapServiceImpl implements MapService {
     private PageResult<MapSelectResult> getMapSelectResultPageResult(String result, Long userId) throws IOException {
 
         JSONObject body = getBodyValue(result);
-        System.out.println(body.toString());
         if (body.get("items").toString().isEmpty()) {
             PageResult<MapSelectResult> pageResult = new PageResult<>();
             pageResult.setData(List.of());
