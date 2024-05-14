@@ -31,7 +31,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(영양제)", description = "영양제 관련")
-@RequestMapping("/medicine")
+@RequestMapping("/medicines")
 public class MedicineController {
     private final MedicineService medicineService;
     private final BookmarkService bookmarkService;

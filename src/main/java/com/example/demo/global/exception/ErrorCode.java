@@ -12,7 +12,7 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 public enum ErrorCode {
     // DB 조회 실패 에러 코드
-    USER_NOT_FOUND(FORBIDDEN, NOT_FOUND, "유저 정보를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, NOT_FOUND, "유저 정보를 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "리뷰 정보를 찾을 수 없습니다."),
     MEDICINE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "영양제 정보를 찾을 수 없습니다."),
     IMAGE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "이미지 정보를 찾을 수 없습니다."),

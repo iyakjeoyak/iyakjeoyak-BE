@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(영양제-좋아요)", description = "영양제 좋아요")
-@RequestMapping("/heart/medicine")
+@RequestMapping("/medicine-hearts")
 public class HeartMedicineController {
     private final HeartMedicineService heartMedicineService;
 
