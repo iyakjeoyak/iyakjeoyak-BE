@@ -8,6 +8,6 @@ public class MedicineNameResult {
     @Schema(description = "영양제 PK")
     private Long id;
 
-    @Schema(description = "브랜드 명")
-    private String BSSH_NM;
+    @Schema(description = "제품 명")
+    private String PRDLST_NM;
 }

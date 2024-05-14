@@ -31,11 +31,11 @@ public class UserStorage extends BaseTimeEntity {
 
     private String medicineName;
 
-    private LocalDateTime expirationDate;
+    private String expirationDate;
 
     private String memo;
 
-    public Long edit(Medicine medicine, String medicineName, LocalDateTime expirationDate, String memo) {
+    public Long edit(Medicine medicine, String medicineName, String expirationDate, String memo) {
         this.medicine = medicine;
         this.medicineName = medicineName;
         this.expirationDate = expirationDate;
@@ -46,6 +46,13 @@ public class UserStorage extends BaseTimeEntity {
 
     public void changeImage(Image image) {
         this.image = image;
+    }
+
+    public Double getGrade() {
+        if (this.medicine == null) {
+            return 0.0;
+        }
+        return this.medicine.getGrade();
     }
 
     public void deleteImage() {

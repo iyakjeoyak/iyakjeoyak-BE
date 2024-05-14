@@ -23,10 +23,9 @@ public class S3FileService implements ImageService {
     private final String endPointUrl;
 
 
-
     @Override
     public Image saveImage(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             return null;
         }
         return imageRepository.save(saveFileAndGetEntity(file));
@@ -35,7 +34,7 @@ public class S3FileService implements ImageService {
     @Override
     public List<Image> saveImageList(List<MultipartFile> files) throws IOException {
         List<Image> ids = new ArrayList<>();
-        if (!files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
                 Image image = saveFileAndGetEntity(file);
                 if (image != null) {

@@ -2,6 +2,7 @@ package com.example.demo.module.point.controller;
 
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.point.dto.payload.PointOrderField;
+import com.example.demo.module.point.dto.result.MyPointResult;
 import com.example.demo.module.point.dto.result.PointHistoryResult;
 import com.example.demo.module.point.service.PointHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "포인트 내역 관련")
-@RequestMapping("/point")
+@RequestMapping("/points")
 public class PointHistoryController {
     private final PointHistoryService pointService;
 
@@ -33,7 +34,7 @@ public class PointHistoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<PointHistoryResult>> findAllByUser(
+    public ResponseEntity<MyPointResult> findAllByUser(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             @RequestParam(name = "orderBy", defaultValue = "ID", required = false) PointOrderField pointOrderField,

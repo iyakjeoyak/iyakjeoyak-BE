@@ -20,7 +20,8 @@ public class UserJoinPayload {
     // login,
     @Schema(description = "로그인 ID")
     @NotBlank(message = "아이디는 필수 입력 값입니다.")
-    @Pattern(regexp = "^[a-zA-Z]{1}[a-zA-Z0-9_]{4,12}$", message = "아이디는 4~12자의 영문 또는 숫자만 허용됩니다.")
+//    @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z]).[a-zA-Z]{2,3}$", message = "이메일 형식에 맞지 않습니다.")
+    @Email(message = "이메일 형식만 가능합니다.")
     private String username;
 
     @Schema(description = "비밀번호")
@@ -57,7 +58,5 @@ public class UserJoinPayload {
     @NotEmpty(message = "관심 태그가 들어 가지 않았습니다.")
     private List<Long> userHashtagList = new ArrayList<>();
 
-    @Schema(description = "이미지")
-    private MultipartFile profileImage;
 
 }

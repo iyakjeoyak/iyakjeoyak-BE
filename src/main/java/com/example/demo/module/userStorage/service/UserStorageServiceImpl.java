@@ -1,5 +1,7 @@
 package com.example.demo.module.userStorage.service;
 
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.service.ImageService;
@@ -15,15 +17,19 @@ import com.example.demo.module.userStorage.entity.UserStorage;
 import com.example.demo.module.userStorage.repository.UserStorageRepository;
 import com.example.demo.util.mapper.UserStorageDetailResultMapper;
 import com.example.demo.util.mapper.UserStorageSimpleResultMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
+
+import static com.example.demo.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,17 +42,22 @@ public class UserStorageServiceImpl implements UserStorageService {
     private final UserStorageDetailResultMapper detailResultMapper;
     private final ImageService imageService;
 
+    @Counted("my.user.storage")
     @Transactional
     @Override
-    public Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload) throws IOException {
+    public Long saveUserStorage(Long userId, UserStorageCreatePayload userStorageCreatePayload, MultipartFile image) throws IOException {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저를 찾지 못했습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Medicine medicine = null;
-        if (userStorageCreatePayload.getMedicineId() != null) {
-            medicine = medicineRepository.findById(userStorageCreatePayload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+        if (userStorageCreatePayload.getMedicineId() != null && userStorageCreatePayload.getMedicineId() != 0L) {
+            medicine = medicineRepository.findById(userStorageCreatePayload.getMedicineId()).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
         }
 
-        Image image = imageService.saveImage(userStorageCreatePayload.getImage());
+        Image saveImage = imageService.saveImage(image);
+
+        if (saveImage == null && medicine != null) {
+            saveImage = medicine.getImage();
+        }
 
         UserStorage save = userStorageRepository.save(
                 UserStorage.builder()
@@ -54,7 +65,7 @@ public class UserStorageServiceImpl implements UserStorageService {
                         .medicine(medicine)
                         .medicineName(userStorageCreatePayload.getMedicineName())
                         .expirationDate(userStorageCreatePayload.getExpirationDate())
-                        .image(image)
+                        .image(saveImage)
                         .memo(userStorageCreatePayload.getMemo())
                         .build());
 
@@ -70,13 +81,13 @@ public class UserStorageServiceImpl implements UserStorageService {
     @Override
     public UserStorageDetailResult getOneById(Long userStorageId) {
         return detailResultMapper.toDto(
-                userStorageRepository.findById(userStorageId).orElseThrow(() -> new NoSuchElementException("영양제 저장 내역이 없습니다.")));
+                userStorageRepository.findById(userStorageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND)));
     }
 
     @Transactional
     @Override
     public Long deleteById(Long userId, Long storageId) {
-        if (!userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관된 영양제를 찾을 수 없습니다."))
+        if (!userStorageRepository.findById(storageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND))
                 .getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("접근 유저가 잘못되었습니다.");
         }
@@ -86,28 +97,29 @@ public class UserStorageServiceImpl implements UserStorageService {
 
     @Transactional
     @Override
-    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload) throws IOException {
+    public Long editUserStorage(Long userId, Long storageId, UserStorageEditPayload payload, MultipartFile image) throws IOException {
 
 
-        UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관 내역이 없습니다."));
+        UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND));
         if (!userStorage.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("작성자가 아니면 수정할 수 없습니다.");
+            throw new CustomException(ACCESS_BLOCKED);
         }
 
         Medicine medicine = null;
         if (payload.getMedicineId() != null) {
-            medicine = medicineRepository.findById(payload.getMedicineId()).orElseThrow(() -> new NoSuchElementException("해당하는 영양제가 없습니다."));
+            medicine = medicineRepository.findById(payload.getMedicineId()).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
         }
+
+        Image change = medicine == null ? null : medicine.getImage();
 
         // 수정 Image 를 받으면 이미지도 수정
-        if (payload.getImage() != null && !payload.getImage().isEmpty()) {
+        if (image != null && !image.isEmpty()) {
             //기존 이미지 삭제
-            imageService.deleteImage(userId, userStorage.getImage().getId());
-
+//            imageService.deleteImage(userId, userStorage.getImage().getId());
             //새로운 이미지 저장
-            Image image = imageService.saveImage(payload.getImage());
-            userStorage.changeImage(image);
+            change = imageService.saveImage(image);
         }
+        userStorage.changeImage(change);
 
         // 이미지 이외 정보 수정
         return userStorage.edit(medicine, payload.getMedicineName(), payload.getExpirationDate(), payload.getMemo());
@@ -116,9 +128,9 @@ public class UserStorageServiceImpl implements UserStorageService {
     @Override
     @Transactional
     public Long deleteStorageImage(Long userId, Long storageId, Long imageId) throws IOException {
-        UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new NoSuchElementException("보관 내역이 없습니다."));
+        UserStorage userStorage = userStorageRepository.findById(storageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND));
         if (!userStorage.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("작성자가 아니면 수정할 수 없습니다.");
+            throw new CustomException(ACCESS_BLOCKED);
         }
         if (!userStorage.getImage().getId().equals(imageId)) {
             throw new IllegalArgumentException("해당 보관함의 이미지가 아닙니다.");

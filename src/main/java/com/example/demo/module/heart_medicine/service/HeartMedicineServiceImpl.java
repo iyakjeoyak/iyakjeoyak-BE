@@ -6,8 +6,10 @@ import com.example.demo.module.heart_medicine.entity.HeartMedicine;
 import com.example.demo.module.heart_medicine.repository.HeartMedicineRepository;
 import com.example.demo.module.heart_medicine.dto.result.HeartMedicineResult;
 import com.example.demo.module.medicine.repository.MedicineRepository;
+import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.common.result.PageResult;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
 
+    @Counted("my.heart.medicine")
     @Override
     @Transactional
     public Long like(Long medicineId, Long userId) {
@@ -73,17 +76,14 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         return heartMedicineRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
 
+    @Counted("my.heart.medicine")
     @Override
     @Transactional
     public boolean click(Long medicineId, Long userId) {
-        if(!userRepository.existsById(userId)){
-            throw new CustomException(USER_NOT_FOUND);
-        }
-        Medicine medicine = medicineRepository.findById(medicineId)
-                .orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Medicine medicine = medicineRepository.findById(medicineId).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
         if(isChecked(medicineId, userId)){
             medicine.decreaseHeartCount();
-
             Long heartMedicineId = heartMedicineRepository.findByMedicineIdAndUserUserId(medicineId, userId)
                     .orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 영양제입니다.")).getId();
             heartMedicineRepository.deleteById(heartMedicineId);
@@ -92,7 +92,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         medicine.addHeartCount();
         heartMedicineRepository.save(HeartMedicine.builder()
                 .medicine(medicine)
-                .user(userRepository.findById(userId).orElseThrow(()-> new CustomException(USER_NOT_FOUND)))
+                .user(user)
                 .build());
         return true;
     }

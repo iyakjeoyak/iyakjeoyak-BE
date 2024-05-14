@@ -3,6 +3,7 @@ package com.example.demo.module.review.service;
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.module.hashtag.repository.HashtagRepository;
+import com.example.demo.module.heart_review.repository.HeartReviewRepository;
 import com.example.demo.module.image.entity.Image;
 import com.example.demo.module.image.entity.ReviewImage;
 import com.example.demo.module.image.repository.ReviewImageRepository;
@@ -15,6 +16,7 @@ import com.example.demo.module.review.dto.payload.ReviewPayload;
 import com.example.demo.module.review.dto.result.ReviewDetailResult;
 import com.example.demo.module.review.dto.result.ReviewMyPageResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
+import com.example.demo.module.review.dto.result.ReviewSimpleMyPageResult;
 import com.example.demo.module.review.entity.Review;
 import com.example.demo.module.review.entity.ReviewHashtag;
 import com.example.demo.module.review.repository.ReviewHashtagRepository;
@@ -24,9 +26,11 @@ import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.util.mapper.ReviewDetailResultMapper;
 import com.example.demo.util.mapper.ReviewMapper;
 import com.example.demo.util.mapper.ReviewMyPageResultMapper;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,11 +59,12 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final PointHistoryService pointHistoryService;
     private final ReviewDetailResultMapper reviewDetailResultMapper;
+    private final HeartReviewRepository heartReviewRepository;
 
-
+    @Timed("my.review")
     @Override
     @Transactional
-    public Long save(Long userId, ReviewPayload reviewPayload) throws IOException {
+    public Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
@@ -77,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .medicine(medicine)
                         .build());
 
-        List<Image> images = imageService.saveImageList(reviewPayload.getImgList());
+        List<Image> images = imageService.saveImageList(imgFile);
 
         images.forEach(i ->
                 reviewImageRepository.save(
@@ -98,9 +103,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDetailResult findOneByReviewId(Long reviewId) {
-        return reviewDetailResultMapper.toDto(
+    public ReviewDetailResult findOneByReviewId(Long reviewId , Long userId) {
+        ReviewDetailResult result = reviewDetailResultMapper.toDto(
                 reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)));
+        result.setIsOwner(result.getCreatedBy().getUserId().equals(userId));
+        result.setIsHeart(heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).isPresent());
+
+        return result;
     }
 
     //이미지 수정은 따로 뺼 예정
@@ -113,10 +122,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
         //없어진 해쉬태그 삭제
         reviewHashtagRepository.findAllByReviewId(reviewId).forEach(ht -> {
-                    if (!reviewEditPayload.getTagList().contains(ht)) {
-                        reviewHashtagRepository.delete(ht);
-                    }
-                });
+            if (!reviewEditPayload.getTagList().contains(ht)) {
+                reviewHashtagRepository.delete(ht);
+            }
+        });
 
         // 새로 추가된 hashtag 테이블 생성
         reviewEditPayload.getTagList().forEach(htId -> {
@@ -132,6 +141,7 @@ public class ReviewServiceImpl implements ReviewService {
         return review.getId();
     }
 
+    @Timed("my.review")
     @Transactional
     @Override
     public Long deleteByReviewId(Long userId, Long reviewId) {
@@ -162,21 +172,27 @@ public class ReviewServiceImpl implements ReviewService {
         return new PageResult<>(result);
     }
 
+    @Override
+    public List<ReviewSimpleMyPageResult> findSimpleResultPageByUserId(Long userId, PageRequest pageRequest) {
+        return reviewRepository.findAllByCreatedByUserId(userId, pageRequest).map(ReviewSimpleMyPageResult::toDto).getContent();
+    }
+
     @Transactional
     @Override
     public Long deleteReviewImage(Long userId, Long reviewId, Long imageId) {
-        if (reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND))
+        if (!reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND))
                 .getCreatedBy().getUserId().equals(userId)) {
             throw new IllegalArgumentException("리뷰 작성자만 이미지 삭제 가능합니다.");
         }
 
         /* 이하 이미지 삭제 로직 */
+        /* 중간 테이블 삭제 */
+        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
+        reviewImageRepository.delete(reviewImage);
+
         //S3에서 파일 삭제하는 로직 실행
         imageService.deleteImage(userId, imageId);
 
-        /* 중간 테이블만 삭제 */
-        ReviewImage reviewImage = reviewImageRepository.findByReviewIdAndImageId(reviewId, imageId).orElseThrow(() -> new NoSuchElementException("해당 리뷰의 이미지가 아닙니다."));
-        reviewImageRepository.delete(reviewImage);
 
         return reviewId;
     }
@@ -198,4 +214,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         return reviewId;
     }
+
+    @Override
+    public List<ReviewDetailResult> findTopReview(int size) {
+        List<Review> heartCount = reviewRepository.findAll(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "heartCount"))).getContent();
+        return reviewDetailResultMapper.toDtoList(heartCount);
+    }
+
 }

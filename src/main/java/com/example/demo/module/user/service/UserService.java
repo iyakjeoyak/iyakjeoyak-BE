@@ -1,20 +1,18 @@
 package com.example.demo.module.user.service;
 
-import com.example.demo.module.hashtag.dto.result.HashtagResult;
-import com.example.demo.module.hashtag.entity.Hashtag;
 import com.example.demo.module.user.dto.payload.UserEditPayload;
 import com.example.demo.module.user.dto.payload.UserJoinPayload;
 import com.example.demo.module.user.dto.payload.UserLoginPayload;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
-import com.example.demo.module.user.entity.User;
-import com.example.demo.module.user.entity.UserHashtag;
 import com.example.demo.security.jwt.JwtTokenResult;
+import org.json.simple.parser.ParseException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 public interface UserService {
-    Long createUser(UserJoinPayload userJoinPayload) throws IOException;
+    Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException;
 
     JwtTokenResult loginUser(UserLoginPayload userLoginPayload);
 
@@ -22,9 +20,28 @@ public interface UserService {
 
     Long deleteByUserId(Long userId);
 
-    Long editUser(Long userId, UserEditPayload userEditPayload);
+    Long editUser(Long userId, UserEditPayload userEditPayload, MultipartFile imgFile) throws IOException;
 
     UserValidationResult validationUser(Long userId);
 
     String createAccessByRefresh(String refreshToken);
+
+    Boolean checkDuplicateUsername(String username);
+
+    Boolean checkDuplicateNickname(String nickname);
+
+    JwtTokenResult authorizationCodeToKakao(String code) throws IOException, ParseException;
+
+    JwtTokenResult createTokenByKakaoToken(String token);
+
+    JwtTokenResult authorizationCodeToGoogle(String code);
+
+    JwtTokenResult createTokenByGoogleToken(String token);
+
+    Long changePassword(Long userId, String oldPassword, String newPassword);
+
+    Long findPassword(String username, String newPassword, String verifyCode);
+
+
+
 }

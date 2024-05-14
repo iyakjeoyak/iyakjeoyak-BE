@@ -1,14 +1,16 @@
 package com.example.demo.module.bookmark.service;
 
 import com.example.demo.global.exception.CustomException;
-import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.module.bookmark.entity.Bookmark;
 import com.example.demo.module.bookmark.repository.BookmarkRepository;
+import com.example.demo.module.medicine.entity.Medicine;
 import com.example.demo.module.medicine.repository.MedicineRepository;
+import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.bookmark.dto.result.BookmarkResult;
 import com.example.demo.module.common.result.PageResult;
 import com.example.demo.util.mapper.MedicineMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +42,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .orElseThrow(() -> new CustomException(BOOKMARK_NOT_FOUND)).toDto(medicineMapper);
     }
 
+    @Counted("my.bookmark")
     @Override
     @Transactional
     public Long save(Long medicineId, Long userId) {
@@ -73,26 +76,22 @@ public class BookmarkServiceImpl implements BookmarkService {
         return bookmarkRepository.existsByMedicineIdAndUserUserId(medicineId, userId);
     }
 
+    @Counted("my.bookmark")
     @Override
     @Transactional
     public Boolean click(Long medicineId, Long userId) {
-        if(!medicineRepository.existsById(medicineId)){
-            throw new CustomException(MEDICINE_NOT_FOUND);
-        }
-        if(!userRepository.existsById(userId)){
-            throw new CustomException(USER_NOT_FOUND);
-        }
+        Medicine medicine = medicineRepository.findById(medicineId).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         if(isChecked(medicineId, userId)){
             BookmarkResult bookmarkResult = bookmarkRepository.findByMedicineIdAndUserUserId(medicineId, userId)
                     .orElseThrow(() -> new CustomException(ACCESS_BLOCKED)).toDto(medicineMapper);
-            System.out.println("bookmarkResult = " + bookmarkResult.getId());
             bookmarkRepository.deleteById(bookmarkResult.getId());
             return false;
         }
         bookmarkRepository.save(Bookmark
                 .builder()
-                .medicine(medicineRepository.findById(medicineId).orElseThrow(() -> new CustomException(MEDICINE_NOT_FOUND)))
-                .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
+                .medicine(medicine)
+                .user(user)
                 .build());
         return true;
     }

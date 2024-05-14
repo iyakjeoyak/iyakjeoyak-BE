@@ -1,20 +1,15 @@
 package com.example.demo.module.map.dto.result;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@Builder
-@NoArgsConstructor
-public class MapSelectResult {
-    private String dutyAddr;
-    private String dutyName;
-    private String dutyTel1;
-    private String hpid;
-    private Double wgs84Lat;
-    private Double wgs84Lon;
+public class MapSelectResult extends MapResult{
+    private String startTime;
+    private String endTime;
 
+    public MapSelectResult(MapResult mapResult, String startTime, String endTime) {
+        super(mapResult.getDutyAddr(), mapResult.getDutyName(), mapResult.getDutyTel1(), mapResult.getHpid(), mapResult.getLatitude(), mapResult.getLongitude(), mapResult.getLiked());
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }

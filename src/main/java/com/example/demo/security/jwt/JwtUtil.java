@@ -17,26 +17,85 @@ public class JwtUtil {
     // lombok @Value 쓰지 말고 spring꺼 쓰기
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
+    public final String[] allowedUrls = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/",
+            "/error",
+            "/users/signup",
+            "/users/login",
+            "/users/access-token",
+            "/users/password",
+            "/users/kakao-authcode",
+            "/users/google-authcode",
+//            "/user/getGoogleAuthCode",
+            "/users/check/username/**",
+            "/users/check/nickname/**",
+            "/maps/**",
+            "/maps**",
+            "/categories",
+            "/hashtags",
+            "/bookmarks/medicine/**",
+            "/top-users",
+            "/auto-completes",
+            "/medicines",
+            "/medicines/**",
+            "/mails/verify",
+            "/mails/send/verify",
+            "/images/**",
+            "/actuator/**"
+    };
+    public final String[] onlyGetNotFilter = {
+//            "/review",
+            "/medicine-hearts/",
+            "/review-hearts/",
+            "/hashtags",
+            "/categories",
+            "/bookmarks/medicine/",
+            "/medicines/query",
+            "/mails",
+            "/images",
+            "/users/check/username",
+            "/users/check/nickname",
+//            "/review/top",
+//            "/review/**"
+    };
+    public final String[] onlyGetAllowUrl = {
+            "/medicine-hearts/**",
+            "/review-hearts/**",
+            "/reviews/**",
+            "/reviews",
+    };
 
-    public JwtUtil (
+    public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time}") long accessTokenExpTime
+            @Value("${jwt.expiration_time.access}") long accessTokenExpTime,
+            @Value("${jwt.expiration_time.refresh}") long refreshTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
     // access 토큰 단독
     public String createAccessToken(JwtTokenPayload user) {
-        return createToken(user,"access" , accessTokenExpTime);
+        return createToken(user, "access", accessTokenExpTime);
     }
 
 
     // token 생성시 둘 다 만든다
     public JwtTokenResult createAccessAndRefreshToken(JwtTokenPayload tokenPayload) {
         String access = createToken(tokenPayload, "access", accessTokenExpTime);
-        String refresh = createToken(tokenPayload, "refresh", accessTokenExpTime);
+        String refresh = createToken(tokenPayload, "refresh", refreshTokenExpTime);
 
         JwtTokenResult jwtTokenResult = new JwtTokenResult(access, refresh);
 
@@ -44,15 +103,15 @@ public class JwtUtil {
     }
 
 
-    private String createToken(JwtTokenPayload user,String type, long expireTime) {
+    private String createToken(JwtTokenPayload user, String type, long expireTime) {
         // 사용자 유저 정보를 클레임에 삽입한다, key value 형식으로 이루어져 있음
         /*
-        *  JwtTokenPayload : userId, username, nickname
-        *
-        * */
+         *  JwtTokenPayload : userId, username, nickname
+         *
+         * */
         Claims claims = Jwts.claims();
-        claims.put("userId" ,user.getUserId());
-        claims.put("username" ,user.getUsername());
+        claims.put("userId", user.getUserId());
+        claims.put("username", user.getUsername());
         claims.put("nickname", user.getNickname());
         claims.put("tokenType", type);
 //        claims.put("", user.)
@@ -89,28 +148,14 @@ public class JwtUtil {
      * JWT 유효성 검증
      * */
     public boolean validateToken(String token) {
+        Jws<Claims> claimsJws = null;
         try {
+            claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 
-            // jWt token parsing
-            Claims claims = parseClaims(token);
-            String tokenType = claims.get("tokenType").toString();
-
-            /*
-            * claim에 들어오는 정보
-            * userid, username, nickname, tokentype, <iat, exp -> 얘넨 뭘까 시간인가 ..?>
-            * */
-            log.info("claims", claims);
-
-            return tokenType.equals("access");
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw e;
-        } catch (ExpiredJwtException e) {
-            throw e;
-        } catch (UnsupportedJwtException e) {
-            throw e;
-        } catch (IllegalArgumentException e) {
-            throw e;
+        } catch (Exception e) {
+            return false;
         }
+        return claimsJws != null && claimsJws.getBody().get("tokenType").toString().equals("access");
     }
 
     /*
@@ -120,6 +165,7 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
+            //TODO 에러 메세지
             return e.getClaims();
         }
     }

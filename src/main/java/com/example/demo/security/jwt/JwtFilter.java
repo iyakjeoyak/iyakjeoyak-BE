@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,36 +24,53 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     /*
-    * JWT 토큰 검증 필터 수행
-    *
-    * */
+     * JWT &#xD1A0;&#xD070; &#xAC80;&#xC99D; &#xD544;&#xD130; &#xC218;&#xD589;
+     *
+     * */
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+
+        return Arrays.stream(jwtUtil.allowedUrls).anyMatch(item -> item.equalsIgnoreCase(request.getServletPath())) || Arrays.stream(jwtUtil.onlyGetNotFilter).anyMatch(item -> request.getMethod().equals("GET") && request.getServletPath().startsWith(item)); // true면 fileter 안 탐
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request 헤더에서 Authorization 정보 가져오기
+        System.out.println("request || method = {}" + request.getMethod().toString() + " , path = {}" + request.getServletPath().toString());
         String authorizationHeader = request.getHeader("Authorization");
         // access, ref
+        // "null"
 
         // JWT가 헤더에 ㅣㅇㅆ는 경우 Bearer가 붙여있는 녀석 가져오기
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             // Bearer 자르기
             String token = authorizationHeader.substring(7);
+            if (!token.equals("null") && !StringUtils.isEmpty(token)) {
+                if (jwtUtil.validateToken(token)) {
 
-            // JWT 유효성 검증
-            if (jwtUtil.validateToken(token)) {
+                    JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
 
-                JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
+                    // UserDetails가 비어있지 않다면?
+                    if (ObjectUtils.isNotEmpty(jwtTokenPayload)) {
+                        //TODO Authenticaiton 객체 바꾸기
+                        // Authentication Token 생성
+                        // usernamepasswordAuthenticationToken은 username = principal, password = credential
+                        CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
 
-                // UserDetails가 비어있지 않다면?
-                if (ObjectUtils.isNotEmpty(jwtTokenPayload)) {
-                    //TODO Authenticaiton 객체 바꾸기
-                    // Authentication Token 생성
-                    // usernamepasswordAuthenticationToken은 username = principal, password = credential
-                    CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
-
-                    // Security context에 저장한다? username password 이
-                    SecurityContextHolder.getContext().setAuthentication(customUserDetails);
+                        // Security context에 저장한다? username password 이
+                        SecurityContextHolder.getContext().setAuthentication(customUserDetails);
+                    }
+                } else {
+//                    SecurityContextHolder.clearContext();
+                    response.sendError(401);
+                    return;
                 }
             }
+//            else {
+//                response.sendError(403);
+//                return;
+//            }
         }
 
         // 다음 필터로 진행 시키자

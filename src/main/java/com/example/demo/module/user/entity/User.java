@@ -24,24 +24,20 @@ public class User extends BaseTimeEntity {
     private Long userId;
 
     // email
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    // TODO 얘도 빼야할 듯?
+//    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    //TODO 얘는 nullable = false 빼야할 듯?
+//    @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    //oauth
-    @Enumerated(EnumType.STRING)
-    private SocialType socialType;
-
-    private String socialId;
 
 //    private String imageUrl;
 
@@ -66,6 +62,10 @@ public class User extends BaseTimeEntity {
         this.point = 0;
     }
 
+    public void changeImage(Image image) {
+        this.image = image;
+    }
+
     public void editUser(UserEditPayload userEditPayload) {
         this.nickname = userEditPayload.getNickname();
         this.introduce = userEditPayload.getIntroduce();
@@ -85,5 +85,9 @@ public class User extends BaseTimeEntity {
 
     public List<Hashtag> getHashtagList() {
        return this.userHashTagList.stream().map(UserHashtag::getHashtag).toList();
+    }
+
+    public void changePassword(String newPw) {
+        this.password = newPw;
     }
 }
