@@ -27,6 +27,7 @@ public class ReviewMyPageResult {
     @Schema(description = "리뷰 별점")
     private Double star;
 
+    @Schema(description = "좋아요 수")
     private Integer heartCount;
 
     @Schema(description = "리뷰 생성 일자")
@@ -35,9 +36,10 @@ public class ReviewMyPageResult {
     @Schema(description = "리뷰 수정 일자")
     private LocalDateTime modifiedDate;
 
-    @Schema(description = "리뷰 수정 일자")
+    @Schema(description = "생성자 정보")
     private UserSimpleResult createdBy;
 
+    @Schema(description = "해쉬태그 리스트")
     private List<HashtagResult> hashtagResult = new ArrayList<>();
 
     @Schema(description = "이미지 리스트")
