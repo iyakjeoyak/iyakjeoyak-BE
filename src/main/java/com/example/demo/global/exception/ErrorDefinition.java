@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorDefinition {
-    NOT_FOUND , ILLEGAL_ARGUMENT
+    NOT_FOUND , ILLEGAL_ARGUMENT ,SECURE
 }

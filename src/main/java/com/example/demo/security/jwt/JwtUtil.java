@@ -36,7 +36,6 @@ public class JwtUtil {
             "/users/password",
             "/users/kakao-authcode",
             "/users/google-authcode",
-//            "/user/getGoogleAuthCode",
             "/users/check/username/**",
             "/users/check/nickname/**",
             "/maps/**",
@@ -54,7 +53,6 @@ public class JwtUtil {
             "/actuator/**"
     };
     public final String[] onlyGetNotFilter = {
-//            "/review",
             "/medicine-hearts/",
             "/review-hearts/",
             "/hashtags",
@@ -65,8 +63,6 @@ public class JwtUtil {
             "/images",
             "/users/check/username",
             "/users/check/nickname",
-//            "/review/top",
-//            "/review/**"
     };
     public final String[] onlyGetAllowUrl = {
             "/medicine-hearts/**",
@@ -148,13 +144,7 @@ public class JwtUtil {
      * JWT 유효성 검증
      * */
     public boolean validateToken(String token) {
-        Jws<Claims> claimsJws = null;
-        try {
-            claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-
-        } catch (Exception e) {
-            return false;
-        }
+        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         return claimsJws != null && claimsJws.getBody().get("tokenType").toString().equals("access");
     }
 
