@@ -51,7 +51,7 @@ public class Oauth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             User findUser = userRepository.findByUsername(email).orElseThrow();
 
-            jwtUtil.createAccessAndRefreshToken(new JwtTokenPayload(findUser.getUserId(), findUser.getUsername(), findUser.getNickname()));
+            jwtUtil.createAccessAndRefreshToken(new JwtTokenPayload(findUser.getUserId(), findUser.getUsername(), findUser.getNickname(), findUser.getUsername()));
 
             log.info("kakaoAccount {}", kakaoAccount);
             for (String key : attributes.keySet()){

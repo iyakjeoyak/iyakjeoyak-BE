@@ -109,6 +109,7 @@ public class JwtUtil {
         claims.put("userId", user.getUserId());
         claims.put("username", user.getUsername());
         claims.put("nickname", user.getNickname());
+        claims.put("socialEmail", user.getSocialEmail());
         claims.put("tokenType", type);
 //        claims.put("", user.)
         ZonedDateTime now = ZonedDateTime.now();
