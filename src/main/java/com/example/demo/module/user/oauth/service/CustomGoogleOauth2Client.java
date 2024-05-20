@@ -16,6 +16,6 @@ public interface CustomGoogleOauth2Client {
                                       @RequestParam(name = "redirect_uri") String redirectUri,
                                       @RequestParam(name = "code") String code);
 
-    @PostMapping(value = "www.googleapis.com/oauth2/v2/userinfo", headers = "Content-type: application/json; charset=utf-8")
+    @PostMapping(value = "www.googleapis.com/oauth2/v2/userinfo")
     GoogleUserInfo getUserInfo(@RequestHeader(name = "Authorization") String token);
 }

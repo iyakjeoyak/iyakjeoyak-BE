@@ -84,12 +84,12 @@ public class Oauth2RestServiceImpl implements Oauth2Service{
     }
 
     @Override
+    @Transactional
     public JwtTokenResult loginByGoogle(String code) {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, String> params = new HashMap<>();
 
         String requestUrl = "https://oauth2.googleapis.com/token";
-        String token = "";
 
         params.put("code", code);
         params.put("client_id", GOOGLE_CLIENT_ID);
@@ -97,17 +97,36 @@ public class Oauth2RestServiceImpl implements Oauth2Service{
         params.put("redirect_uri", GOOGLE_REDIRECT_URL);
         params.put("grant_type", "authorization_code");
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(requestUrl, params, String.class);
+        ResponseEntity<OAuthTokenResponse> responseEntity = restTemplate.postForEntity(requestUrl, params, OAuthTokenResponse.class);
 
-        return null;
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_FAILED);
+        }
+
+        OAuthTokenResponse body = responseEntity.getBody();
+
+        return createTokenByGoogleToken(body.getAccessToken());
     }
 
     @Transactional
     public JwtTokenResult createTokenByGoogleToken(String token) {
-//        GoogleUserInfo userInfo = new GoogleUserInfo(token);
-//        return loginAndCreateToken(userInfo);
+        HttpHeaders headers = new HttpHeaders();
 
-        return null;
+        headers.add("Authorization", "Bearer " + token);
+
+        HttpEntity request = new HttpEntity(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<GoogleUserInfo> responseEntity = restTemplate.exchange("https://www.googleapis.com/oauth2/v2/userinfo", HttpMethod.GET, request, GoogleUserInfo.class);
+
+        log.info("body = {}", responseEntity.getBody());
+
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_FAILED);
+        }
+
+        return loginAndCreateToken(responseEntity.getBody());
     }
 
     @Transactional

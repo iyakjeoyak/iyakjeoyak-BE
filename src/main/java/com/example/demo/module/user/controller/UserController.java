@@ -65,7 +65,8 @@ public class UserController {
     @GetMapping("/google-authcode")
     @Operation(summary = "구글 유저 생성 및 토큰 생성", description = "구글 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getGoogleAuthorizationCode(@RequestParam String code,HttpServletResponse response) {
-        JwtTokenResult token = userService.authorizationCodeToGoogle(code);
+
+        JwtTokenResult token = oauth2Service.loginByGoogle(code);
 
         response.setHeader("Authorization", token.getAccessToken());
 
