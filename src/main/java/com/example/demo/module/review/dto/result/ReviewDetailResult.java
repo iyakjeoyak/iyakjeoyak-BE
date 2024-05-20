@@ -48,4 +48,7 @@ public class ReviewDetailResult {
 
     @Schema(description = "작성자 여부")
     private Boolean isOwner;
+
+    @Schema(description = "좋아요 여부")
+    private Boolean isHeart;
 }

@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final HashtagRepository hashtagRepository;
     private final UserHashTagRepository userHashTagRepository;
-    private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final SocialUserRepository socialUserRepository;
     private final JwtUtil jwtUtil;
@@ -386,9 +385,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long findPassword(String username, String newPassword, String verifyCode) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-        if (!mailService.verifyMail(user.getUsername(), verifyCode)) {
-            throw new CustomException(MAIL_NOT_VERIFY);
-        }
+
         user.changePassword(passwordEncoder.encode(newPassword));
 
         return user.getUserId();

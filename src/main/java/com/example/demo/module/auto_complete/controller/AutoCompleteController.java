@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(자동 완성)", description = "검색 자동완성 관련")
-@RequestMapping("/auto-complete")
+@RequestMapping("/auto-completes")
 public class AutoCompleteController {
     private final AutoCompleteService autoCompleteService;
 

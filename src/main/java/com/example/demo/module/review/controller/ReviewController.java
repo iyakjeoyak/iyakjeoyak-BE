@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(후기)", description = "후기 관련")
-@RequestMapping("/review")
+@RequestMapping("/reviews")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -61,8 +61,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ReviewDetailResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<ReviewDetailResult> findOneByMedicineId(@AuthenticationPrincipal Long userId , @PathVariable("reviewId") Long reviewId) {
-        ReviewDetailResult oneByReviewId = reviewService.findOneByReviewId(reviewId);
-        oneByReviewId.setIsOwner(oneByReviewId.getCreatedBy().getUserId().equals(userId));
+        ReviewDetailResult oneByReviewId = reviewService.findOneByReviewId(reviewId , userId);
         return new ResponseEntity<>(oneByReviewId, HttpStatus.OK);
     }
 
@@ -113,6 +112,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
     public ResponseEntity<Long> deleteReviewImage(@RequestParam("reviewId") Long reviewId, @RequestParam("imageId") Long imageId, @AuthenticationPrincipal Long userId) throws IOException {
+        System.out.println("userId = "+ userId);
         return new ResponseEntity<>(reviewService.deleteReviewImage(userId, reviewId, imageId), HttpStatus.CREATED);
     }
 

@@ -115,7 +115,7 @@ public class UserStorageServiceImpl implements UserStorageService {
         // 수정 Image 를 받으면 이미지도 수정
         if (image != null && !image.isEmpty()) {
             //기존 이미지 삭제
-            imageService.deleteImage(userId, userStorage.getImage().getId());
+//            imageService.deleteImage(userId, userStorage.getImage().getId());
             //새로운 이미지 저장
             change = imageService.saveImage(image);
         }

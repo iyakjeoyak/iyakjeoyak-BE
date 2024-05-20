@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mail")
+@RequestMapping("/mails")
 @Tag(name = "이메일 인증 기능")
 public class MailTestController {
     private final MailService mailService;

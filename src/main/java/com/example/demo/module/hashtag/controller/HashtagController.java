@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(해쉬태그)", description = "해쉬태그 관련")
-@RequestMapping("/hashtag")
+@RequestMapping("/hashtags")
 public class HashtagController {
     private final HashtagService hashtagService;
 

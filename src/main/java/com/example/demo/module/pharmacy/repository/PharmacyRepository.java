@@ -14,18 +14,20 @@ import java.util.Optional;
 @Repository
 public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
-    @Query("SELECT p FROM Pharmacy p LEFT JOIN FETCH p.businessHoursList bhl WHERE p.user.userId = ?1")
+    @EntityGraph(attributePaths = {"user"})
     Page<Pharmacy> findAllByUserUserId(Long userId, PageRequest pageRequest);
 
+    @EntityGraph(attributePaths = {"user"})
     List<Pharmacy> findAllByUserUserId(Long userId);
 
     boolean existsByUserUserIdAndId(Long userId, Long pharmacyId);
 
     boolean existsByUserUserIdAndHpid(Long userId, String hpid);
 
+    @EntityGraph(attributePaths = {"user"})
     Optional<Pharmacy> findByUserUserIdAndHpid(Long userId, String hpid);
 
     @Override
-    @EntityGraph(attributePaths = {"businessHoursList"})
+    @EntityGraph(attributePaths = {"user"})
     Optional<Pharmacy> findById(Long aLong);
 }

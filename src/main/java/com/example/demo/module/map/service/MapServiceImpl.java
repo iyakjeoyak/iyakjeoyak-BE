@@ -7,7 +7,6 @@ import com.example.demo.module.map.dto.result.MapResult;
 import com.example.demo.module.map.dto.result.MapSelectResult;
 import com.example.demo.module.pharmacy.entity.Pharmacy;
 import com.example.demo.module.pharmacy.repository.PharmacyRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
@@ -28,7 +27,7 @@ import java.util.List;
 public class MapServiceImpl implements MapService {
 
     private final String serviceKey;
-    private String serviceUrl = "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService";
+    private final String serviceUrl = "http://apis.data.go.kr/B552657/ErmctInsttInfoInqireService";
     private final PharmacyRepository pharmacyRepository;
 
     public MapServiceImpl(String serviceKey, PharmacyRepository pharmacyRepository) {
@@ -61,7 +60,7 @@ public class MapServiceImpl implements MapService {
         JSONObject item = (JSONObject) items.get("item");
 
 
-        return new MapDetailResult(getMapSelectResult(item ,userId), getBusinessHoursList(item));
+        return new MapDetailResult(getMapResult(item ,userId), getBusinessHoursList(item));
     }
 
     @Override
@@ -90,7 +89,6 @@ public class MapServiceImpl implements MapService {
     private PageResult<MapSelectResult> getMapSelectResultPageResult(String result, Long userId) throws IOException {
 
         JSONObject body = getBodyValue(result);
-        System.out.println(body.toString());
         if (body.get("items").toString().isEmpty()) {
             PageResult<MapSelectResult> pageResult = new PageResult<>();
             pageResult.setData(List.of());
@@ -112,11 +110,8 @@ public class MapServiceImpl implements MapService {
 
         List<MapSelectResult> list = new ArrayList<>();
         for (Object o : array) {
-            JSONObject i = (JSONObject) o;
-            String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
-            String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
-
-            list.add(new MapSelectResult(getMapSelectResult(i, userId), startTime, endTime));
+            MapSelectResult mapSelectResult = getMapSelectResult(userId, (JSONObject) o);
+            list.add(mapSelectResult);
         }
 
         PageResult<MapSelectResult> pageResult = new PageResult<>();
@@ -125,6 +120,12 @@ public class MapServiceImpl implements MapService {
         pageResult.setSize(Integer.parseInt(body.get("numOfRows").toString()));
         pageResult.setTotalElement(Long.parseLong(body.get("totalCount").toString()));
         return pageResult;
+    }
+
+    private MapSelectResult getMapSelectResult(Long userId, JSONObject i) {
+        String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
+        String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
+        return new MapSelectResult(getMapResult(i, userId), startTime, endTime);
     }
 
     private PageResult<MapDetailResult> getMapDetailResultPageResult(String result, Long userId) throws IOException {
@@ -153,10 +154,8 @@ public class MapServiceImpl implements MapService {
         List<MapDetailResult> list = new ArrayList<>();
         for (Object o : array) {
             JSONObject i = (JSONObject) o;
-            String startTime = i.get("startTime") == null ? "" : i.get("startTime").toString();
-            String endTime = i.get("endTime") == null ? "" : i.get("endTime").toString();
-
-            list.add(new MapDetailResult(new MapSelectResult(getMapSelectResult(i,userId), startTime, endTime), getBusinessHoursList(i)));
+            MapSelectResult mapSelectResult = getMapSelectResult(userId, i);
+            list.add(new MapDetailResult(mapSelectResult, getBusinessHoursList(i)));
         }
 
         PageResult<MapDetailResult> pageResult = new PageResult<>();
@@ -186,7 +185,7 @@ public class MapServiceImpl implements MapService {
         return (JSONObject) response.get("body");
     }
 
-    private MapResult getMapSelectResult(JSONObject i, Long userId) {
+    private MapResult getMapResult(JSONObject i, Long userId) {
         List<String> hpidList = new ArrayList<>();
         if (userId != null && userId != 0L) {
             hpidList = pharmacyRepository.findAllByUserUserId(userId).stream().map(Pharmacy::getHpid).toList();
