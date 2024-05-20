@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class GoogleUserInfo implements Oauth2UserInfo {
+
     @JsonProperty("id")
     private String id;
     @JsonProperty("email")

@@ -9,6 +9,7 @@ import com.example.demo.module.user.dto.result.ChangePasswordPayLoad;
 import com.example.demo.module.user.dto.result.UserDetailResult;
 import com.example.demo.module.user.dto.result.UserResult;
 import com.example.demo.module.user.dto.result.UserValidationResult;
+import com.example.demo.module.user.oauth.service.Oauth2Service;
 import com.example.demo.module.user.service.UserService;
 import com.example.demo.module.userStorage.dto.payload.StorageOrderField;
 import com.example.demo.module.userStorage.dto.result.UserStorageSimpleResult;
@@ -47,10 +48,14 @@ public class UserController {
     private final ReviewService reviewService;
     private final UserStorageService userStorageService;
 
+    private final Oauth2Service oauth2Service;
+
     @GetMapping("/kakao-authcode")
     @Operation(summary = "카카오 유저 생성 및 토큰 생성 ", description = "카카오 유저 생성 및 토큰 생성")
     public ResponseEntity<String> getKakaoAuthorizationCode(@RequestParam String code, HttpServletResponse response) throws IOException, ParseException {
-        JwtTokenResult token = userService.authorizationCodeToKakao(code);
+//        JwtTokenResult token = userService.authorizationCodeToKakao(code);
+
+        JwtTokenResult token = oauth2Service.loginByKakao(code);
 
         response.setHeader("Authorization", token.getAccessToken());
 

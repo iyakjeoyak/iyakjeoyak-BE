@@ -24,6 +24,7 @@ public enum ErrorCode {
     AUTH_CORD_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "인증코드가 발송되지 않은 이메일입니다."),
     ROLE_NOT_FOUND(BAD_REQUEST, NOT_FOUND, "유저 권한을 찾을 수 없습니다."),
 
+    SOCIAL_LOGIN_FAILED(BAD_REQUEST, NOT_FOUND, "소셜 로그인을 실패했습니다."),
 
     // 로직 실패 에러코드
     REVIEW_DUPLICATION(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 후기를 작성한 영양제 입니다."),

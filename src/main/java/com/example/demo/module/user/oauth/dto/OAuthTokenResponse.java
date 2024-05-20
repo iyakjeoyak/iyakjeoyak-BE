@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 public class OAuthTokenResponse {
-    private String tokenType;
+//    private String tokenType;
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
-    private int expiresIn;
+//    private int expiresIn;
 }

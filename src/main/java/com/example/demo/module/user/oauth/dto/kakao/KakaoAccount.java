@@ -5,10 +5,8 @@ import lombok.Data;
 
 @Data
 public class KakaoAccount {
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("profile_image")
-    private String imageUrl;
+    @JsonProperty("profile")
+    private Profile profile;
     @JsonProperty("gender")
     private String gender;
     @JsonProperty("email")
