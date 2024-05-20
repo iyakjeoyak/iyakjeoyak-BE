@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final HashtagRepository hashtagRepository;
     private final UserHashTagRepository userHashTagRepository;
-    private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final SocialUserRepository socialUserRepository;
     private final JwtUtil jwtUtil;

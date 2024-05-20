@@ -29,9 +29,9 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = PageResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<PageResult<DeclarationResult>> findAllByUser(@RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "10") int size,
-                                                                       @AuthenticationPrincipal Long userId){
+    public ResponseEntity<PageResult<DeclarationResult>> findAllByUser(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+                                                                       @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+                                                                       @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(declarationService.findAll(userId, PageRequest.of(page, size)), HttpStatus.OK);
     }
 
@@ -40,7 +40,7 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = DeclarationResult.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<DeclarationResult> findOneByUser(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId){
+    public ResponseEntity<DeclarationResult> findOneByUser(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(declarationService.findOneByUser(declarationId, userId), HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> declareReview(@RequestBody DeclarationPayload declarationPayload, @AuthenticationPrincipal Long userId){
+    public ResponseEntity<Long> declareReview(@RequestBody DeclarationPayload declarationPayload, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(declarationService.save(declarationPayload, userId), HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class DeclarationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "500", description = "에러", content = @Content(schema = @Schema(implementation = String.class)))})
-    public ResponseEntity<Long> deleteDeclaration(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId){
+    public ResponseEntity<Long> deleteDeclaration(@PathVariable("declarationId") Long declarationId, @AuthenticationPrincipal Long userId) {
         return new ResponseEntity<>(declarationService.delete(declarationId, userId), HttpStatus.OK);
     }
 

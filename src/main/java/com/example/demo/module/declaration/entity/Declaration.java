@@ -1,5 +1,6 @@
 package com.example.demo.module.declaration.entity;
 
+import com.example.demo.module.common.entity.BaseEntity;
 import com.example.demo.module.declaration.dto.result.DeclarationResult;
 import com.example.demo.module.review.dto.result.ReviewResult;
 import com.example.demo.module.review.entity.Review;
@@ -15,7 +16,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Declaration {
+public class Declaration extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

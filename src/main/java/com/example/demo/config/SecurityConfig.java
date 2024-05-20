@@ -3,8 +3,7 @@ package com.example.demo.config;
 import com.example.demo.module.user.oauth.CustomOAuthUserService;
 import com.example.demo.module.user.oauth.Oauth2LoginFailureHandler;
 import com.example.demo.module.user.oauth.Oauth2LoginSuccessHandler;
-import com.example.demo.security.jwt.JwtUtil;
-import com.example.demo.security.jwt.JwtFilter;
+import com.example.demo.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +48,11 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable())
                 // usernmaepassword 필터 전에 loginfilter를 거치겠다
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(jwtUtil), JwtFilter.class)
+                .exceptionHandling((exceptionConfig) ->
+                        exceptionConfig
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPointHandler())
+                )
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(jwtUtil.allowedUrls).permitAll()
@@ -58,8 +62,6 @@ public class SecurityConfig {
                 )
                 //세션 관리 상태 없음으로 구성한다, Spring Security가 세션 생성과 사용을 하지 않겠다. 무상태
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//                .oauth2Login(oauth -> oauth.userInfoEndpoint(config -> config.userService(customOAuthUserService)).successHandler(successHandler));
-//                .oauth2Login(oauth2Configurer -> oauth2Configurer.loginPage("/login").successHandler(successHandler).failureHandler(failureHandler).userInfoEndpoint(c -> c.userService(customOAuthUserService)));
 
 
         return http.build();
