@@ -15,6 +15,6 @@ public interface CustomKakaoOauth2Client {
                                       @RequestParam(name = "redirect_uri") String redirectUri,
                                       @RequestParam(name = "code") String code);
 
-    @PostMapping(value = "kapi.kakao.com/v2/user/me", headers = "Content-type: application/json; charset=utf-8")
+    @PostMapping(value = "kapi.kakao.com/v2/user/me", headers = "Content-type: application/x-www-form-urlencoded;charset=utf-8")
     KakaoUserInfo getUserInfo(@RequestHeader(name = "Authorization") String token);
 }

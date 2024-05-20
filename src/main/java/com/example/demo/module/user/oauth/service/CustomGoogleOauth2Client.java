@@ -12,6 +12,7 @@ public interface CustomGoogleOauth2Client {
     @PostMapping("oauth2.googleapis.com/token")
     OAuthTokenResponse getToken(@RequestParam(name = "grant_type") String grantType,
                                       @RequestParam(name = "client_id") String clientId,
+                                      @RequestParam(name = "client_secret") String clientSecret,
                                       @RequestParam(name = "redirect_uri") String redirectUri,
                                       @RequestParam(name = "code") String code);
 
