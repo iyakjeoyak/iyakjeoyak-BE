@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "(명예의 전당)", description = "명예의 전당 관련")
-@RequestMapping("/topUser")
+@RequestMapping("/top-users")
 public class TopUserController {
     private final TopUserService topUserService;
 

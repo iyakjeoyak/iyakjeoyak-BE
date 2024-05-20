@@ -30,49 +30,45 @@ public class JwtUtil {
             "/swagger-ui/**",
             "/",
             "/error",
-            "/user/signup",
-            "/user/login",
-            "/user/createAccessByRefresh",
-            "/user/findPassword",
-            "/user/getKakaoAuthCode",
-            "/user/getGoogleAuthCode",
-//            "/user/getGoogleAuthCode",
-            "/user/check/username/**",
-            "/user/check/nickname/**",
-            "/map/**",
-            "/map**",
-            "/category",
-            "/hashtag",
-            "/bookmark/medicine/**",
-            "/topUser",
-            "/auto-complete",
-            "/medicine",
-            "/medicine/**",
-            "/mail/verify",
-            "/mail/send/verify",
-            "/image/**",
+            "/users/signup",
+            "/users/login",
+            "/users/access-token",
+            "/users/password",
+            "/users/kakao-authcode",
+            "/users/google-authcode",
+            "/users/check/username/**",
+            "/users/check/nickname/**",
+            "/maps/**",
+            "/maps**",
+            "/categories",
+            "/hashtags",
+            "/bookmarks/medicine/**",
+            "/top-users",
+            "/auto-completes",
+            "/medicines",
+            "/medicines/**",
+            "/mails/verify",
+            "/mails/send/verify",
+            "/images/**",
             "/actuator/**"
     };
     public final String[] onlyGetNotFilter = {
-//            "/review",
-            "/heart/medicine/",
-            "/heart/review/",
-            "/hashtag",
-            "/category",
-            "/bookmark/medicine/",
-            "/medicine/query",
-            "/mail",
-            "/image",
-            "/user/check/username",
-            "/user/check/nickname",
-//            "/review/top",
-//            "/review/**"
+            "/medicine-hearts/",
+            "/review-hearts/",
+            "/hashtags",
+            "/categories",
+            "/bookmarks/medicine/",
+            "/medicines/query",
+            "/mails",
+            "/images",
+            "/users/check/username",
+            "/users/check/nickname",
     };
     public final String[] onlyGetAllowUrl = {
-            "/heart/review/**",
-            "/heart/medicine/**",
-            "/review/**",
-            "/review",
+            "/medicine-hearts/**",
+            "/review-hearts/**",
+            "/reviews/**",
+            "/reviews",
     };
 
     public JwtUtil(
@@ -113,6 +109,7 @@ public class JwtUtil {
         claims.put("userId", user.getUserId());
         claims.put("username", user.getUsername());
         claims.put("nickname", user.getNickname());
+        claims.put("socialEmail", user.getSocialEmail());
         claims.put("tokenType", type);
 //        claims.put("", user.)
         ZonedDateTime now = ZonedDateTime.now();
@@ -148,13 +145,7 @@ public class JwtUtil {
      * JWT 유효성 검증
      * */
     public boolean validateToken(String token) {
-        Jws<Claims> claimsJws = null;
-        try {
-            claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-
-        } catch (Exception e) {
-            return false;
-        }
+        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         return claimsJws != null && claimsJws.getBody().get("tokenType").toString().equals("access");
     }
 

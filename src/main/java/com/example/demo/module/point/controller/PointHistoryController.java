@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "포인트 내역 관련")
-@RequestMapping("/point")
+@RequestMapping("/points")
 public class PointHistoryController {
     private final PointHistoryService pointService;
 

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/map")
+@RequestMapping("/maps")
 @RequiredArgsConstructor
 @Tag(name = "(지도)", description = "지도 API")
 public class MapController {
