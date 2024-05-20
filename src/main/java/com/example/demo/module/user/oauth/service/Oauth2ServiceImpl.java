@@ -46,14 +46,14 @@ public class Oauth2ServiceImpl implements Oauth2Service {
     @Transactional
     public JwtTokenResult loginByKakao(String code) {
         OAuthTokenResponse token = kakaoOauth2Client.getToken(grantType, KAKAO_CLIENT_ID, KAKAO_REDIRECT_URL, code);
-        return createTokenByKakaoToken(token.getAccessToken());
+        return createTokenByKakaoToken("Bearer " + token.getAccessToken());
     }
 
     @Override
     @Transactional
     public JwtTokenResult loginByGoogle(String code) {
-        OAuthTokenResponse token = googleOauth2Client.getToken(grantType, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URL, code);
-        return createTokenByGoogleToken(token.getAccessToken());
+        OAuthTokenResponse token = googleOauth2Client.getToken(grantType, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URL, code);
+        return createTokenByGoogleToken("Bearer " + token.getAccessToken());
     }
 
     @Transactional
