@@ -30,14 +30,6 @@ public interface UserService {
 
     Boolean checkDuplicateNickname(String nickname);
 
-    JwtTokenResult authorizationCodeToKakao(String code) throws IOException, ParseException;
-
-    JwtTokenResult createTokenByKakaoToken(String token);
-
-    JwtTokenResult authorizationCodeToGoogle(String code);
-
-    JwtTokenResult createTokenByGoogleToken(String token);
-
     Long changePassword(Long userId, String oldPassword, String newPassword);
 
     Long findPassword(String username, String newPassword, String verifyCode);
