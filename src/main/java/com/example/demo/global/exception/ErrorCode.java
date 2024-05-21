@@ -40,7 +40,13 @@ public enum ErrorCode {
     JWT_TIME_EXP(UNAUTHORIZED, SECURE, "토큰 시간이 만료되었습니다."),
     JWT_INVALID(FORBIDDEN, SECURE, "유효하지 않은 토큰이 입력되었습니다."),
     AUTHENTICATION_BLOCKED(FORBIDDEN, SECURE, "로그인 후 사용 가능한 서비스 입니다."),
-    JWT_TYPE_ERROR(FORBIDDEN, SECURE, "토큰 타입이 잘못되었습니다.");
+    JWT_TYPE_ERROR(FORBIDDEN, SECURE, "토큰 타입이 잘못되었습니다."),
+
+    //외부 API 호출 실패
+    API_4xx_ERROR(BAD_REQUEST, ILLEGAL_ARGUMENT, "외부 API 호출에 문제가 있습니다(4xx error)"),
+    API_5xx_ERROR(INTERNAL_SERVER_ERROR, ILLEGAL_ARGUMENT, "외부 API 호출에 문제가 있습니다(5xx error)"),
+    ;
+
 
 
 
