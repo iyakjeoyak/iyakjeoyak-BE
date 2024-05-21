@@ -1,9 +1,9 @@
 package com.example.demo.config;
 
-import com.example.demo.module.user.oauth.CustomOAuthUserService;
-import com.example.demo.module.user.oauth.Oauth2LoginFailureHandler;
-import com.example.demo.module.user.oauth.Oauth2LoginSuccessHandler;
-import com.example.demo.security.jwt.*;
+import com.example.demo.security.jwt.JwtAuthenticationEntryPointHandler;
+import com.example.demo.security.jwt.JwtExceptionFilter;
+import com.example.demo.security.jwt.JwtFilter;
+import com.example.demo.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,9 +27,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
-    private final CustomOAuthUserService customOAuthUserService;
-    private final Oauth2LoginSuccessHandler successHandler;
-    private final Oauth2LoginFailureHandler failureHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

@@ -33,7 +33,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Primary
+//@Primary
 @Transactional(readOnly = true)
 public class Oauth2RestServiceImpl implements Oauth2Service{
 
@@ -135,8 +135,8 @@ public class Oauth2RestServiceImpl implements Oauth2Service{
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-        headers.add("Authorization", "Bearer " + token);
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
         HttpEntity request = new HttpEntity(headers);
 

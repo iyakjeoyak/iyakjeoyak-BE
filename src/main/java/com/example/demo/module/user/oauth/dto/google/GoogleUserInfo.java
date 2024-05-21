@@ -4,9 +4,13 @@ import com.example.demo.module.user.entity.Gender;
 import com.example.demo.module.user.entity.SocialType;
 import com.example.demo.module.user.oauth.dto.Oauth2UserInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class GoogleUserInfo implements Oauth2UserInfo {
 
     @JsonProperty("id")
