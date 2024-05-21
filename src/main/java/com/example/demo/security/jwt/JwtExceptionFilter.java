@@ -33,27 +33,18 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-
             log.info("[JwtExceptionFilter] : 토큰 만료");
             setErrorResponse(response, ErrorCode.JWT_TIME_EXP);
-
         } catch (JwtException | IllegalArgumentException e) {
-
             log.info("[JwtExceptionFilter] : 유효하지 않은 토큰");
             setErrorResponse(response, ErrorCode.JWT_INVALID);
-
         } catch (NoSuchElementException e) {
-
             log.info("[JwtExceptionFilter] : 유저 정보 찾지 못함");
             setErrorResponse(response, ErrorCode.USER_NOT_FOUND);
-
         } catch (ArrayIndexOutOfBoundsException e) {
-
             log.info("[JwtExceptionFilter] : 배열 범위 벗어남 (권한 등)");
             setErrorResponse(response, ErrorCode.JWT_INVALID);
-
         } catch (NullPointerException e) {
-
             filterChain.doFilter(request, response);
         }
     }

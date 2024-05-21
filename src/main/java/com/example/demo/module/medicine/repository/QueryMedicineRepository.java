@@ -58,7 +58,6 @@ public class QueryMedicineRepository {
                 .select(medicine)
                 .from(medicine)
                 .leftJoin(medicine.image, image)
-//                .fetchJoin()
                 .where(medicine.id.in(idList))
                 .orderBy(setOrderBy(orderSortCond))
                 .fetch();
@@ -91,20 +90,7 @@ public class QueryMedicineRepository {
                 .offset(0)
                 .limit(limit)
                 .fetch();
-
-//        QMedicine sub = new QMedicine("sub");
-//        List<String> companyResult =
-//                query.select(medicine.BSSH_NM)
-//                        .from(medicine)
-//                        .orderBy(new OrderSpecifier<>(Order.ASC, medicine.BSSH_NM))
-//                        .where(companyStart(keyword))
-//                        .offset(0)
-//                        .limit(limit)
-//                        .fetch();
-//        return Stream.concat(companyResult.stream(), nameResult.stream())
-//                .sorted(Comparator.comparing(String::length)).toList();
         result.sort(Comparator.comparing(i -> i.getName().length()));
-
         return result;
     }
 
@@ -126,9 +112,6 @@ public class QueryMedicineRepository {
                 .fetch();
     }
 
-    private BooleanExpression heartCountGoe(Integer heartCount) {
-        return (heartCount == null) ? null : medicine.heartCount.goe(heartCount);
-    }
 
     private BooleanExpression companyLike(String keyword) {
         return StringUtils.isEmpty(keyword) ? null : medicine.BSSH_NM.like("%" + keyword + "%");
@@ -136,19 +119,6 @@ public class QueryMedicineRepository {
 
     private BooleanExpression nameLike(String keyword) {
         return StringUtils.isEmpty(keyword) ? null : medicine.PRDLST_NM.like("%" + keyword + "%");
-    }
-
-    private BooleanExpression nameStart(String keyword) {
-        return StringUtils.isEmpty(keyword) ? null : medicine.PRDLST_NM.like(keyword + "%");
-    }
-
-    private BooleanExpression companyStart(String keyword) {
-        return StringUtils.isEmpty(keyword) ? null : medicine.BSSH_NM.like(keyword + "%");
-    }
-
-    private BooleanExpression keywordLike(String keyword) {
-        BooleanExpression nameLike = nameLike(keyword);
-        return nameLike == null ? companyLike(keyword) : nameLike(keyword).and(companyLike(keyword));
     }
 
     private BooleanExpression categoryEq(Long categoryId) {
@@ -176,6 +146,23 @@ public class QueryMedicineRepository {
             case CREATED_DATE -> new OrderSpecifier<>(sort, medicine.createdDate);
             case ID -> new OrderSpecifier<>(sort, medicine.id);
         };
+    }
+
+    private BooleanExpression nameStart(String keyword) {
+        return StringUtils.isEmpty(keyword) ? null : medicine.PRDLST_NM.like(keyword + "%");
+    }
+
+    private BooleanExpression companyStart(String keyword) {
+        return StringUtils.isEmpty(keyword) ? null : medicine.BSSH_NM.like(keyword + "%");
+    }
+
+    private BooleanExpression keywordLike(String keyword) {
+        BooleanExpression nameLike = nameLike(keyword);
+        return nameLike == null ? companyLike(keyword) : nameLike(keyword).and(companyLike(keyword));
+    }
+
+    private BooleanExpression heartCountGoe(Integer heartCount) {
+        return (heartCount == null) ? null : medicine.heartCount.goe(heartCount);
     }
 
 }

@@ -41,7 +41,6 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-//	implementation 'com.auth0:java-jwt:4.4.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.security:spring-security-config'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -85,8 +84,8 @@ dependencies {
 	implementation group: 'org.json', name: 'json', version: '20200518'
 
 	//프로메테우스 그라파나
-	implementation 'org.springframework.boot:spring-boot-starter-actuator' //actuator 추가
-	implementation 'io.micrometer:micrometer-registry-prometheus' //추가 ```
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 }
 

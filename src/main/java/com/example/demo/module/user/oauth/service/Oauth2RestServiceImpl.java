@@ -47,10 +47,8 @@ public class Oauth2RestServiceImpl implements Oauth2Service{
     private String GOOGLE_CLIENT_SECRET;
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String GOOGLE_REDIRECT_URL;
-
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String KAKAO_REDIRECT_URL;
-
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String KAKAO_CLIENT_ID;
 

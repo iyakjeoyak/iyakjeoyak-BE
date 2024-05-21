@@ -92,7 +92,6 @@ public class MedicineController {
     public ResponseEntity<MedicineResult> findOneById(@PathVariable(name = "medicineId") Long medicineId, @AuthenticationPrincipal Long userId) {
         Boolean isHeart = false;
         Boolean isBookmark = false;
-        System.out.println("userId = " + userId);
         if (userId != null && userId != 0L) {
             isBookmark = bookmarkService.isChecked(medicineId, userId);
             isHeart = heartMedicineService.isChecked(medicineId, userId);

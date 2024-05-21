@@ -44,9 +44,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     JwtTokenPayload jwtTokenPayload = jwtUtil.getJwtTokenPayload(token);
 
                     if (ObjectUtils.isNotEmpty(jwtTokenPayload)) {
-                        CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
 
+                        CustomUserDetails customUserDetails = new CustomUserDetails(jwtTokenPayload);
                         SecurityContextHolder.getContext().setAuthentication(customUserDetails);
+
                     }
                 } else {
                     setErrorResponse(response, ErrorCode.JWT_TYPE_ERROR);

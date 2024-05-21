@@ -26,9 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @Primary
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class Oauth2ServiceImpl implements Oauth2Service {
     private final KakaoOauth2TokenClient kakaoOauth2TokenClient;
@@ -59,7 +59,6 @@ public class Oauth2ServiceImpl implements Oauth2Service {
     @Transactional
     public JwtTokenResult loginByKakao(String code) {
         OAuthTokenResponse token = kakaoOauth2TokenClient.getToken(grantType, KAKAO_CLIENT_ID, KAKAO_REDIRECT_URL, code);
-        log.info("[토큰 kakao] = {}", token);
         return createTokenByKakaoToken("Bearer " + token.getAccessToken());
     }
 
@@ -67,21 +66,18 @@ public class Oauth2ServiceImpl implements Oauth2Service {
     @Transactional
     public JwtTokenResult loginByGoogle(String code) {
         OAuthTokenResponse token = googleOauth2TokenClient.getToken(grantType, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URL, code);
-        log.info("[토큰 google] = {}", token);
         return createTokenByGoogleToken("Bearer " + token.getAccessToken());
     }
 
     @Transactional
     public JwtTokenResult createTokenByGoogleToken(String token) {
         GoogleUserInfo userInfo = googleOauth2InfoClient.getUserInfo(token);
-        log.info("userInfo google ={}",userInfo);
         return loginAndCreateToken(userInfo);
     }
 
     @Transactional
     public JwtTokenResult createTokenByKakaoToken(String token) {
         KakaoUserInfo userInfo = kakaoOauth2InfoClient.getUserInfo(token);
-        log.info("userInfo kakao ={}",userInfo);
         return loginAndCreateToken(userInfo);
     }
 

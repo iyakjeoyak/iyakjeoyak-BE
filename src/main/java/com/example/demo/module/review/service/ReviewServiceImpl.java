@@ -65,9 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public Long save(Long userId, ReviewPayload reviewPayload, List<MultipartFile> imgFile) throws IOException {
-
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
         if (reviewRepository.existsByMedicineIdAndCreatedByUserId(reviewPayload.getMedicineId(), user.getUserId())) {
             throw new CustomException(REVIEW_DUPLICATION);
         }

@@ -59,46 +59,23 @@ public class UserServiceImpl implements UserService {
     private final HashtagRepository hashtagRepository;
     private final UserHashTagRepository userHashTagRepository;
     private final ImageService imageService;
-    private final SocialUserRepository socialUserRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final MailService mailService;
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    private String GOOGLE_CLIENT_ID;
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-    private String GOOGLE_CLIENT_SECRET;
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String GOOGLE_REDIRECT_URL;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String KAKAO_REDIRECT_URL;
-
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String KAKAO_CLIENT_ID;
-    /*
-     * 회원 가입
-     * */
     @Counted("my.user")
     @Override
     @Transactional
     public Long createUser(UserJoinPayload userJoinPayload, MultipartFile imgFile) throws IOException {
-        Boolean isUsernameExist = userRepository.existsByUsername(userJoinPayload.getUsername());
-        Boolean isUserNicknameExist = userRepository.existsByNickname(userJoinPayload.getNickname());
-
-        if (isUsernameExist) {
+        if (userRepository.existsByUsername(userJoinPayload.getUsername())) {
             throw new IllegalArgumentException("이미 있는 아이디입니다.");
         }
-
-        if (isUserNicknameExist) {
+        if (userRepository.existsByNickname(userJoinPayload.getNickname())) {
             throw new IllegalArgumentException("이미 있는 닉네임입니다.");
         }
-
         if (ObjectUtils.notEqual(userJoinPayload.getPassword(), userJoinPayload.getConfirmPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요.");
         }
-
         Image image = imageService.saveImage(imgFile);
-
         User saveUser = userRepository.save(User.builder()
                 .username(userJoinPayload.getUsername())
                 .password(passwordEncoder.encode(userJoinPayload.getPassword()))
@@ -107,15 +84,12 @@ public class UserServiceImpl implements UserService {
                 .age(userJoinPayload.getAge())
                 .image(image)
                 .build());
-        // UserHash Tag 저장
-        // TODD no value present
         userJoinPayload.getUserHashtagList().forEach(
                 uht -> userHashTagRepository.save(
                         UserHashtag.builder()
                                 .hashtag(hashtagRepository.findById(uht).orElseThrow(() -> new CustomException(HASHTAG_NOT_FOUND)))
                                 .user(saveUser)
                                 .build()));
-        // userRole 저장
         userJoinPayload.getUserRoleList().forEach(
                 ur -> userRoleRepository.save(
                         UserRole.builder()
@@ -126,54 +100,32 @@ public class UserServiceImpl implements UserService {
         return saveUser.getUserId();
     }
 
-    /*
-     * 유저 로그인
-     * */
     @Counted("my.user")
     @Override
     public JwtTokenResult loginUser(UserLoginPayload userLoginPayload) {
-        // body에서 페이로드로 페스워드 꺼내기
         String password = userLoginPayload.getPassword();
-        // username으로 user 테이블 조회
         User user = userRepository.findByUsername(userLoginPayload.getUsername()).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-        //TODO 더 추가할 수도 있음
-
-        // 유효성 검증
         if (ObjectUtils.isEmpty(user)) {
             throw new CustomException(USER_NOT_FOUND);
         }
-
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-
-        // 다음 버전 (디비를 조회할 필요없이 loginPayload로 조회한 녀석으로 JwtTokenPayload 채우기)
-        // TODO 여기서 다 채우기
         JwtTokenPayload buildPayload = JwtTokenPayload.builder()
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .username(user.getUsername())
                 .build();
-        // 그대로 토큰을 만드는데 사용하기
-//        String accessToken = jwtUtil.createAccessToken(buildPayload);
-
-        JwtTokenResult accessAndRefreshToken = jwtUtil.createAccessAndRefreshToken(buildPayload);
-        // 만들어진 토큰 리턴
-        return accessAndRefreshToken;
+        return jwtUtil.createAccessAndRefreshToken(buildPayload);
     }
 
     @Override
     public UserResult findOneByUserId(Long userId) {
-
         return userMapper.toDto(
                 userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")));
 
     }
 
-    /*
-     * 회원 삭제
-     * */
     @Transactional
     @Override
     public Long deleteByUserId(Long userId) {
@@ -186,18 +138,11 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /*
-     * 회원 수정
-     * */
-    //TODO edit 개발
     @Transactional
     @Override
     public Long editUser(Long userId, UserEditPayload userEditPayload, MultipartFile imgFile) throws IOException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
-
-        // UserHashtag에 있는 애들 일단 가져오기
-        // userhashtag를 변경 하는데.. 단순하게 hashtag로 받아서 쓰고 userhashtag를 저장하자
 
         List<UserHashtag> allById = userHashTagRepository.findAllByUser(user);
 
@@ -220,9 +165,6 @@ public class UserServiceImpl implements UserService {
         return userId;
     }
 
-    /*
-     * 유저 벨리데이션, 인터셉터?
-     * */
     @Override
     public UserValidationResult validationUser(Long userId) {
         if (userId == null) {
