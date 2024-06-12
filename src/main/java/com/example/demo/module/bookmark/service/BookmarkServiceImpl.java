@@ -53,7 +53,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                     .user(userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND)))
                     .build()).getId();
         }
-        throw new IllegalArgumentException("해당유저는 이미 북마크 등록을 했습니다.");
+        throw new CustomException(BOOKMARK_EXIST);
     }
 
     @Override

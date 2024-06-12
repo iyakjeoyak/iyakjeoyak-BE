@@ -35,6 +35,11 @@ public enum ErrorCode {
     MAIL_NOT_VERIFY(BAD_REQUEST, ILLEGAL_ARGUMENT, "메일 인증번호가 일치하지 않습니다."),
     PW_CONFIRM_FAIL(BAD_REQUEST, ILLEGAL_ARGUMENT, "비밀번호 확인이 일치하지 않습니다."),
     PHARMACY_DUPLICATION(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 등록된 약국 정보입니다."),
+    REVIEW_HEART_EXIST(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 좋아요 클릭한 후기입니다."),
+    REVIEW_HEART_NOT_EXIST(BAD_REQUEST, ILLEGAL_ARGUMENT, "좋아요 클릭 되지 않은 후기입니다."),
+    MEDICINE_HEART_NOT_EXIST(BAD_REQUEST, ILLEGAL_ARGUMENT, "좋아요 클릭되지 않은 영양제입니다."),
+    MEDICINE_HEART_EXIST(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 좋아요 클릭한 영양제입니다."),
+    BOOKMARK_EXIST(BAD_REQUEST, ILLEGAL_ARGUMENT, "이미 북마크 등록을 했습니다."),
 
     //JWT 실패 코드
     JWT_TIME_EXP(UNAUTHORIZED, SECURE, "토큰 시간이 만료되었습니다."),

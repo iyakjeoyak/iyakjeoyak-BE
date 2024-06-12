@@ -89,7 +89,7 @@ public class UserStorageServiceImpl implements UserStorageService {
     public Long deleteById(Long userId, Long storageId) {
         if (!userStorageRepository.findById(storageId).orElseThrow(() -> new CustomException(STORAGE_NOT_FOUND))
                 .getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("접근 유저가 잘못되었습니다.");
+            throw new CustomException(ACCESS_BLOCKED);
         }
         userStorageRepository.deleteById(storageId);
         return storageId;
@@ -133,7 +133,7 @@ public class UserStorageServiceImpl implements UserStorageService {
             throw new CustomException(ACCESS_BLOCKED);
         }
         if (!userStorage.getImage().getId().equals(imageId)) {
-            throw new IllegalArgumentException("해당 보관함의 이미지가 아닙니다.");
+            throw new CustomException(IMAGE_NOT_FOUND);
         }
         imageService.deleteImage(userId, imageId);
 

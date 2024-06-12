@@ -44,7 +44,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
             medicineRepository.save(medicine);
             return id;
         }
-        throw new CustomException(ACCESS_BLOCKED);
+        throw new CustomException(MEDICINE_HEART_EXIST);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
            heartMedicineRepository.deleteByMedicineIdAndUserUserId(medicineId, userId);
            return medicineId;
         }
-        throw new CustomException(ACCESS_BLOCKED);
+        throw new CustomException(MEDICINE_HEART_EXIST);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class HeartMedicineServiceImpl implements HeartMedicineService {
         if(isChecked(medicineId, userId)){
             medicine.decreaseHeartCount();
             Long heartMedicineId = heartMedicineRepository.findByMedicineIdAndUserUserId(medicineId, userId)
-                    .orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 영양제입니다.")).getId();
+                    .orElseThrow(() -> new CustomException(MEDICINE_HEART_NOT_EXIST)).getId();
             heartMedicineRepository.deleteById(heartMedicineId);
             return false;
         }

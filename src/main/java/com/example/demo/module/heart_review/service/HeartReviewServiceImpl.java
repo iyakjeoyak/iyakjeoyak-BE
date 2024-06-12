@@ -31,7 +31,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
     @Override
     public Long save(Long userId, Long reviewId) {
         if (checkReviewHeart(userId, reviewId)) {
-            throw new IllegalArgumentException("이미 좋아요 클릭한 후기입니다.");
+            throw new CustomException(REVIEW_HEART_EXIST);
         }
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
         review.addHeartCount();
@@ -47,11 +47,11 @@ public class HeartReviewServiceImpl implements HeartReviewService {
     @Override
     public Long delete(Long userId, Long reviewId) {
         if (!checkReviewHeart(userId, reviewId)) {
-            throw new IllegalArgumentException("좋아요 클릭 되지 않은 후기입니다.");
+            throw new CustomException(REVIEW_HEART_NOT_EXIST);
         }
         reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND)).decreaseHeartCount();
 
-        Long hrId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
+        Long hrId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new CustomException(REVIEW_HEART_NOT_EXIST)).getId();
         heartReviewRepository.deleteById(hrId);
         return hrId;
     }
@@ -78,7 +78,7 @@ public class HeartReviewServiceImpl implements HeartReviewService {
             if(!Objects.equals(user.getUserId(), userId)){
                 user.minusPoint(HEART.getPoint());
             }
-            Long heartReviewId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new NoSuchElementException("좋아요 클릭되지 않은 후기입니다.")).getId();
+            Long heartReviewId = heartReviewRepository.findByUserUserIdAndReviewId(userId, reviewId).orElseThrow(() -> new CustomException(REVIEW_HEART_NOT_EXIST)).getId();
             heartReviewRepository.deleteById(heartReviewId);
             return false;
         }
